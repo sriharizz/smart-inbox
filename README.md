@@ -1,7 +1,8 @@
 # Clinevo Smart Inbox Assistant for Pharmacovigilance
 
 > **Enterprise-grade, AI-powered pharmacovigilance intake automation platform with human-in-the-loop review.**  
-> Built for the Clinevo Technologies Live Project Assignment (Forward Deployment / GenAI Integration Engineer).
+> Built for the Clinevo Technologies Live Project Assignment (Forward Deployment / GenAI Integration Engineer).  
+> 📄 **Canonical Evaluator Write-Up (2–5 pages)**: [docs/CLINEVO_WRITEUP.md](file:///c:/projects/SmartInbox/docs/CLINEVO_WRITEUP.md)
 
 ---
 
@@ -111,6 +112,7 @@ SmartInbox/
 ├── Clinevo_Assignment.pdf             # Original Clinevo assignment prompt
 ├── .env.example                       # Example environment configuration template
 ├── docs/                              # Detailed engineering documentation
+│   ├── CLINEVO_WRITEUP.md             # Canonical evaluator write-up (2–5 pages)
 │   ├── ARCHITECTURE.md                # System architecture & component contracts
 │   ├── AI_PIPELINE.md                 # 16-stage AI processing pipeline specification
 │   ├── DATA_AND_GROUND_TRUTH.md       # Synthetic dataset, inventory & ground truth
