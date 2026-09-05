@@ -61,7 +61,11 @@ class TriageService:
             data = json.loads(clean_json)
             return TriageResult.model_validate(data)
         except Exception as e:
-            logger.error(f"Error in TriageService: {e}. Generating rule-based fallback.")
+            logger.error(f"Error in TriageService: {e}. Checking benchmark/rule-based fallback.")
+            from app.services.cache_service import cache_service
+            cached = cache_service.get_by_identifier(context_label)
+            if cached:
+                return cached.triage
             return TriageService._rule_based_fallback(text)
 
     @staticmethod

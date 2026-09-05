@@ -1,0 +1,213 @@
+<div class="literature-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-info">
+      <div class="badge-pill">Pharmacovigilance Automation</div>
+      <h1>Literature Screening & Case Splitting</h1>
+      <p class="subtitle">
+        Automated regulatory screening of biomedical literature reprints per GVP Module VI guidelines. Identifies ICSR reportability, negative control exclusions, and splits multi-patient case series.
+      </p>
+    </div>
+  </header>
+
+  <!-- Notification Toasts -->
+  <div class="alert alert-success" *ngIf="successMessage">
+    <span class="icon">✓</span> {{ successMessage }}
+  </div>
+  <div class="alert alert-error" *ngIf="errorMessage">
+    <span class="icon">⚠️</span> {{ errorMessage }}
+  </div>
+
+  <!-- Screening Input Section -->
+  <div class="screening-controls-card">
+    <div class="controls-grid">
+      <!-- File Upload Card -->
+      <div class="upload-box">
+        <h3>Upload Scientific Reprint</h3>
+        <p class="box-desc">Select a PDF literature article or publication reprint to screen for individual adverse event cases.</p>
+        <div class="file-input-wrapper">
+          <input 
+            type="file" 
+            id="pdfFileInput" 
+            accept=".pdf" 
+            (change)="onFileSelected($event)" 
+            [disabled]="isScreening" />
+          <label for="pdfFileInput" class="btn-file-upload">
+            <span *ngIf="!isScreening">Browse PDF File...</span>
+            <span *ngIf="isScreening">Screening in Progress...</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Quick-Test Sample Articles -->
+      <div class="sample-box">
+        <h3>Pre-Loaded Clinical Benchmark Articles</h3>
+        <p class="box-desc">Test with verified regulatory ground-truth reprints from the test dataset:</p>
+        <div class="samples-list">
+          <button 
+            type="button" 
+            class="btn-sample" 
+            *ngFor="let sample of sampleArticles"
+            (click)="screenSample(sample.name)"
+            [disabled]="isScreening">
+            <div class="sample-btn-title">{{ sample.label }}</div>
+            <div class="sample-btn-desc">{{ sample.description }}</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State Indicator -->
+  <div class="loading-state" *ngIf="isScreening">
+    <div class="spinner"></div>
+    <div class="loading-text">
+      <h4>Processing Literature Reprint with AI</h4>
+      <p>Analyzing publication text, assessing ICSR criteria, checking exclusion rules, and splitting multi-patient series...</p>
+    </div>
+  </div>
+
+  <!-- Current Screening Result Display -->
+  <div class="results-section" *ngIf="currentResult && !isScreening">
+    <div class="section-title-row">
+      <h2>Regulatory Screening Results</h2>
+      <span 
+        class="reportability-badge" 
+        [ngClass]="currentResult.is_reportable ? 'badge-reportable' : 'badge-excluded'">
+        {{ currentResult.is_reportable ? '✓ REPORTABLE ICSR' : '✕ NON-REPORTABLE / EXCLUDED' }}
+      </span>
+    </div>
+
+    <!-- Article Metadata Summary -->
+    <div class="article-meta-card">
+      <div class="meta-row main-title">
+        <span class="meta-label">Article Title:</span>
+        <span class="meta-value highlight">{{ currentResult.article_title || currentArticleName }}</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Journal:</span>
+          <span class="meta-value">{{ currentResult.journal || 'Medical Journal' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Publication Year:</span>
+          <span class="meta-value">{{ currentResult.publication_year || '2025' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Study Design / Type:</span>
+          <span class="meta-value">{{ currentResult.study_type || 'Clinical Report' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Total Cases Identified:</span>
+          <span class="meta-value bold">{{ currentResult.patient_cases_count }} case(s)</span>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Authors:</span>
+        <span class="meta-value">{{ currentResult.authors || 'Not stated' }}</span>
+      </div>
+    </div>
+
+    <!-- Exclusion Reason Banner (if non-reportable) -->
+    <div class="exclusion-banner" *ngIf="!currentResult.is_reportable && currentResult.exclusion_reason">
+      <div class="exclusion-title">Regulatory Exclusion Justification (GVP Module VI)</div>
+      <div class="exclusion-text">{{ currentResult.exclusion_reason }}</div>
+    </div>
+
+    <!-- Regulatory Screening Narrative -->
+    <div class="narrative-card" *ngIf="currentResult.screening_summary">
+      <div class="card-header">
+        <h3>Regulatory Screening Evaluation</h3>
+      </div>
+      <div class="narrative-body">
+        <p>{{ currentResult.screening_summary }}</p>
+      </div>
+    </div>
+
+    <!-- Split Individual Patient Cases Table -->
+    <div class="cases-card" *ngIf="currentResult.is_reportable && currentResult.individual_cases && currentResult.individual_cases.length > 0">
+      <div class="card-header">
+        <h3>Split Individual Patient ICSR Cases ({{ currentResult.individual_cases.length }})</h3>
+        <span class="info-tag">Ready for automated E2B XML or CIOMS export</span>
+      </div>
+      
+      <div class="table-container">
+        <table class="cases-table">
+          <thead>
+            <tr>
+              <th>Case #</th>
+              <th>Patient Demographics</th>
+              <th>Suspect Medicinal Product</th>
+              <th>Adverse Drug Reaction</th>
+              <th>Regulatory Seriousness</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of currentResult.individual_cases; let idx = index">
+              <td class="case-id-cell">
+                <span class="case-chip">CASE {{ idx + 1 }}</span>
+                <div class="sub-id" *ngIf="c.case_id">{{ c.case_id }}</div>
+              </td>
+              <td>{{ getPatientDemographics(c) }}</td>
+              <td class="product-cell">
+                <strong>{{ getSuspectProduct(c) }}</strong>
+              </td>
+              <td class="reaction-cell">
+                <span class="reaction-tag">{{ getAdverseReaction(c) }}</span>
+              </td>
+              <td>
+                <span 
+                  class="seriousness-badge"
+                  [ngClass]="getSeriousness(c).includes('Serious') ? 'badge-serious' : 'badge-nonserious'">
+                  {{ getSeriousness(c) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screening History Table -->
+  <div class="history-section" *ngIf="screenedArticles.length > 0">
+    <div class="section-title-row">
+      <h2>Screened Literature Archive</h2>
+      <span class="history-count">{{ screenedArticles.length }} articles recorded</span>
+    </div>
+
+    <div class="table-container">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Article / File</th>
+            <th>Journal</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Cases</th>
+            <th>Screened At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of screenedArticles">
+            <td class="file-name-cell">
+              <strong>{{ item.filename }}</strong>
+              <div class="sub-title" *ngIf="item.articleTitle">{{ item.articleTitle }}</div>
+            </td>
+            <td>{{ item.journal || 'Medical Journal' }}</td>
+            <td>{{ item.studyType || 'Clinical Report' }}</td>
+            <td>
+              <span 
+                class="status-chip"
+                [ngClass]="item.isReportable ? 'chip-reportable' : 'chip-excluded'">
+                {{ item.isReportable ? 'Reportable' : 'Excluded' }}
+              </span>
+            </td>
+            <td class="cases-count-cell">{{ item.patientCasesCount }}</td>
+            <td class="timestamp-cell">{{ item.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -32,7 +32,8 @@ class DocumentOrchestrator:
         candidate_images: List[Image.Image] = []
         
         for att in parsed_email.attachments:
-            if att["filename"].lower().endswith(".pdf"):
+            fname = att["filename"].lower()
+            if fname.endswith(".pdf"):
                 pdf_res = PDFParser.parse_pdf_bytes(att["bytes"], filename=att["filename"])
                 combined_text_parts.append(f"\n[ATTACHED PDF: {att['filename']} (Flavor: {pdf_res.flavor})]\n{pdf_res.full_content_with_tables}")
                 for img_info in pdf_res.images:
@@ -44,6 +45,14 @@ class DocumentOrchestrator:
                         candidate_images.append(pdf_res.render_page_image(1))
                     except Exception:
                         pass
+            elif fname.endswith((".jpg", ".jpeg", ".png")):
+                import io
+                try:
+                    img = Image.open(io.BytesIO(att["bytes"]))
+                    candidate_images.append(img)
+                    combined_text_parts.append(f"\n[ATTACHED DEFECT PHOTO: {att['filename']}]")
+                except Exception as e:
+                    logger.warning(f"Could not open image attachment {att['filename']}: {e}")
 
         full_context_text = "\n\n".join(combined_text_parts)
 

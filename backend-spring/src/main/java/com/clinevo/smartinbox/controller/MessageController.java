@@ -173,6 +173,24 @@ public class MessageController {
         }
     }
 
+    @PostMapping("/reset")
+    public ResponseEntity<Map<String, Object>> resetAndReingest() {
+        try {
+            messageRepository.deleteAll();
+            int count = ingestionService.triggerIngestion();
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "reingestedCount", count,
+                    "message", "Database reset and re-ingested successfully."
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
     @GetMapping("/attachments/{id}/download")
     public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long id) {
         return attachmentRepository.findById(id)

@@ -65,4 +65,24 @@ public class LiteratureController {
             throw new RuntimeException("Literature screening failed: " + e.getMessage(), e);
         }
     }
+
+    @GetMapping("/sample-pdf")
+    public ResponseEntity<byte[]> getSamplePdf(@RequestParam String filename) {
+        try {
+            java.nio.file.Path p = java.nio.file.Paths.get("../test-data/pdfs/literature_articles", filename);
+            if (!java.nio.file.Files.exists(p)) {
+                p = java.nio.file.Paths.get("test-data/pdfs/literature_articles", filename);
+            }
+            if (java.nio.file.Files.exists(p)) {
+                byte[] bytes = java.nio.file.Files.readAllBytes(p);
+                return ResponseEntity.ok()
+                        .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                        .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                        .body(bytes);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

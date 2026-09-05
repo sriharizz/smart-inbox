@@ -1,0 +1,171 @@
+<div class="queue-layout">
+  <!-- Sub-Header / Control Toolbar -->
+  <div class="queue-toolbar">
+    <div class="toolbar-top">
+      <div class="queue-title-block">
+        <h1 class="queue-heading">Safety Review Queue</h1>
+        <span class="queue-subtitle">
+          Clinical pharmacovigilance triage and ICH E2B verification workbench
+        </span>
+      </div>
+
+      <!-- Quick Metrics Counter -->
+      <div class="queue-stats">
+        <div class="stat-chip">
+          <span class="stat-label">Total Ingested:</span>
+          <span class="stat-val">{{ messages.length }}</span>
+        </div>
+        <div class="stat-chip highlight">
+          <span class="stat-label">Needs Review:</span>
+          <span class="stat-val">{{ filteredMessages.length }}</span>
+        </div>
+        <button class="btn-refresh" (click)="loadQueue()" title="Refresh queue">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filter Bar Row -->
+    <div class="toolbar-filters">
+      <!-- Category Filters -->
+      <div class="filter-group">
+        <span class="filter-label">Category:</span>
+        <button class="filter-pill" [class.active]="selectedCategory === 'ALL'" (click)="setCategoryFilter('ALL')">All</button>
+        <button class="filter-pill" [class.active]="selectedCategory === 'ICSR'" (click)="setCategoryFilter('ICSR')">ICSR</button>
+        <button class="filter-pill" [class.active]="selectedCategory === 'PQC'" (click)="setCategoryFilter('PQC')">PQC</button>
+        <button class="filter-pill" [class.active]="selectedCategory === 'MI'" (click)="setCategoryFilter('MI')">MI</button>
+        <button class="filter-pill" [class.active]="selectedCategory === 'NOT_RELEVANT'" (click)="setCategoryFilter('NOT_RELEVANT')">Not Relevant</button>
+      </div>
+
+      <div class="filter-divider"></div>
+
+      <!-- Flag Filters -->
+      <div class="filter-group">
+        <span class="filter-label">Flags:</span>
+        <button class="filter-pill" [class.active]="filterFlag === 'ALL'" (click)="setFlagFilter('ALL')">All</button>
+        <button class="filter-pill flag-urgent" [class.active]="filterFlag === 'CRITICAL'" (click)="setFlagFilter('CRITICAL')">Critical / Urgent</button>
+        <button class="filter-pill flag-attention" [class.active]="filterFlag === 'LOW_CONFIDENCE'" (click)="setFlagFilter('LOW_CONFIDENCE')" title="Prototype review threshold: <{{ confidenceThreshold * 100 }}%">⚠ Low Conf</button>
+        <button class="filter-pill flag-photo" [class.active]="filterFlag === 'PHOTO_REVIEW'" (click)="setFlagFilter('PHOTO_REVIEW')">📷 Photo Review</button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="search-box">
+        <input 
+          type="text" 
+          placeholder="Search sender, subject, case ID..." 
+          [(ngModel)]="searchQuery" 
+          (ngModelChange)="applyFilters()"
+          class="input-search" />
+        <span class="search-clear" *ngIf="searchQuery" (click)="searchQuery = ''; applyFilters()">✕</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading / Error States -->
+  <div class="state-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <span>Loading review queue from Spring Boot orchestrator...</span>
+  </div>
+
+  <div class="state-container error-box" *ngIf="!isLoading && errorMessage">
+    <span class="error-icon">⚠️</span>
+    <span>{{ errorMessage }}</span>
+    <button class="btn-retry" (click)="loadQueue()">Retry Connection</button>
+  </div>
+
+  <!-- Main Queue Table (Compact, Dense, Informative) -->
+  <div class="table-wrapper" *ngIf="!isLoading && !errorMessage">
+    <table class="queue-table">
+      <thead>
+        <tr>
+          <th style="width: 90px;">Priority</th>
+          <th style="width: 90px;">Case ID</th>
+          <th style="width: 200px;">Sender / Origin</th>
+          <th>Subject / Communication</th>
+          <th style="width: 170px;">Category</th>
+          <th style="width: 90px; text-align: center;">Confidence</th>
+          <th style="width: 130px;">Review Flags</th>
+          <th style="width: 110px;">Status</th>
+          <th style="width: 90px; text-align: right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of filteredMessages" (click)="openCase(m.id)" class="queue-row" [class.row-critical]="m.priority === 'CRITICAL'">
+          <!-- Priority -->
+          <td>
+            <span class="badge" [ngClass]="{
+              'badge-urgent': m.priority === 'CRITICAL',
+              'badge-attention': m.priority === 'EXPEDITED',
+              'badge-neutral': m.priority === 'STANDARD'
+            }">
+              {{ m.priority }}
+            </span>
+          </td>
+
+          <!-- Case ID -->
+          <td>
+            <span class="case-id">{{ formatCaseId(m.id) }}</span>
+          </td>
+
+          <!-- Sender -->
+          <td>
+            <div class="sender-cell">
+              <span class="sender-name">{{ m.sender }}</span>
+              <span class="sender-email">{{ m.senderEmail }}</span>
+            </div>
+          </td>
+
+          <!-- Subject -->
+          <td>
+            <div class="subject-cell">
+              <span class="subject-text">{{ m.subject }}</span>
+              <span class="executive-snippet" *ngIf="m.executiveSummary">{{ m.executiveSummary | slice:0:110 }}...</span>
+            </div>
+          </td>
+
+          <!-- Categories -->
+          <td>
+            <div class="category-cell">
+              <span class="category-pill">{{ m.primaryCategory }}</span>
+              <span class="badge badge-brand" *ngIf="m.isMultiLabel" title="Multi-Label Regulatory Communication">Multi-Label</span>
+            </div>
+          </td>
+
+          <!-- Confidence -->
+          <td style="text-align: center;">
+            <div class="confidence-cell">
+              <span class="conf-num" [class.conf-low]="m.flags?.lowConfidence">{{ formatConfidence(m.confidence) }}</span>
+              <span class="warn-icon" *ngIf="m.flags?.lowConfidence" title="Below review threshold ({{ confidenceThreshold * 100 }}%)">⚠️</span>
+            </div>
+          </td>
+
+          <!-- Review Flags -->
+          <td>
+            <div class="flags-cell">
+              <span class="flag-pill photo" *ngIf="m.flags?.imageReviewRequired" title="Defect photo detected: requires mandatory inspection">📷 Photo</span>
+              <span class="flag-pill low-conf" *ngIf="m.flags?.lowConfidence" title="Classification confidence < {{ confidenceThreshold * 100 }}%">⚠ Low Conf</span>
+              <span class="flag-pill attachment" *ngIf="m.attachmentCount > 0" title="{{ m.attachmentCount }} attachments">📎 {{ m.attachmentCount }}</span>
+            </div>
+          </td>
+
+          <!-- Review Status -->
+          <td>
+            <span class="badge" [ngClass]="getStatusBadgeClass(m.status)">
+              {{ getStatusLabel(m.status) }}
+            </span>
+          </td>
+
+          <!-- Action -->
+          <td style="text-align: right;">
+            <button class="btn-inspect" (click)="openCase(m.id); $event.stopPropagation()">Inspect →</button>
+          </td>
+        </tr>
+
+        <!-- Empty State -->
+        <tr *ngIf="filteredMessages.length === 0">
+          <td colspan="9" class="empty-state">
+            <span>No cases match the selected filters. Use <strong>⚡ Ingest Fixtures</strong> in the header to load test communications.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

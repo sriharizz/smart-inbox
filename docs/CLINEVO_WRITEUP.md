@@ -24,7 +24,7 @@ Traditionally, intake teams manually triage incoming communications and perform 
 2. **ICH E2B Extraction Burden**: Extracting the four minimal regulatory criteria for a valid ICSR—**Identifiable Patient**, **Identifiable Reporter**, **Suspect Product**, and **Adverse Event / Reaction**—is labor-intensive and vulnerable to transcription errors.
 3. **Auditability & Traceability**: Global health inspectors require that every transcribed clinical assertion be grounded in verifiable source evidence.
 
-The **Clinevo Smart Inbox Assistant** solves these challenges by providing an automated, zero-hallucination, AI-driven initial intake and triage pipeline. It ingests emails and attachments, normalizes content, performs multi-label classification, extracts structured ICH E2B entities with mandatory verbatim citations, screens scientific literature (including a **+30% Bonus** multi-patient case series disaggregator), flags product defect photos for human inspection, and empowers reviewers through an interactive dashboard with an immutable 21 CFR Part 11 audit trail.
+The **Clinevo Smart Inbox Assistant** solves these challenges by providing an automated, zero-hallucination, AI-driven initial intake and triage pipeline. It ingests emails and attachments, normalizes content, performs multi-label classification, extracts structured ICH E2B entities with mandatory verbatim citations, screens scientific literature (including a **+30% Bonus** multi-patient case series disaggregator), flags product defect photos for human inspection, and empowers reviewers through an interactive dashboard with a Part 11-oriented immutable audit trail.
 
 ---
 
@@ -50,7 +50,7 @@ The platform is designed as a decoupled, 3-tier polyglot architecture mirroring 
 |  - Dual Ingestion Abstraction: Live IMAP Poller OR Local EML Synthetic Fixtures   |
 |  - Asynchronous Worker Pipeline: ThreadPoolTaskExecutor Non-Blocking Queue        |
 |  - Resilient AI Gateway Client calling Python AI Microservice                     |
-|  - Reviewer Management & Immutable 21 CFR Part 11 Audit Trail Logging             |
+|  - Reviewer Management & Part 11-Oriented Immutable Audit Trail Logging            |
 |  - Dual-Profile Persistence: Embedded H2 (Oracle Mode) OR Oracle Database 19c/21c |
 +-----------------------------------------------------------------------------------+
                                          |
@@ -95,7 +95,7 @@ The lifecycle of an incoming document proceeds through discrete, verifiable stag
 7. **ICH E2B Clinical Entity Extraction**: For safety reports, the system extracts the four mandatory ICH E2B pillars along with product dosages, event onset dates, and seriousness criteria.
 8. **Defect Photo Flagging**: Smartphone photos of physical drug defects trigger `requires_human_review = True`, generating detailed AI defect observations and routing the case for mandatory human inspection.
 9. **Literature Screening & Case Disaggregation (+30% Bonus)**: Literature articles are screened for ICSR reportability (excluding preclinical animal models and meta-analyses). Multi-patient case series are disaggregated into separate, independent ICSR records.
-10. **Human-in-the-Loop Review & Audit Logging**: Reviewers inspect cases in the split-screen dashboard, review citations, edit or accept data, and generate immutable 21 CFR Part 11 audit records.
+10. **Human-in-the-Loop Review & Audit Logging**: Reviewers inspect cases in the split-screen dashboard, review citations, edit or accept data, and generate immutable audit records designed around Part 11 principles.
 
 ---
 
@@ -161,7 +161,7 @@ If the model cannot produce an exact verbatim text snippet from the document, it
 
 ---
 
-## 7. Human-in-the-Loop Review & 21 CFR Part 11 Compliance
+## 7. Human-in-the-Loop Review & Part 11-Oriented Audit Controls
 
 The platform is designed to augment human safety specialists, maintaining strict human-in-the-loop oversight:
 
@@ -169,7 +169,7 @@ The platform is designed to augment human safety specialists, maintaining strict
 - **Split-Screen Reviewer Workspace**: Reviewers inspect the original document (rendered PDF or formatted email) on the left panel while viewing pre-populated ICH E2B fields on the right panel.
 - **One-Click Verbatim Highlighting**: Clicking any extracted field or citation pill instantly highlights the exact supporting verbatim text in the source document viewer, allowing instantaneous human verification without manual text hunting.
 - **Reviewer Override & Clinical Justification**: Human reviewers possess full authority to override classifications (e.g. converting an MI inquiry to an ICSR) or edit clinical values. Overriding requires a mandatory clinical justification text input.
-- **21 CFR Part 11 Immutable Audit Trail**: Every automated prediction and human action is recorded in an immutable audit table. In production Oracle environments, database trigger `TRG_AUDIT_LOG_IMMUTABLE` prevents any `UPDATE` or `DELETE` operations on audit records.
+- **Part 11-Oriented Immutable Audit Trail**: Every automated prediction and human action is recorded in an immutable audit table. In production Oracle environments, database trigger `TRG_AUDIT_LOG_IMMUTABLE` prevents any `UPDATE` or `DELETE` operations on audit records.
 
 ---
 

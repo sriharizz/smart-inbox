@@ -1,0 +1,139 @@
+<div class="audit-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-info">
+      <div class="badge-pill">Regulatory Governance</div>
+      <h1>Immutable Regulatory Audit Trail</h1>
+      <p class="subtitle">
+        Audit trail designed around Part 11 principles — immutable, append-only chronological record of all automated ingestion steps, AI extractions, and human reviewer acceptances or overrides.
+      </p>
+    </div>
+  </header>
+
+  <!-- Filter & Search Controls -->
+  <div class="audit-controls-bar">
+    <div class="filter-tabs">
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="selectedAction === 'ALL'" 
+        (click)="onActionFilterChange('ALL')">
+        All Events
+      </button>
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="selectedAction === 'OVERRIDE_CATEGORY'" 
+        (click)="onActionFilterChange('OVERRIDE_CATEGORY')">
+        Category Overrides
+      </button>
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="selectedAction === 'OVERRIDE_FIELD'" 
+        (click)="onActionFilterChange('OVERRIDE_FIELD')">
+        Field Edits
+      </button>
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="selectedAction === 'REVIEWER_CONFIRM'" 
+        (click)="onActionFilterChange('REVIEWER_CONFIRM')">
+        Reviewer Confirmations
+      </button>
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="selectedAction === 'INGESTION'" 
+        (click)="onActionFilterChange('INGESTION')">
+        Ingestion Events
+      </button>
+    </div>
+
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="applyFilters()" 
+        placeholder="Filter by case, user, field, or reason..." />
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-box" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <span>Loading immutable regulatory log...</span>
+  </div>
+
+  <!-- Error State -->
+  <div class="alert-error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Audit Events Table -->
+  <div class="audit-table-card" *ngIf="!isLoading">
+    <div class="card-top-row">
+      <div class="results-summary">
+        Showing <strong>{{ filteredEvents.length }}</strong> of <strong>{{ events.length }}</strong> audit events
+      </div>
+      <div class="governance-tag">
+        <span class="dot"></span> Append-Only Immutable Store
+      </div>
+    </div>
+
+    <div class="table-container" *ngIf="filteredEvents.length > 0">
+      <table class="audit-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Case Ref</th>
+            <th>Event Action</th>
+            <th>Operator / Agent</th>
+            <th>Field Changed</th>
+            <th>Original Value</th>
+            <th>Updated Value</th>
+            <th>Clinical Justification / Comments</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let evt of filteredEvents">
+            <td class="timestamp-cell">{{ evt.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td class="case-cell">
+              <a [routerLink]="['/cases', evt.messageId]" class="case-link" *ngIf="evt.messageId">
+                {{ formatCaseId(evt.messageId) }}
+              </a>
+              <span *ngIf="!evt.messageId" class="system-text">SYSTEM</span>
+            </td>
+            <td>
+              <span class="action-badge" [ngClass]="getActionBadgeClass(evt.action)">
+                {{ getActionLabel(evt.action) }}
+              </span>
+            </td>
+            <td class="user-cell">
+              <strong>{{ evt.reviewerUsername || evt.reviewer }}</strong>
+            </td>
+            <td class="field-cell">
+              <code>{{ evt.targetField || evt.fieldChanged || '—' }}</code>
+            </td>
+            <td class="diff-cell old-val">
+              <span *ngIf="evt.originalValue || evt.oldValue">{{ evt.originalValue || evt.oldValue }}</span>
+              <span *ngIf="!evt.originalValue && !evt.oldValue" class="subtle">—</span>
+            </td>
+            <td class="diff-cell new-val">
+              <span *ngIf="evt.newValue">{{ evt.newValue }}</span>
+              <span *ngIf="!evt.newValue" class="subtle">—</span>
+            </td>
+            <td class="reason-cell">
+              <span *ngIf="evt.reviewerComments || evt.justification" class="justification-text">{{ evt.reviewerComments || evt.justification }}</span>
+              <span *ngIf="!evt.reviewerComments && !evt.justification" class="subtle">Automated baseline</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredEvents.length === 0">
+      <p>No audit events match the current filter criteria.</p>
+    </div>
+  </div>
+</div>

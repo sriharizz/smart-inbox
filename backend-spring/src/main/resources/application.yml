@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8081}
 
 spring:
   application:
@@ -29,12 +29,12 @@ spring:
 # Application Specific Properties
 smartinbox:
   ai-service:
-    url: ${PYTHON_AI_SERVICE_URL:http://localhost:8000}
-    timeout-seconds: 60
+    url: ${PYTHON_AI_SERVICE_URL:http://127.0.0.1:8000}
+    timeout-seconds: 180
   ingestion:
     mode: ${INGESTION_MODE:FIXTURE}
     fixture-dir: ${FIXTURE_DIR:../test-data/emails}
-    auto-ingest-on-startup: true
+    auto-ingest-on-startup: false
     imap:
       host: ${MAIL_IMAP_HOST:imap.gmail.com}
       port: ${MAIL_IMAP_PORT:993}
@@ -44,8 +44,8 @@ smartinbox:
       folder: ${MAIL_IMAP_FOLDER:INBOX}
       poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:60000}
   async:
-    core-pool-size: 4
-    max-pool-size: 8
+    core-pool-size: 1
+    max-pool-size: 1
     queue-capacity: 100
 
 ---

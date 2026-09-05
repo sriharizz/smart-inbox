@@ -1,0 +1,66 @@
+<div class="app-container">
+  <!-- Top Global Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <!-- Clinevo Monogram & App Title -->
+      <a routerLink="/queue" class="brand-link">
+        <div class="brand-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="5" fill="var(--brand-primary)" />
+            <path d="M7 12L11 16L17 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Clinevo</span>
+          <span class="brand-sub">Smart Inbox</span>
+        </div>
+      </a>
+
+      <!-- Primary Navigation -->
+      <nav class="main-nav">
+        <a routerLink="/queue" routerLinkActive="active" class="nav-item">
+          <span class="nav-label">Review Queue</span>
+          <span class="nav-badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+        </a>
+        <a routerLink="/literature" routerLinkActive="active" class="nav-item">
+          <span class="nav-label">Literature Screening</span>
+          <span class="nav-tag">+30%</span>
+        </a>
+        <a routerLink="/audit" routerLinkActive="active" class="nav-item">
+          <span class="nav-label">Audit Trail</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Header Actions & User Session -->
+    <div class="header-right">
+      <!-- Ingestion Toast / Notification -->
+      <span class="ingest-status" *ngIf="ingestNotification">{{ ingestNotification }}</span>
+
+      <!-- Ingest Fixtures Action Button -->
+      <button 
+        type="button" 
+        class="btn-ingest" 
+        (click)="onTriggerIngest()" 
+        [disabled]="isIngesting"
+        title="Ingest local synthetic .eml test files">
+        <span *ngIf="!isIngesting">⚡ Ingest Fixtures</span>
+        <span *ngIf="isIngesting">Processing...</span>
+      </button>
+
+      <!-- Reviewer Session Pill -->
+      <div class="user-pill">
+        <div class="user-avatar">ER</div>
+        <div class="user-meta">
+          <span class="user-name">Dr. E. Rostova</span>
+          <span class="user-role">Safety Reviewer</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Router Workspace Content -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

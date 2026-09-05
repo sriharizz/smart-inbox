@@ -17,17 +17,17 @@ public class IcsrReportEntity {
     @JoinColumn(name = "MESSAGE_ID", nullable = false)
     private IntakeMessageEntity message;
 
-    @Column(name = "CASE_IDENTIFIER", length = 100)
+    @Column(name = "CASE_IDENTIFIER", length = 255)
     private String caseIdentifier;
 
     // Patient Information
-    @Column(name = "PATIENT_AGE", length = 50)
+    @Column(name = "PATIENT_AGE", length = 100)
     private String patientAge = "Not stated";
 
-    @Column(name = "PATIENT_SEX", length = 50)
+    @Column(name = "PATIENT_SEX", length = 100)
     private String patientSex = "Not stated";
 
-    @Column(name = "PATIENT_WEIGHT", length = 50)
+    @Column(name = "PATIENT_WEIGHT", length = 100)
     private String patientWeight = "Not stated";
 
     @Lob
@@ -38,13 +38,13 @@ public class IcsrReportEntity {
     @Column(name = "REPORTER_NAME", length = 255)
     private String reporterName = "Not stated";
 
-    @Column(name = "REPORTER_ROLE", length = 100)
+    @Column(name = "REPORTER_ROLE", length = 255)
     private String reporterRole = "Not stated";
 
     @Column(name = "REPORTER_INSTITUTION", length = 255)
     private String reporterInstitution = "Not stated";
 
-    @Column(name = "REPORTER_COUNTRY", length = 100)
+    @Column(name = "REPORTER_COUNTRY", length = 255)
     private String reporterCountry = "Not stated";
 
     @Column(name = "REPORTER_CONTACT", length = 255)
@@ -54,41 +54,41 @@ public class IcsrReportEntity {
     @Column(name = "PRODUCT_NAME", length = 255)
     private String productName = "Not stated";
 
-    @Column(name = "PRODUCT_DOSE", length = 100)
+    @Column(name = "PRODUCT_DOSE", length = 255)
     private String productDose = "Not stated";
 
-    @Column(name = "PRODUCT_FREQUENCY", length = 100)
+    @Column(name = "PRODUCT_FREQUENCY", length = 255)
     private String productFrequency = "Not stated";
 
-    @Column(name = "PRODUCT_ROUTE", length = 100)
+    @Column(name = "PRODUCT_ROUTE", length = 255)
     private String productRoute = "Not stated";
 
-    @Column(name = "PRODUCT_LOT", length = 100)
+    @Column(name = "PRODUCT_LOT", length = 255)
     private String productLot = "Not stated";
 
-    @Column(name = "PRODUCT_EXPIRY", length = 100)
+    @Column(name = "PRODUCT_EXPIRY", length = 255)
     private String productExpiry = "Not stated";
 
-    @Column(name = "PRODUCT_INDICATION", length = 255)
+    @Column(name = "PRODUCT_INDICATION", length = 500)
     private String productIndication = "Not stated";
 
     // Adverse Reaction Information
-    @Column(name = "ADVERSE_EVENT", length = 255)
+    @Column(name = "ADVERSE_EVENT", length = 500)
     private String adverseEvent = "Not stated";
 
-    @Column(name = "EVENT_ONSET", length = 100)
+    @Column(name = "EVENT_ONSET", length = 255)
     private String eventOnset = "Not stated";
 
-    @Column(name = "EVENT_OUTCOME", length = 100)
+    @Column(name = "EVENT_OUTCOME", length = 255)
     private String eventOutcome = "Not stated";
 
-    @Column(name = "SERIOUSNESS_CRITERIA", length = 255)
+    @Column(name = "SERIOUSNESS_CRITERIA", length = 500)
     private String seriousnessCriteria;
 
-    @Column(name = "DECHALLENGE", length = 50)
+    @Column(name = "DECHALLENGE", length = 500)
     private String dechallenge = "Not stated";
 
-    @Column(name = "RECHALLENGE", length = 50)
+    @Column(name = "RECHALLENGE", length = 500)
     private String rechallenge = "Not stated";
 
     @Lob

@@ -57,6 +57,7 @@ public class AsyncDocumentProcessor {
         messageRepository.save(message);
 
         try {
+            Thread.sleep(1500); // Respect Google Gemini RPM quota
             ExtractionResultDto result = aiGatewayClient.processEml(filename, rawEmlBytes);
             if (result == null || result.getTriage() == null) {
                 throw new IllegalStateException("Empty extraction result from AI service.");

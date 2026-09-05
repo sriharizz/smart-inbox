@@ -2,10 +2,16 @@ import time
 import logging
 from typing import List, Any, Optional
 from google import genai
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
 from app.core.config import settings
 
 logger = logging.getLogger("smartinbox.gemini")
+
+def _is_retryable(exception: BaseException) -> bool:
+    msg = str(exception).lower()
+    if "429" in msg or "resource_exhausted" in msg or "quota" in msg:
+        return False
+    return True
 
 class GeminiClient:
     _instance: Optional["GeminiClient"] = None
@@ -26,8 +32,9 @@ class GeminiClient:
             self._client = None
 
     @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1.5, min=2, max=10),
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=1.0, min=1, max=3),
+        retry=retry_if_exception(_is_retryable),
         reraise=True
     )
     def generate_content(

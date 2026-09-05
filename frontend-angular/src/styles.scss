@@ -1,0 +1,172 @@
+/* ==========================================================================
+   CLINEVO SMART INBOX — APPLICATION DESIGN TOKENS
+   Restrained clinical operations workbench design tokens.
+   Inspired by Clinevo enterprise visual hierarchy:
+   Light surfaces, crisp typography, restrained brand accents.
+   ========================================================================== */
+
+:root {
+  /* Application Design Tokens (Restrained Brand Accents) */
+  --brand-primary: #521d5e;             /* Restrained enterprise plum / deep purple */
+  --brand-primary-hover: #40144a;
+  --brand-primary-subtle: #f6eef8;      /* Light tint for selected rows & badges */
+  --brand-primary-border: #e4cce9;
+  
+  --brand-secondary: #743485;           /* Secondary violet accent */
+  --brand-accent-blue: #2563eb;         /* Reference links */
+  
+  /* Semantic Status & Action Tokens */
+  --action-confirm: #18794e;            /* Enterprise action green */
+  --action-confirm-hover: #136340;
+  --action-confirm-bg: #edf8f2;
+  --action-confirm-border: #bce3cf;
+  
+  --status-urgent: #c92a2a;             /* Expedited / High risk */
+  --status-urgent-bg: #fff5f5;
+  --status-urgent-border: #ffc9c9;
+  
+  --status-attention: #d97706;          /* Low confidence / Missing data / Review cue */
+  --status-attention-bg: #fffbeb;
+  --status-attention-border: #fde68a;
+  
+  --status-neutral: #475569;            /* Standard / Non-expedited */
+  --status-neutral-bg: #f1f5f9;
+  --status-neutral-border: #cbd5e1;
+
+  /* Surfaces & Canvas (Primarily White/Light) */
+  --surface-canvas: #f8fafc;            /* Application canvas background */
+  --surface-panel: #ffffff;             /* Cards, tables, inspectors */
+  --surface-hover: #f1f5f9;             /* Table row hover */
+  --surface-active: #f6eef8;            /* Selected queue row */
+  --surface-subtle: #f8fafc;
+  
+  /* Borders & Dividers */
+  --border-light: #e2e8f0;              /* Subtle separators */
+  --border-medium: #cbd5e1;             /* Control borders */
+  --border-focus: #521d5e;              /* Accessible focus ring */
+
+  /* High-Contrast Typography */
+  --text-main: #0f172a;                 /* Primary content / data fields */
+  --text-secondary: #334155;            /* Labels / section subtitles */
+  --text-muted: #64748b;                /* Metadata, "Not stated" */
+  --text-subtle: #94a3b8;               /* Timestamps / hints */
+  --text-inverse: #ffffff;
+
+  /* Typography Scale */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  
+  /* UI Radii & Elevation */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-panel: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Base Reset & Typography */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  color: var(--text-main);
+  background-color: var(--surface-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  color: var(--brand-accent-blue);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Global Utility Classes */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge-urgent {
+  background-color: var(--status-urgent-bg);
+  color: var(--status-urgent);
+  border: 1px solid var(--status-urgent-border);
+}
+
+.badge-attention {
+  background-color: var(--status-attention-bg);
+  color: var(--status-attention);
+  border: 1px solid var(--status-attention-border);
+}
+
+.badge-confirm {
+  background-color: var(--action-confirm-bg);
+  color: var(--action-confirm);
+  border: 1px solid var(--action-confirm-border);
+}
+
+.badge-neutral {
+  background-color: var(--status-neutral-bg);
+  color: var(--status-neutral);
+  border: 1px solid var(--status-neutral-border);
+}
+
+.badge-brand {
+  background-color: var(--brand-primary-subtle);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-primary-border);
+}
+
+/* Restrained "Not stated" token */
+.not-stated {
+  color: var(--text-muted);
+  font-style: italic;
+  font-weight: 400;
+  background: #f1f5f9;
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  display: inline-block;
+}
+
+/* Accessibility Focus Indicator */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}

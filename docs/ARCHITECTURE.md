@@ -33,7 +33,7 @@ The platform is architected as a decoupled, 3-tier polyglot system aligning with
 |  - AI Gateway Client: Resilient REST Client to Python AI Microservice             |
 |  - Reviewer Management: Human Overrides, Field Modifications, Comments            |
 |  - Dual-Profile Persistence: H2 (Oracle Compatibility Mode) OR Oracle XE          |
-|  - Immutable Audit Service: 21 CFR Part 11 Compliant Event Logging                |
+|  - Immutable Audit Service: Part 11-Oriented Event Logging                         |
 +-----------------------------------------------------------------------------------+
                                          |
                                          | HTTP / JSON REST APIs (Port 8000)
@@ -148,4 +148,4 @@ Stage 12: Human Review & Audit Logging
 
 1. **100% Synthetic Data**: All patient names, reporter identities, institutional affiliations, and clinical narratives in `test-data/` are strictly synthetic. No real patient data or proprietary corporate records exist within the repository.
 2. **Zero Credential Leakage**: No API keys, database passwords, or mailbox credentials are hardcoded. All configurations load through system environment variables (`GEMINI_API_KEY`, `MAIL_IMAP_HOST`, `MAIL_IMAP_USERNAME`, `MAIL_IMAP_PASSWORD`).
-3. **21 CFR Part 11 Audit Trail**: Modifications made by human reviewers do not overwrite historical states. An immutable audit table records the user, timestamp, original value, modified value, and justification. Database triggers prevent update or delete operations on audit records.
+3. **Part 11-Oriented Audit Trail**: Modifications made by human reviewers do not overwrite historical states. An immutable audit table records the user, timestamp, original value, modified value, and justification. Database triggers prevent update or delete operations on audit records.

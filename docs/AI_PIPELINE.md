@@ -177,4 +177,4 @@ The pipeline processes bounded intake documents using complete context rather th
   - Triage queue displays urgent and low-confidence items at top.
   - Reviewer inspects side-by-side: original document on left, editable AI fields on right.
   - Reviewer accepts, overrides classification, or modifies extracted values.
-  - All actions recorded in immutable 21 CFR Part 11 audit log.
+  - All actions recorded in Part 11-oriented immutable audit log.

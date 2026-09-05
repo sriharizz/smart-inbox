@@ -2,6 +2,19 @@
 
 All significant architectural, AI, dataset, testing, and engineering milestones are recorded in this document.
 
+## [2026-09-05] — Phase 4 Angular Reviewer Dashboard & End-to-End System Verification
+
+### Frontend Reviewer Workspace (Phase 4)
+- **Angular 18 Enterprise UI**: Built standalone Angular 18 single-page application (`frontend-angular/`) with clean, restrained Clinevo corporate aesthetics (white/light surfaces, deep blue accents, zero neon/glassmorphism/gradients).
+- **Triage Review Queue**: Responsive, high-density table displaying urgency badges (`CRITICAL`, `EXPEDITED`, `STANDARD`), multi-category flags (ICSR, PQC, MI), confidence scores, and action shortcuts.
+- **Split-Screen Case Workspace**: Implemented Case 004 review environment featuring dual-pane layout: source document inspector on the left, editable ICH E2B and PQC fields on the right, and interactive one-click verbatim citation inspector.
+- **Human Review Actions & Overrides**: Integrated Accept and Override workflows requiring mandatory clinical justification with real-time optimistic UI updates.
+- **Literature Screening & Case Splitting (+30% Bonus)**: Built dedicated literature screening view demonstrating automated article classification, reportability decisions, and disaggregation of multi-patient clinical case series into distinct ICSR records.
+- **Part 11-Oriented Audit Trail Viewer**: Created chronological, immutable audit trail interface displaying all automated predictions, human overrides, field modifications, and clinical rationales.
+- **Zero-Error Production Build**: Verified Angular production build (`ng build`) compiling with 0 errors and serving via modern development proxy to Spring Boot orchestrator.
+
+---
+
 ## [2026-09-05] — Phase 3 Spring Boot 3 Orchestrator, Ingestion Pipeline & Persistence
 
 ### Backend Orchestration (Phase 3)
@@ -10,7 +23,7 @@ All significant architectural, AI, dataset, testing, and engineering milestones 
 - **Asynchronous Task Queue**: Configured `ThreadPoolTaskExecutor` (core 4, max 8, queue 100) to decouple mailbox ingestion from downstream AI inference, ensuring non-blocking wire-speed intake.
 - **Resilient AI Gateway**: Implemented `AiGatewayClient` calling Python FastAPI microservice (`/api/v1/process-eml`, `/api/v1/process-pdf`, `/api/v1/literature/screen-and-split`).
 - **Domain Persistence Layer**: Built JPA entities (`IntakeMessageEntity`, `AttachmentEntity`, `IcsrReportEntity`, `PqcReportEntity`, `MedicalInfoEntity`, `AuditEventEntity`, `LiteratureArticleEntity`) and repositories.
-- **Reviewer & Audit APIs**: Created `MessageController` (triage queue, detailed message view, accept/override endpoints), `AuditController` (21 CFR Part 11 audit trail), and `LiteratureController` (literature reprint screening and case disaggregation).
+- **Reviewer & Audit APIs**: Created `MessageController` (triage queue, detailed message view, accept/override endpoints), `AuditController` (Part 11-oriented immutable audit trail), and `LiteratureController` (literature reprint screening and case disaggregation).
 - **Dual-Profile Database**: Configured embedded H2 in Oracle compatibility mode (`MODE=Oracle`) for zero-friction demo and wrote production Oracle PL/SQL schema (`database/oracle/schema.sql`) with sequences and `TRG_AUDIT_LOG_IMMUTABLE` trigger.
 - **Integration Tests**: Automated tests passed (`AuditServiceTest`, `FixtureIngestionTest`, `SmartInboxApplicationTests`) with `BUILD SUCCESS`.
 
