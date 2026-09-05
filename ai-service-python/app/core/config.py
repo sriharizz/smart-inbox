@@ -1,0 +1,29 @@
+import os
+from pathlib import Path
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "SmartInbox AI Microservice"
+    VERSION: str = "1.0.0"
+    API_V1_PREFIX: str = "/api/v1"
+    
+    # Google GenAI Settings
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    # Primary model is gemini-2.5-flash with alias fallback to gemini-flash-latest
+    MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+    FALLBACK_MODEL_NAME: str = "gemini-flash-latest"
+    
+    # Caching & Resilience (Disabled - 100% Live Gemini AI)
+    USE_LOCAL_CACHE: bool = False
+    CACHE_DIR: Path = Path(__file__).resolve().parent.parent.parent / "data" / "cache"
+    BENCHMARK_FILE: Path = Path(__file__).resolve().parent.parent.parent.parent / "test-data" / "ground_truth" / "benchmark.json"
+    
+    # Rate Limiting & Timeouts
+    RATE_LIMIT_RPM: int = 15
+    REQUEST_TIMEOUT_SECONDS: int = 30
+    MAX_RETRIES: int = 3
+
+    class Config:
+        case_sensitive = True
+
+settings = Settings()

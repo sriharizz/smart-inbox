@@ -1,0 +1,1275 @@
+{
+  "version": "3.0.0",
+  "reconciliation_status": "Canonical Truth Aligned with Physical .eml and PDF files",
+  "audit_rules": {
+    "zero_hallucination": "Unstated fields MUST be returned strictly as 'Not stated' rather than guessed",
+    "source_traceability": "All extracted facts must map to exact document name and section/page",
+    "multi_label_support": "Documents with both ICSR and PQC elements must return both categories"
+  },
+  "cases": {
+    "CASE-01": {
+      "type": "email_intake",
+      "email_file": "emails/email_01.eml",
+      "email_headers": {
+        "from": "\"Dr. Sarah Jenkins, MD\" <sjenkins@metrohealth-chicago.org>",
+        "to": "Clinevo Safety Mailbox <drugsafety@clinevotech.com>",
+        "date": "Wed, 12 Nov 2025 14:22:10 -0600",
+        "subject": "URGENT: Individual Case Safety Report (ICSR) - Suspect DILI with Cardioril (Pt M.K.)",
+        "message_id": "<20251112.142210.sjenkins@metrohealth-chicago.org>"
+      },
+      "attachment_file": "pdfs/digital_forms/cioms_form_MK_Cardioril.pdf",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "confidence_threshold": 0.95,
+      "patient": {
+        "initials": "M.K.",
+        "dob": "14-MAY-1967",
+        "age": "58 YRS",
+        "sex": "FEMALE",
+        "weight": "68 kg (150 lbs)",
+        "medical_history": "Essential hypertension (5 yrs), Type 2 diabetes mellitus (4 yrs)"
+      },
+      "product": {
+        "name": "Cardioril (cardioril hydrochloride)",
+        "dose": "20 mg once daily (QD)",
+        "route": "Oral (tablet)",
+        "lot": "Lot #CR-2025-0981",
+        "expiry": "08/2027",
+        "therapy_dates": "15-OCT-2025 to 10-NOV-2025",
+        "action_taken": "Drug permanently withdrawn"
+      },
+      "reaction": {
+        "terms": [
+          "Acute Drug-Induced Liver Injury (DILI)",
+          "Jaundice",
+          "Scleral Icterus",
+          "Dark Brown Urine",
+          "Severe Generalized Pruritus"
+        ],
+        "onset": "08-NOV-2025",
+        "serious": true,
+        "hospitalization": true,
+        "life_threatening": false,
+        "death": false,
+        "canonical": "Acute Drug-Induced Liver Injury (DILI)",
+        "acceptable_terms": [
+          "acute drug-induced liver injury (dili)",
+          "jaundice",
+          "scleral icterus",
+          "dark brown urine",
+          "severe generalized pruritus"
+        ]
+      },
+      "lab_tests": {
+        "ALT": "540 U/L",
+        "AST": "420 U/L",
+        "Total_Bilirubin": "4.8 mg/dL",
+        "Alkaline_Phosphatase": "210 U/L",
+        "Serum_Creatinine": "0.9 mg/dL",
+        "Hepatitis_Serology": "Negative (Non-reactive)"
+      },
+      "reporter": {
+        "name": "Sarah Jenkins, MD, FACP",
+        "institution": "MetroHealth Medical Center, Division of Gastroenterology & Hepatology",
+        "address": "2500 MetroHealth Dr, Chicago, IL 60609, USA",
+        "phone": "(312) 555-0188",
+        "email": "sjenkins@metrohealth-chicago.org"
+      },
+      "source_citations": {
+        "patient": "cioms_form_MK_Cardioril.pdf:Page1:Box1-3a",
+        "drug": "cioms_form_MK_Cardioril.pdf:Page1:Box14-21",
+        "reaction": "cioms_form_MK_Cardioril.pdf:Page1:Box6",
+        "labs": "cioms_form_MK_Cardioril.pdf:Page1:Box23",
+        "reporter": "cioms_form_MK_Cardioril.pdf:Page1:Box24a"
+      }
+    },
+    "CASE-02": {
+      "type": "email_intake",
+      "email_file": "emails/email_02.eml",
+      "email_headers": {
+        "from": "\"Dr. A. Peterson, MD\" <a.peterson@stmarys-hospital.org>",
+        "to": "Clinevo Drug Safety Mailbox <drugsafety@clinevotech.com>",
+        "date": "Sun, 10 Dec 2023 15:30:00 -0500",
+        "subject": "URGENT: Adverse Drug Event Report - Acute Anaphylaxis s/p InjectaPen (Pt Jane Doe)",
+        "message_id": "<20231210.153000.apeterson@stmarys-hospital.org>"
+      },
+      "attachment_file": "pdfs/scanned_handwritten/urgent_care_intake_handwritten.pdf",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "confidence_threshold": 0.82,
+      "patient": {
+        "name": "Jane Doe",
+        "dob": "05/18/1990",
+        "age": "33",
+        "sex": "F",
+        "weight": "Not stated"
+      },
+      "product": {
+        "name": "InjectaPen",
+        "dose": "Not stated",
+        "lot": "Not stated",
+        "onset_latency": "20 minutes following self-injection"
+      },
+      "reaction": {
+        "terms": [
+          "Acute Anaphylaxis (Grade 3)",
+          "Generalized Urticaria / Hives",
+          "Facial & Perioral Angioedema",
+          "Inspiratory Stridor",
+          "Profound Hypotension"
+        ],
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "death": false,
+        "canonical": "Acute Anaphylaxis (Grade 3)",
+        "acceptable_terms": [
+          "acute anaphylaxis (grade 3)",
+          "generalized urticaria / hives",
+          "facial & perioral angioedema",
+          "inspiratory stridor",
+          "profound hypotension"
+        ]
+      },
+      "treatment": {
+        "emergency_intervention": "Epinephrine 0.3 mg IM, high-flow oxygen, IV fluid resuscitation, emergency admission"
+      },
+      "vitals": {
+        "BP": "85/50",
+        "HR": "128 bpm",
+        "SpO2": "91%"
+      },
+      "reporter": {
+        "name": "Dr. A. Peterson, MD",
+        "institution": "St. Mary's General Hospital Emergency Department",
+        "email": "a.peterson@stmarys-hospital.org",
+        "npi": "9876543210"
+      },
+      "source_citations": {
+        "all": "urgent_care_intake_handwritten.pdf:Page1"
+      }
+    },
+    "CASE-03": {
+      "type": "email_intake",
+      "email_file": "emails/email_03.eml",
+      "email_headers": {
+        "from": "Emily Watson <emily.watson92@consumer-mail.com>",
+        "to": "Clinevo Drug Safety Intake <drugsafety@clinevotech.com>",
+        "date": "Fri, 14 Nov 2025 09:14:22 -0700",
+        "subject": "Terrible heart palpitations and dizzy spells after taking Corzapan 10mg",
+        "message_id": "<20251114.091422.ewatson@consumer-mail.com>"
+      },
+      "attachment_file": null,
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "confidence_threshold": 0.9,
+      "patient": {
+        "name": "Emily Watson",
+        "age": "42 years old",
+        "sex": "Female",
+        "location": "Denver, Colorado, USA",
+        "weight": "Not stated",
+        "indication": "Mild hypertension and work-related anxiety"
+      },
+      "product": {
+        "name": "Corzapan 10mg tablets",
+        "dose": "10mg",
+        "frequency": "Not stated",
+        "lot": "Not stated"
+      },
+      "reaction": {
+        "terms": [
+          "Drug-Induced Tachycardia (Pulse 154 bpm)",
+          "Heart Palpitations",
+          "Dizzy Spells / Extreme Lightheadedness",
+          "Near-Syncope",
+          "Chest Tightness",
+          "Shortness of Breath"
+        ],
+        "onset": "13-NOV-2025 (1 hour after taking 4th pill)",
+        "serious": false,
+        "hospitalization": false,
+        "life_threatening": false,
+        "dechallenge": "Positive (Corzapan stopped by Dr. Robert Hayes; resting pulse normalized to 78 bpm)",
+        "canonical": "Drug-Induced Tachycardia (Pulse 154 bpm)",
+        "acceptable_terms": [
+          "drug-induced tachycardia (pulse 154 bpm)",
+          "heart palpitations",
+          "dizzy spells / extreme lightheadedness",
+          "near-syncope",
+          "chest tightness",
+          "shortness of breath"
+        ]
+      },
+      "reporter": {
+        "name": "Emily Watson (Patient / Consumer)",
+        "phone": "(303) 555-0192",
+        "email": "emily.watson92@consumer-mail.com",
+        "treating_physician": "Dr. Robert Hayes (Denver Family Medicine)"
+      },
+      "source_citations": {
+        "all": "emails/email_03.eml:Body"
+      }
+    },
+    "CASE-04": {
+      "type": "email_intake",
+      "email_file": "emails/email_04.eml",
+      "email_headers": {
+        "from": "\"Dr. Robert Lang, MD\" <rlang@nmh-icu.org>",
+        "to": "Clinevo Safety & Quality Intake <drugsafety@clinevotech.com>",
+        "date": "Fri, 14 Nov 2025 14:10:00 -0600",
+        "subject": "CRITICAL ALERT: Sepsis caused by Contaminated Cefatox 1g Vial (Lot #CX54831) - FDA Form 3500A Attached",
+        "message_id": "<20251114.141000.rlang@nmh-icu.org>"
+      },
+      "attachment_file": "pdfs/quality_complaints/vial_contamination_sepsis.pdf",
+      "categories": [
+        "Safety Report (ICSR)",
+        "Quality Complaint (PQC)"
+      ],
+      "confidence_threshold": 0.95,
+      "quality_complaint": {
+        "product": "Cefatox (cefatoxime sodium) 1g for Inj.",
+        "lot": "Lot #CX54831",
+        "expiry": "08/2025",
+        "defect": "Irregular mechanical rupture/tear in aluminum crimp collar, compromised blue elastomeric stopper closure integrity, visible dark black foreign particulate matter suspended in reconstituted solution",
+        "quarantine_status": "All 48 remaining hospital vials of Lot #CX54831 quarantined under Seal #NMH-Q-94821",
+        "photo_present": true,
+        "photo_requires_human_review": true,
+        "photo_location": "vial_contamination_sepsis.pdf:Page2:Exhibit1"
+      },
+      "safety_report": {
+        "patient": {
+          "identifier": "A.P. (Arthur Pendelton)",
+          "dob": "19-AUG-1954",
+          "age": "71 YRS",
+          "sex": "MALE",
+          "weight": "74 kg (163 lbs)",
+          "indication": "Post-operative Aspiration Pneumonia"
+        },
+        "reaction": {
+          "terms": [
+            "Distributive Septic Shock",
+            "Acute Rigors",
+            "Hyperthermia (Temperature spike 39.8 C / 103.6 F)",
+            "Severe Hypotension (BP 72/40 mmHg, MAP 50)"
+          ],
+          "onset": "14-NOV-2025 (45 minutes post-partial infusion of ~35mL)",
+          "serious": true,
+          "life_threatening": true,
+          "hospitalization": true,
+          "death": false,
+          "intervention": "Norepinephrine vasopressor support titrated to 0.14 mcg/kg/min, empiric antibiotic coverage"
+        }
+      },
+      "reporter": {
+        "name": "Robert Lang, MD, FCCM (Director of Critical Care Medicine)",
+        "institution": "Northwestern Memorial Hospital \u2014 Medical ICU",
+        "address": "251 E Huron St, Chicago, IL 60611, USA",
+        "phone": "(312) 555-0320",
+        "email": "rlang@nmh-icu.org"
+      },
+      "source_citations": {
+        "pqc": "vial_contamination_sepsis.pdf:Page1:SectionB & SectionC",
+        "photo": "vial_contamination_sepsis.pdf:Page2:Exhibit1",
+        "safety": "vial_contamination_sepsis.pdf:Page1:SectionA & SectionB",
+        "reporter": "vial_contamination_sepsis.pdf:Page1:SectionE"
+      },
+      "patient": {
+        "identifier": "A.P. (Arthur Pendelton)",
+        "dob": "19-AUG-1954",
+        "age": "71 YRS",
+        "sex": "MALE",
+        "weight": "74 kg (163 lbs)",
+        "indication": "Post-operative Aspiration Pneumonia"
+      },
+      "product": {
+        "name": "Cefatox (cefatoxime sodium) 1g for Inj.",
+        "dose": "1g IV partial infusion (~35mL)",
+        "frequency": "Not stated",
+        "route": "Intravenous infusion",
+        "lot": "Lot #CX54831",
+        "expiry": "08/2025"
+      },
+      "reaction": {
+        "terms": [
+          "Distributive Septic Shock",
+          "Acute Rigors",
+          "Hyperthermia (Temperature spike 39.8 C / 103.6 F)",
+          "Severe Hypotension (BP 72/40 mmHg, MAP 50)"
+        ],
+        "canonical": "Distributive Septic Shock",
+        "acceptable_terms": [
+          "distributive septic shock",
+          "septic shock",
+          "severe sepsis",
+          "severe hypotension",
+          "bacteremia/septic shock"
+        ],
+        "onset": "14-NOV-2025 (45 minutes post-partial infusion of ~35mL)",
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "death": false
+      }
+    },
+    "CASE-05": {
+      "type": "email_intake",
+      "email_file": "emails/email_05.eml",
+      "email_headers": {
+        "from": "\"Dra. Elena Morales\" <emorales@hospitallapaz.es>",
+        "to": "Clinevo Safety Mailbox <drugsafety@clinevotech.com>",
+        "date": "Sat, 15 Nov 2025 11:20:00 +0100",
+        "subject": "URGENTE: Notificaci\u00f3n de Reacci\u00f3n Adversa Grave - Necr\u00f3lisis Epid\u00e9rmica T\u00f3xica con Lamotrigina (Pt C.O.)",
+        "message_id": "<20251115.112000.emorales@hospitallapaz.es>"
+      },
+      "attachment_file": "pdfs/non_english/notificacion_ram_madrid.pdf",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "confidence_threshold": 0.95,
+      "language": "es",
+      "translated": true,
+      "patient": {
+        "initials": "C.O. (Carmen Ortiz)",
+        "dob": "22-MAR-1996",
+        "age": "29 A\u00d1OS",
+        "sex": "MUJER",
+        "weight": "54 kg",
+        "indication": "Epilepsia miocl\u00f3nica"
+      },
+      "product": {
+        "name": "Lamotrigina (Lamictal) 100 mg",
+        "dose": "100 mg/d\u00eda v\u00eda oral",
+        "lot": "Lote #LM-9941",
+        "expiry": "05/2027",
+        "therapy_dates": "20-OCT-2025 al 11-NOV-2025",
+        "action_taken": "Retirada definitiva"
+      },
+      "reaction": {
+        "original_terms": [
+          "Necr\u00f3lisis Epid\u00e9rmica T\u00f3xica (NET / S\u00edndrome de Lyell)",
+          "Desprendimiento dermoepid\u00e9rmico extenso en l\u00e1minas >35% SC",
+          "Signo de Nikolsky positivo",
+          "Estomatitis pseudomembranosa grave",
+          "Conjuntivitis pseudomembranosa bilateral con queratitis"
+        ],
+        "translated_terms": [
+          "Toxic Epidermal Necrolysis (TEN / Lyell Syndrome)",
+          "Sheet-like epidermal detachment >35% body surface area",
+          "Positive Nikolsky sign",
+          "Severe pseudomembranous stomatitis",
+          "Bilateral pseudomembranous conjunctivitis with keratitis"
+        ],
+        "onset": "11-NOV-2025",
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "death": false,
+        "outcome": "No recuperado (Estado cr\u00edtico en Unidad de Quemados Cr\u00edticos La Paz)"
+      },
+      "reporter": {
+        "name": "Dra. Elena Morales (M\u00e9dico Especialista en Dermatolog\u00eda)",
+        "institution": "Hospital Universitario La Paz \u2014 Servicio de Dermatolog\u00eda",
+        "address": "Paseo de la Castellana 261, 28046 Madrid, Espa\u00f1a",
+        "phone": "+34 91 555 0244",
+        "email": "emorales@hospitallapaz.es"
+      },
+      "source_citations": {
+        "all": "notificacion_ram_madrid.pdf:Page1"
+      }
+    },
+    "CASE-06": {
+      "type": "email_intake",
+      "email_file": "emails/email_06.eml",
+      "email_headers": {
+        "from": "\"Dr. Richard Vance, MD\" <rvance@columbia-neurology.org>",
+        "to": "Clinevo Safety Mailbox <drugsafety@clinevotech.com>",
+        "date": "Sun, 16 Nov 2025 16:05:12 -0500",
+        "subject": "FOLLOW-UP REPORT #1: Case Ref CR-2025-US-00744 - Seizure Resolution s/p Neuroval Discontinuation",
+        "message_id": "<20251116.160512.rvance@columbia-neurology.org>"
+      },
+      "attachment_file": "pdfs/digital_forms/fda_medwatch_followup.pdf",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "confidence_threshold": 0.95,
+      "report_type": "Follow-up Report #1 (Clinical Resolution & Dechallenge Confirmation)",
+      "original_case_ref": "CR-2025-US-00744",
+      "patient": {
+        "identifier": "D.M. (David Miller)",
+        "dob": "11-FEB-1973",
+        "age": "52 YRS",
+        "sex": "MALE",
+        "weight": "79 kg"
+      },
+      "product": {
+        "name": "Neuroval (neuroval HCl) 200mg/400mg",
+        "dose": "Titrated to 400 mg PO QD",
+        "lot": "Lot #NV-2025-110 (Exp 09/27)",
+        "therapy_dates": "15-OCT-2025 to 02-NOV-2025",
+        "action_taken": "Permanently withdrawn on 02-NOV-2025"
+      },
+      "reaction": {
+        "terms": [
+          "Generalized Tonic-Clonic Seizure - Resolved",
+          "Post-ictal Confusion - Resolved"
+        ],
+        "initial_onset": "02-NOV-2025 (48h post dose increase to 400mg daily)",
+        "followup_date": "16-NOV-2025 (14-day post-discontinuation review)",
+        "outcome": "Fully Recovered / Resolved (Seizure-free for 14 consecutive days)",
+        "dechallenge": "Positive (Confirmed by 24h video EEG normalization on 14-NOV-2025)",
+        "serious": true,
+        "hospitalization": true,
+        "canonical": "Generalized Tonic-Clonic Seizure - Resolved",
+        "acceptable_terms": [
+          "generalized tonic-clonic seizure - resolved",
+          "post-ictal confusion - resolved"
+        ]
+      },
+      "reporter": {
+        "name": "Dr. Richard Vance, MD, PhD (Attending Neurologist)",
+        "institution": "Department of Neurology, Columbia University Irving Medical Center",
+        "address": "710 W 168th St, New York, NY 10032",
+        "phone": "(212) 555-0199",
+        "email": "rvance@columbia-neurology.org"
+      },
+      "source_citations": {
+        "all": "fda_medwatch_followup.pdf:Page1"
+      }
+    },
+    "CASE-07": {
+      "type": "email_intake",
+      "email_file": "emails/email_07.eml",
+      "email_headers": {
+        "from": "\"Robert Vance, PharmD\" <rvance@metrohealth-pharmacy.org>",
+        "to": "Clinevo Product Quality Department <qualitycomplaints@clinevotech.com>",
+        "date": "Mon, 17 Nov 2025 08:30:00 -0600",
+        "subject": "PRODUCT QUALITY COMPLAINT: Compromised Blister Foil & Oxidized Tablets (Lot #BL-8802)",
+        "message_id": "<20251117.083000.rvance@metrohealth-pharmacy.org>"
+      },
+      "attachment_file": "pdfs/quality_complaints/packaging_defect_report.pdf",
+      "categories": [
+        "Quality Complaint (PQC)"
+      ],
+      "confidence_threshold": 0.98,
+      "patient": null,
+      "quality_complaint": {
+        "complaint_id": "PQC-MH-2025-088",
+        "product": "Cardioril 10mg Film-Coated Tablets",
+        "lot": "Lot #BL-8802",
+        "expiry": "11/2026",
+        "package_type": "10-tablet push-through blister cards",
+        "quantity_affected": "12 cartons (360 strips / 3,600 tablets)",
+        "defect": "Packaging Integrity Failure & Chemical Oxidation / Degradation. Aluminum lidding foil unsealed and peeling away from PVC/PVDC thermoformed cavities along top margin; exposed tablets exhibit dark speckling/oxidation, softening, edge chipping, friability breakdown",
+        "disposition": "100% Stock Quarantined in Vault under Seal #Q-2025-094",
+        "photo_present_in_pdf": false,
+        "patient_exposure": false,
+        "adverse_reactions": "None / Not Applicable"
+      },
+      "reporter": {
+        "name": "Robert Vance, PharmD, BCPS (Director of Pharmacy Operations)",
+        "institution": "MetroHealth Medical Center \u2014 Department of Pharmacy",
+        "address": "2500 MetroHealth Dr, Chicago, IL 60609",
+        "phone": "(312) 555-0140",
+        "email": "rvance@metrohealth-pharmacy.org"
+      },
+      "source_citations": {
+        "all": "packaging_defect_report.pdf:Page1"
+      }
+    },
+    "CASE-08": {
+      "type": "email_intake",
+      "email_file": "emails/email_08.eml",
+      "email_headers": {
+        "from": "\"Karen Patel, RPh\" <kpatel@apex-care-pharmacy.com>",
+        "to": "Clinevo Product Quality Department <qualitycomplaints@clinevotech.com>",
+        "date": "Tue, 18 Nov 2025 10:15:45 -0500",
+        "subject": "Urgent Quality Notice: Suspected Counterfeit Packaging - Lipocur 20mg (Lot #LP-44109)",
+        "message_id": "<20251118.101545.kpatel@apex-care-pharmacy.com>"
+      },
+      "attachment_file": null,
+      "categories": [
+        "Quality Complaint (PQC)"
+      ],
+      "confidence_threshold": 0.98,
+      "patient": null,
+      "quality_complaint": {
+        "product": "Lipocur 20mg tablets",
+        "lot": "Lot #LP-44109",
+        "quantity_affected": "10 bottles (from secondary wholesaler)",
+        "defects": [
+          "Bottle neck lacks standard induction inner heat-seal",
+          "Expiration date typography misaligned and lacks 2D data matrix barcode",
+          "Bottle cap color is noticeably darker shade of blue than official product packaging"
+        ],
+        "disposition": "Quarantined all 10 bottles in pharmacy vault; requesting chain-of-custody pickup for lab authentication",
+        "patient_exposure": false,
+        "adverse_reactions": "None / Not Applicable"
+      },
+      "reporter": {
+        "name": "Karen Patel, RPh (Pharmacist-in-Charge)",
+        "institution": "Apex Care Pharmacy #104, Boston, MA",
+        "phone": "(617) 555-0166",
+        "email": "kpatel@apex-care-pharmacy.com"
+      },
+      "source_citations": {
+        "all": "emails/email_08.eml:Body"
+      }
+    },
+    "CASE-09": {
+      "type": "email_intake",
+      "email_file": "emails/email_09.eml",
+      "email_headers": {
+        "from": "\"David Wu, BCPS\" <david.wu@ucsf-clinical.edu>",
+        "to": "Clinevo Medical Information Department <medinfo@clinevotech.com>",
+        "date": "Wed, 19 Nov 2025 13:40:00 -0800",
+        "subject": "Medical Information Request: Can Corzapan 10mg tablets be crushed for NG-tube administration?",
+        "message_id": "<20251119.134000.dwu@ucsf-clinical.edu>"
+      },
+      "attachment_file": null,
+      "categories": [
+        "Medical Information (MI)"
+      ],
+      "confidence_threshold": 0.97,
+      "patient": null,
+      "medical_inquiry": {
+        "product": "Corzapan 10mg film-coated tablets",
+        "clinical_context": "Elderly patient with severe dysphagia prescribed Corzapan 10mg once daily, active nasogastric (NG) enteral feeding tube",
+        "questions": [
+          "Can Corzapan 10mg tablets be crushed and suspended in sterile water for NG feeding tube delivery without altering bioavailability or causing tube occlusion?",
+          "Potential adsorption of active substance to polyurethane enteral feeding tubes?",
+          "Co-administration compatibility with enteral nutrition formulas?"
+        ]
+      },
+      "adverse_event_present": false,
+      "product_defect_present": false,
+      "reporter": {
+        "name": "David Wu, PharmD, BCPS (Clinical Pharmacy Specialist)",
+        "institution": "UCSF Health, San Francisco, CA",
+        "phone": "(415) 555-0198",
+        "email": "david.wu@ucsf-clinical.edu"
+      },
+      "source_citations": {
+        "all": "emails/email_09.eml:Body"
+      }
+    },
+    "CASE-10": {
+      "type": "email_intake",
+      "email_file": "emails/email_10.eml",
+      "email_headers": {
+        "from": "PharmaTech Global Summit <events@pharmasummit-global2026.com>",
+        "to": "Drug Safety Department <drugsafety@clinevotech.com>",
+        "date": "Thu, 20 Nov 2025 08:00:00 +0000",
+        "subject": "Early Bird Registration Open: 14th Annual Global AI in Pharmacovigilance & Drug Safety Summit",
+        "message_id": "<20251120.080000.events@pharmasummit-global2026.com>"
+      },
+      "attachment_file": null,
+      "categories": [
+        "Not Relevant"
+      ],
+      "confidence_threshold": 0.99,
+      "reason": "Commercial conference promotional newsletter (Boston, MA, March 24-26, 2026). Contains zero patient safety data, zero product quality defects, and zero clinical product questions.",
+      "extracted_entities": {},
+      "reporter": {
+        "name": "PharmaTech Global Summit",
+        "email": "events@pharmasummit-global2026.com"
+      },
+      "source_citations": {
+        "all": "emails/email_10.eml:Body"
+      }
+    },
+    "CASE-11": {
+      "type": "email_intake",
+      "email_file": "emails/email_11.eml",
+      "email_headers": {
+        "from": "\"Dr. Elena Rostova, PharmD, BCPS\" <e.rostova@massgeneral-pharmacy.org>",
+        "to": "Clinevo Medical Information Service <medinfo@clinevotech.com>",
+        "date": "Fri, 21 Nov 2025 09:15:00 -0500",
+        "subject": "Medical Information Request: In-Use Compatibility & Dilution Stability for Cefatox 1g in D5W",
+        "message_id": "<20251121.091500.erostova@massgeneral-pharmacy.org>"
+      },
+      "attachment_file": null,
+      "categories": [
+        "Medical Information (MI)"
+      ],
+      "confidence_threshold": 0.98,
+      "patient": null,
+      "medical_inquiry": {
+        "product": "Cefatox (cefatoxime sodium) 1g for Injection",
+        "clinical_context": "Hospital compounding standardization protocol for adult surgical prophylaxis (1g IV q8h)",
+        "questions": [
+          "Chemical stability and potency retention (>95%) of Cefatox 1g in 100 mL D5W at refrigerated temperatures (2 deg C to 8 deg C) for up to 48 hours?",
+          "In-use room temperature (20 deg C to 25 deg C) stability during prolonged 4-hour intravenous infusion?",
+          "Compatibility with Y-site co-infusion of standard 0.9% Sodium Chloride or Lactated Ringer's solution?"
+        ]
+      },
+      "adverse_event_present": false,
+      "product_defect_present": false,
+      "reporter": {
+        "name": "Dr. Elena Rostova, PharmD, BCPS (Senior Clinical Compounding Specialist)",
+        "institution": "Department of Pharmacy Services, Massachusetts General Hospital",
+        "address": "55 Fruit Street, Boston, MA 02114",
+        "phone": "(617) 555-0144",
+        "email": "e.rostova@massgeneral-pharmacy.org"
+      },
+      "source_citations": {
+        "all": "emails/email_11.eml:Body"
+      }
+    },
+    "LIT-01": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_01_dili_case.pdf",
+      "journal": "Journal of Clinical Hepatology & Pharmacovigilance",
+      "doi": "10.1016/j.jchpv.2025.04.012",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "reportable": true,
+      "total_cases_extracted": 1,
+      "patient": {
+        "age": "61-year-old",
+        "sex": "male",
+        "ethnicity": "Caucasian",
+        "history": "10-year history of refractory hypertension and hyperlipidemia"
+      },
+      "product": {
+        "name": "Cardioril (cardioril hydrochloride)",
+        "dose": "40 mg PO QD",
+        "latency": "42 days following treatment initiation"
+      },
+      "reaction": {
+        "terms": [
+          "Acute Drug-Induced Autoimmune-Like Hepatitis",
+          "Jaundice",
+          "Scleral Icterus",
+          "Dark Urine",
+          "Fatigue"
+        ],
+        "serious": true,
+        "hospitalization": true,
+        "life_threatening": false,
+        "dechallenge": "Positive (Cardioril discontinued; normalized over 6 weeks with oral prednisone)",
+        "canonical": "Acute Drug-Induced Autoimmune-Like Hepatitis",
+        "acceptable_terms": [
+          "acute drug-induced autoimmune-like hepatitis",
+          "jaundice",
+          "scleral icterus",
+          "dark urine",
+          "fatigue"
+        ]
+      },
+      "labs": {
+        "ALT": "680 U/L (>12x ULN)",
+        "AST": "510 U/L (>12x ULN)",
+        "Total_Bilirubin": "6.2 mg/dL",
+        "Alkaline_Phosphatase": "240 U/L",
+        "ANA": "1:640 (speckled pattern)",
+        "IgG": "2,100 mg/dL",
+        "Biopsy": "Severe interface hepatitis with dense portal lymphoplasmacytic infiltrate and bridging necrosis"
+      },
+      "authors": "Julian Montgomery, MD, PhD; Evelyn Vance, MD; Kenneth Ross, MD",
+      "source_citations": {
+        "all": "article_01_dili_case.pdf:Page1"
+      }
+    },
+    "LIT-02": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_02_sjs_case.pdf",
+      "journal": "British Journal of Clinical Dermatology",
+      "doi": "10.1111/bjcd.2025.10921",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "reportable": true,
+      "total_cases_extracted": 1,
+      "patient": {
+        "age": "24-year-old",
+        "sex": "female",
+        "indication": "Idiopathic trigeminal neuralgia"
+      },
+      "product": {
+        "name": "Neuroval (neuroval HCl)",
+        "dose": "150 mg daily",
+        "latency": "18 days later"
+      },
+      "reaction": {
+        "terms": [
+          "Stevens-Johnson Syndrome (SJS)",
+          "Purpuric Macules with Atypical Targetoid Morphology",
+          "Epidermal Detachment (~8% BSA)",
+          "Hemorrhagic Crusting of Lips",
+          "Bilateral Purulent Conjunctivitis",
+          "High Fever (39.5 C)"
+        ],
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "outcome": "Admitted to intensive care burn unit; IVIG (1 g/kg/day x 3 days); complete re-epithelialization by day 21",
+        "canonical": "Stevens-Johnson Syndrome (SJS)",
+        "acceptable_terms": [
+          "stevens-johnson syndrome (sjs)",
+          "purpuric macules with atypical targetoid morphology",
+          "epidermal detachment (~8% bsa)",
+          "hemorrhagic crusting of lips",
+          "bilateral purulent conjunctivitis",
+          "high fever (39.5 c)"
+        ]
+      },
+      "authors": "Sanjay Gupta, MD; Priya Sharma, MD",
+      "source_citations": {
+        "all": "article_02_sjs_case.pdf:Page1"
+      }
+    },
+    "LIT-03": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_03_multicase_series.pdf",
+      "journal": "The Lancet Regional Health \u2014 Europe",
+      "doi": "10.1016/j.lanepe.2025.100984",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "reportable": true,
+      "multicase": true,
+      "total_cases_extracted": 3,
+      "split_cases": [
+        {
+          "case_no": 1,
+          "patient": {
+            "initials": "A.J.",
+            "age": "45-year-old",
+            "sex": "male",
+            "weight": "81 kg",
+            "indication": "Stage II hypertension"
+          },
+          "product": {
+            "name": "Cardioril",
+            "dose": "20 mg once daily",
+            "latency": "Day 22 of therapy"
+          },
+          "reaction": {
+            "terms": [
+              "Erythema Multiforme Major",
+              "Target Lesions with Central Blistering",
+              "Severe Oral Mucosal Erosions"
+            ],
+            "serious": true,
+            "hospitalization": true
+          }
+        },
+        {
+          "case_no": 2,
+          "patient": {
+            "initials": "B.L.",
+            "age": "62-year-old",
+            "sex": "female",
+            "weight": "64 kg",
+            "indication": "Essential hypertension"
+          },
+          "product": {
+            "name": "Corzapan",
+            "dose": "10 mg daily",
+            "latency": "8 weeks of therapy"
+          },
+          "reaction": {
+            "terms": [
+              "Drug-Induced Subacute Cutaneous Lupus Erythematosus (SCLE)",
+              "Annular Polycyclic Scaly Plaques",
+              "Anti-Ro/SSA >240 U/mL",
+              "ANA 1:320"
+            ],
+            "serious": false,
+            "hospitalization": false
+          }
+        },
+        {
+          "case_no": 3,
+          "patient": {
+            "initials": "C.M.",
+            "age": "38-year-old",
+            "sex": "female",
+            "weight": "59 kg",
+            "indication": "Mild hypertension"
+          },
+          "product": {
+            "name": "Cardioril",
+            "dose": "10 mg daily",
+            "latency": "90 minutes following initial dose"
+          },
+          "reaction": {
+            "terms": [
+              "Acute Generalized Urticaria",
+              "Severe Pruritus",
+              "Dysphonia",
+              "Marked Bilateral Periorbital Angioedema"
+            ],
+            "serious": true,
+            "life_threatening": true,
+            "hospitalization": false,
+            "emergency_treatment": "Epinephrine 0.3 mg IM, diphenhydramine 50 mg IV"
+          }
+        }
+      ],
+      "authors": "Marcus Sterling, MD, FRCP; Alistair Finch, MBChB; Eleanor Vance, MD",
+      "source_citations": {
+        "case_1": "article_03_multicase_series.pdf:Page1:Col1",
+        "case_2": "article_03_multicase_series.pdf:Page1:Col1",
+        "case_3": "article_03_multicase_series.pdf:Page1:Col2"
+      }
+    },
+    "LIT-04": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_04_preclinical_review.pdf",
+      "journal": "European Journal of Pharmaceutical Sciences",
+      "doi": "10.1016/j.ejps.2025.105412",
+      "categories": [
+        "Not Relevant"
+      ],
+      "reportable": false,
+      "total_cases_extracted": 0,
+      "exclusion_reason": "Preclinical in-vitro and rat hepatocyte metabolic clearance study. Contains zero human subjects and zero clinical cases (GVP Module VI Section VI.B.1 exempt).",
+      "authors": "Heinrich Mueller, PhD; Klaus Schmidt, PhD",
+      "source_citations": {
+        "all": "article_04_preclinical_review.pdf:Page1"
+      }
+    },
+    "LIT-05": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_05_meta_analysis_review.pdf",
+      "journal": "International Journal of Cardiology Reviews",
+      "doi": "10.1016/j.ijcard.2025.110294",
+      "categories": [
+        "Not Relevant"
+      ],
+      "reportable": false,
+      "total_cases_extracted": 0,
+      "exclusion_reason": "Systematic review and meta-analysis of 34 clinical trials (28,450 aggregate patients). Reports pooled odds ratios without individual identifiable patient case reports.",
+      "authors": "Catherine Tremblay, MD; Jean-Luc Moreau, MD",
+      "source_citations": {
+        "all": "article_05_meta_analysis_review.pdf:Page1"
+      }
+    },
+    "LIT-06": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_06_buried_case_study.pdf",
+      "journal": "Journal of Clinical Oncology & Immunotherapy",
+      "doi": "10.1200/JCOI.2025.18.3.412",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "reportable": true,
+      "pages_count": 2,
+      "total_cases_extracted": 1,
+      "patient": {
+        "identifier": "Patient H.L.",
+        "age": "68-year-old",
+        "sex": "female",
+        "ethnicity": "Caucasian",
+        "weight": "62 kg",
+        "indication": "BRAF wild-type stage IV metastatic cutaneous melanoma"
+      },
+      "product": {
+        "name": "Nivolumab (Opdivo) 240 mg IV q2w + Ipilimumab (Yervoy) 1 mg/kg IV q6w",
+        "latency": "Day 44 post-initiation (12 days following cycle 3)"
+      },
+      "reaction": {
+        "terms": [
+          "Delayed Immune-Mediated Fulminant Myocarditis",
+          "Complete (Third-Degree) AV Heart Block with Junctional Escape Rhythm",
+          "Acute LVEF Decline to 32% (Diffuse Biventricular Hypokinesis)",
+          "Progressive Exertional Dyspnea and Orthopnea"
+        ],
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "intervention": "CICU transfer, temporary transvenous pacemaker, methylprednisolone 1,000 mg IV daily, therapeutic plasma exchange",
+        "canonical": "Delayed Immune-Mediated Fulminant Myocarditis",
+        "acceptable_terms": [
+          "delayed immune-mediated fulminant myocarditis",
+          "complete (third-degree) av heart block with junctional escape rhythm",
+          "acute lvef decline to 32% (diffuse biventricular hypokinesis)",
+          "progressive exertional dyspnea and orthopnea"
+        ]
+      },
+      "diagnostics": {
+        "Troponin_T": "1.84 ng/mL (ref <0.014)",
+        "NT_proBNP": "4,820 pg/mL",
+        "Biopsy": "Dense interstitial infiltration of CD4+ and CD8+ T-lymphocytes with multifocal cardiomyocyte necrosis"
+      },
+      "authors": "Robert H. Caldwell, MD; Danielle M. Zhang, MD, PhD; Christopher Owens, MD",
+      "source_citations": {
+        "all": "article_06_buried_case_study.pdf:Page1:Col2 to Page2:Col1"
+      }
+    },
+    "LIT-07": {
+      "type": "literature_screening",
+      "pdf_file": "pdfs/literature_articles/article_07_complex_screening_case.pdf",
+      "journal": "American Journal of Respiratory and Critical Care Medicine",
+      "doi": "10.1164/rccm.2025.09.1182",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "reportable": true,
+      "pages_count": 2,
+      "multicase": true,
+      "total_cases_extracted": 2,
+      "non_case_cohort_filtered": "420-patient observational registry cohort correctly filtered out as non-case background",
+      "split_cases": [
+        {
+          "case_no": 1,
+          "patient": {
+            "identifier": "Patient T.K.",
+            "age": "54-year-old",
+            "sex": "male",
+            "weight": "75 kg",
+            "indication": "Seropositive rheumatoid arthritis"
+          },
+          "product": {
+            "name": "Infliximab (Remicade)",
+            "dose": "5 mg/kg IV infusions",
+            "latency": "12 days following 4th infusion"
+          },
+          "reaction": {
+            "terms": [
+              "Acute Drug-Induced Interstitial Pneumonitis",
+              "Hypoxemic Respiratory Failure (PaO2 54 mmHg)",
+              "High Fever (38.9 C)",
+              "Diffuse Bilateral Ground-Glass Opacities"
+            ],
+            "serious": true,
+            "life_threatening": true,
+            "hospitalization": true,
+            "intervention": "MICU admission, non-invasive positive pressure ventilation, IV methylprednisolone 125 mg q6h"
+          }
+        },
+        {
+          "case_no": 2,
+          "patient": {
+            "identifier": "Patient M.S.",
+            "age": "41-year-old",
+            "sex": "female",
+            "weight": "58 kg",
+            "indication": "Active psoriatic arthritis"
+          },
+          "product": {
+            "name": "Leflunomide (Arava)",
+            "dose": "20 mg PO QD",
+            "latency": "12 weeks of continuous therapy"
+          },
+          "reaction": {
+            "terms": [
+              "Cryptogenic Organizing Pneumonia (COP / BOOP)",
+              "Restrictive Physiology with 28% decline in DLCO",
+              "Patchy Peripheral and Peribronchovascular Consolidations"
+            ],
+            "serious": true,
+            "hospitalization": true,
+            "life_threatening": false,
+            "intervention": "Cholestyramine accelerated washout (8g TID x 11 days) + oral prednisone 40 mg QD"
+          }
+        }
+      ],
+      "authors": "Samantha Reed, MD; Tariq Al-Mansoor, MD; Fiona Gallagher, MD",
+      "source_citations": {
+        "case_1": "article_07_complex_screening_case.pdf:Page1:Col1-Col2",
+        "case_2": "article_07_complex_screening_case.pdf:Page1:Col2 to Page2:Col1"
+      }
+    },
+    "NON-ENG-01": {
+      "type": "regulatory_form",
+      "pdf_file": "pdfs/non_english/notificacion_ram_madrid.pdf",
+      "form_standard": "Synthetic Style-Matched Spanish AEMPS Yellow Card (Tarjeta Amarilla)",
+      "language": "es",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "patient": {
+        "initials": "C.O. (Carmen Ortiz)",
+        "dob": "22-MAR-1996",
+        "age": "29 A\u00d1OS",
+        "sex": "MUJER",
+        "weight": "54 kg"
+      },
+      "product": {
+        "name": "Lamotrigina (Lamictal) 100 mg",
+        "dose": "100 mg/d\u00eda v\u00eda oral",
+        "lot": "Lote #LM-9941"
+      },
+      "reaction": {
+        "terms": [
+          "Toxic Epidermal Necrolysis",
+          "Necr\u00f3lisis Epid\u00e9rmica T\u00f3xica"
+        ],
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "canonical": "Toxic Epidermal Necrolysis",
+        "acceptable_terms": [
+          "toxic epidermal necrolysis",
+          "necr\u00f3lisis epid\u00e9rmica t\u00f3xica"
+        ]
+      },
+      "source_citations": {
+        "all": "notificacion_ram_madrid.pdf:Page1"
+      }
+    },
+    "NON-ENG-02": {
+      "type": "regulatory_form",
+      "pdf_file": "pdfs/non_english/bericht_uaw_charite_berlin.pdf",
+      "form_standard": "Synthetic Style-Matched German BfArM UAW Meldebogen (\u00a7 63b AMG)",
+      "language": "de",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "patient": {
+        "name": "Hans Schneider (H.S.)",
+        "dob": "04.08.1962",
+        "age": "63 JAHRE",
+        "sex": "M\u00c4NNLICH",
+        "weight": "88 kg"
+      },
+      "product": {
+        "name": "Cardioril (Cardioril-HCl) 20 mg",
+        "dose": "20 mg 1x t\u00e4glich p.o.",
+        "lot": "Ch.-B.: CR-2025-0814 (Verf. 09/2027)",
+        "therapy_dates": "28.10.2025 bis 12.11.2025",
+        "action_taken": "Arzneimittel dauerhaft abgesetzt"
+      },
+      "reaction": {
+        "original_terms": [
+          "Akutes Angio\u00f6dem von Lippen, Zunge und Pharynx",
+          "Schwere Dyspnoe",
+          "Inspiratorischer Stridor",
+          "Diffuses Urtikaria-Exanthem"
+        ],
+        "translated_terms": [
+          "Acute Angioedema of Lips, Tongue, and Pharynx",
+          "Severe Dyspnea",
+          "Inspiratory Stridor",
+          "Diffuse Urticaria"
+        ],
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true
+      },
+      "reporter": {
+        "name": "Dr. med. Wolfgang Becker (Facharzt f\u00fcr Kardiologie & Notfallmedizin)",
+        "institution": "Charit\u00e9 \u2013 Universit\u00e4tsmedizin Berlin, Campus Virchow-Klinikum",
+        "address": "Augustenburger Platz 1, 13353 Berlin, Deutschland",
+        "phone": "+49 30 555-0821",
+        "email": "w.becker@charite.de"
+      },
+      "source_citations": {
+        "all": "bericht_uaw_charite_berlin.pdf:Page1"
+      }
+    },
+    "DIG-03": {
+      "type": "regulatory_form",
+      "pdf_file": "pdfs/digital_forms/cioms_pediatric_oncology.pdf",
+      "form_standard": "Synthetic Style-Matched CIOMS Form I (Pediatric Oncology)",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "special_population": "Pediatric",
+      "patient": {
+        "name": "Lucas Torres (L.T.)",
+        "age": "8 YRS",
+        "dob": "14-JUL-2017",
+        "sex": "MALE",
+        "weight": "26 kg",
+        "indication": "Acute lymphoblastic leukemia (ALL) in maintenance phase"
+      },
+      "product": {
+        "name": "OncoShield (peg-oncoshield)",
+        "dose": "50mg/m\u00b2 IV",
+        "lot": "Lot #OS-2025-771 (Exp: 04/2026)"
+      },
+      "reaction": {
+        "terms": [
+          "Acute Cytokine Release Syndrome / Severe Infusion Reaction",
+          "Severe Shaking Rigors",
+          "High-Grade Fever (40.1 C / 104.2 F)",
+          "Hypoxemia (SpO2 88% room air)"
+        ],
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "canonical": "Acute Cytokine Release Syndrome / Severe Infusion Reaction",
+        "acceptable_terms": [
+          "acute cytokine release syndrome / severe infusion reaction",
+          "severe shaking rigors",
+          "high-grade fever (40.1 c / 104.2 f)",
+          "hypoxemia (spo2 88% room air)"
+        ]
+      },
+      "reporter": {
+        "name": "Dr. Amanda Bennett, MD, FAAP (Pediatric Hematologist-Oncologist)",
+        "institution": "Children's Memorial Hospital, Boston, MA",
+        "phone": "(617) 555-0811",
+        "email": "abennett@childrens-boston.org"
+      },
+      "source_citations": {
+        "all": "cioms_pediatric_oncology.pdf:Page1"
+      }
+    },
+    "DIG-04": {
+      "type": "regulatory_form",
+      "pdf_file": "pdfs/digital_forms/fda_medwatch_initial_neuroval.pdf",
+      "form_standard": "Synthetic Style-Matched FDA Form 3500A (Initial Serious Adverse Event)",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "report_type": "Initial Report",
+      "patient": {
+        "identifier": "David Miller (D.M.)",
+        "age": "52 YRS",
+        "sex": "MALE",
+        "weight": "79 kg",
+        "indication": "Neuropathic pain"
+      },
+      "product": {
+        "name": "Neuroval (neuroval HCl)",
+        "dose": "400mg PO QD (escalated from 200mg on 31-OCT-2025)",
+        "lot": "Lot #NV-2025-110"
+      },
+      "reaction": {
+        "terms": [
+          "Witnessed New-Onset Generalized Tonic-Clonic Seizure (3.5 min)",
+          "Post-ictal Confusion (20 min)"
+        ],
+        "onset": "02-NOV-2025 (~48h post dose increase)",
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "canonical": "Witnessed New-Onset Generalized Tonic-Clonic Seizure (3.5 min)",
+        "acceptable_terms": [
+          "witnessed new-onset generalized tonic-clonic seizure (3.5 min)",
+          "post-ictal confusion (20 min)"
+        ]
+      },
+      "reporter": {
+        "name": "Dr. Richard Vance, MD",
+        "institution": "Columbia University Medical Center, NY",
+        "email": "rvance@cumc.columbia.edu"
+      },
+      "source_citations": {
+        "all": "fda_medwatch_initial_neuroval.pdf:Page1"
+      }
+    },
+    "DIG-05": {
+      "type": "regulatory_form",
+      "pdf_file": "pdfs/digital_forms/cioms_form_renal_injury.pdf",
+      "form_standard": "Synthetic Style-Matched CIOMS Form I (Nephrotoxicity Report)",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "patient": {
+        "initials": "G.T. (George Taylor)",
+        "age": "67 YRS",
+        "sex": "MALE",
+        "weight": "76 kg",
+        "indication": "Chronic osteoarthritis"
+      },
+      "product": {
+        "name": "Renotril",
+        "dose": "30 mg PO QD",
+        "lot": "Lot #RN-2025-412"
+      },
+      "reaction": {
+        "terms": [
+          "KDIGO Stage 3 Acute Kidney Injury",
+          "Oliguria (<400 mL/day)",
+          "Peripheral Edema"
+        ],
+        "onset": "Day 14 of treatment",
+        "serious": true,
+        "hospitalization": true,
+        "life_threatening": false,
+        "canonical": "KDIGO Stage 3 Acute Kidney Injury",
+        "acceptable_terms": [
+          "kdigo stage 3 acute kidney injury",
+          "oliguria (<400 ml/day)",
+          "peripheral edema"
+        ]
+      },
+      "labs": {
+        "Baseline_Creatinine": "1.0 mg/dL (eGFR 78 mL/min)",
+        "Peak_Creatinine": "4.2 mg/dL",
+        "BUN": "68 mg/dL",
+        "Potassium": "5.6 mEq/L"
+      },
+      "reporter": {
+        "name": "Dr. Keith Miller, MD (Nephrology)",
+        "institution": "Vanderbilt University Medical Center, Nashville, TN",
+        "email": "kmiller@vumc-nephrology.org"
+      },
+      "source_citations": {
+        "all": "cioms_form_renal_injury.pdf:Page1"
+      }
+    },
+    "PQC-02": {
+      "type": "quality_complaint_document",
+      "pdf_file": "pdfs/quality_complaints/packaging_defect_report.pdf",
+      "form_standard": "Synthetic Pharmacy Defect Inspection Form",
+      "categories": [
+        "Quality Complaint (PQC)"
+      ],
+      "quality_complaint": {
+        "product": "Cardioril 10mg Film-Coated Tablets",
+        "lot": "Lot #BL-8802",
+        "expiry": "11/2026",
+        "quantity_affected": "12 cartons (360 strips / 3,600 tablets)",
+        "defect": "Packaging Integrity Failure & Chemical Oxidation / Degradation. Aluminum lidding foil unsealed and peeling away from PVC/PVDC thermoformed cavities along top margin; exposed tablets exhibit dark speckling/oxidation, softening, edge chipping, friability breakdown"
+      },
+      "patient": null,
+      "source_citations": {
+        "all": "packaging_defect_report.pdf:Page1"
+      }
+    },
+    "MED-01": {
+      "type": "medical_info_document",
+      "pdf_file": "pdfs/medical_info/cardioril_clinical_monograph_dosing.pdf",
+      "form_standard": "Synthetic Clinical Pharmacology Reference Monograph",
+      "categories": [
+        "Medical Information (MI)"
+      ],
+      "content_summary": "Clinical pharmacology reference monograph outlining Cardioril dosing recommendations stratified by renal function (Normal, Mild, CKD 3, CKD 4/5, ESRD hemodialysis) and dialysis clearance kinetics.",
+      "patient": null,
+      "adverse_event": null,
+      "quality_defect": null,
+      "source_citations": {
+        "all": "cardioril_clinical_monograph_dosing.pdf:Page1"
+      }
+    },
+    "MED-02": {
+      "type": "medical_info_document",
+      "pdf_file": "pdfs/medical_info/corzapan_drug_interaction_guide.pdf",
+      "form_standard": "Synthetic Medical Affairs Formulation Compatibility Table",
+      "categories": [
+        "Medical Information (MI)"
+      ],
+      "content_summary": "Medical affairs formulation guide detailing Corzapan 10mg enteral tube crushing protocols across NG, G-tube, and J-tube administration, and CYP3A4/CYP2C9 pharmacokinetic interaction tables.",
+      "patient": null,
+      "adverse_event": null,
+      "quality_defect": null,
+      "source_citations": {
+        "all": "corzapan_drug_interaction_guide.pdf:Page1"
+      }
+    },
+    "IRR-01": {
+      "type": "irrelevant_document",
+      "pdf_file": "pdfs/irrelevant/pharmatech_conference_prospectus.pdf",
+      "form_standard": "Synthetic Commercial Event Flyer & Pricing Matrix",
+      "categories": [
+        "Not Relevant"
+      ],
+      "content_summary": "Commercial event sponsorship prospectus for PharmaTech Global AI Summit 2026. Contains sponsorship pricing tiers ($45k Diamond, $28k Platinum, $15k Gold) and booth layouts. Zero patient safety data.",
+      "extracted_entities": {},
+      "source_citations": {
+        "all": "pharmatech_conference_prospectus.pdf:Page1"
+      }
+    }
+  }
+}

@@ -1,0 +1,1246 @@
+================ PHYSICAL EMAILS DUMP ================
+
+=================== email_01.eml ===================
+From: "Dr. Sarah Jenkins, MD" <sjenkins@metrohealth-chicago.org>
+To: Clinevo Safety Mailbox <drugsafety@clinevotech.com>
+Date: Wed, 12 Nov 2025 14:22:10 -0600
+Subject: URGENT: Individual Case Safety Report (ICSR) - Suspect DILI with Cardioril (Pt M.K.)
+Message-ID: <20251112.142210.sjenkins@metrohealth-chicago.org>
+--- Full Body ---
+Dear Pharmacovigilance Team,
+
+I am submitting an urgent spontaneous adverse drug reaction report concerning a 58-year-old female patient (M.K.) under my care who developed acute drug-induced liver injury (DILI) and jaundice following treatment with Cardioril 20 mg once daily.
+
+The patient required acute hospital admission on November 10, 2025 due to significantly elevated transaminases (>9x ULN) and hyperbilirubinemia (Total Bili: 4.8 mg/dL) meeting Hy's law criteria. Viral hepatitis serologies and abdominal ultrasound were negative for biliary obstruction.
+
+Cardioril was promptly discontinued on admission, and liver transaminases are beginning to trend down. Please find attached the completed official CIOMS-I reporting form along with the structured hepatic chemistry laboratory panel for your expedited safety evaluation.
+
+Please acknowledge receipt of this regulatory submission.
+
+Sincerely,
+Sarah Jenkins, MD, FACP
+Department of Gastroenterology, MetroHealth Medical Center
+2500 MetroHealth Dr, Chicago, IL 60609
+Tel: (312) 555-0188 | Email: sjenkins@metrohealth-chicago.org
+Attachments: ['cioms_form_MK_Cardioril.pdf']
+
+=================== email_02.eml ===================
+From: "Dr. A. Peterson, MD" <a.peterson@stmarys-hospital.org>
+To: Clinevo Drug Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sun, 10 Dec 2023 15:30:00 -0500
+Subject: URGENT: Adverse Drug Event Report - Acute Anaphylaxis s/p InjectaPen (Pt Jane Doe)
+Message-ID: <20231210.153000.apeterson@stmarys-hospital.org>
+--- Full Body ---
+Dear Pharmacovigilance Department,
+
+I am urgently submitting an initial adverse event report for a 33-year-old female patient (Jane Doe, DOB: 05/18/1990) who presented to St. Mary's Emergency Department in severe acute anaphylactic shock 20 minutes following self-injection of InjectaPen.
+
+Patient presented with generalized urticaria, marked lip and perioral angioedema, inspiratory stridor, and profound hypotension (BP 85/50, HR 128). Immediate emergency intervention was initiated: Epinephrine 0.3 mg IM, high-flow oxygen, IV fluid resuscitation, and admission to the emergency unit.
+
+Attached is the photograph of our emergency intake and triage record completed at bedside.
+
+Sincerely,
+Dr. A. Peterson, MD
+Emergency Department, St. Mary's General Hospital
+NPI: 9876543210 | Email: a.peterson@stmarys-hospital.org
+Attachments: ['urgent_care_intake_handwritten.pdf']
+
+=================== email_03.eml ===================
+From: Emily Watson <emily.watson92@consumer-mail.com>
+To: Clinevo Drug Safety Intake <drugsafety@clinevotech.com>
+Date: Fri, 14 Nov 2025 09:14:22 -0700
+Subject: Terrible heart palpitations and dizzy spells after taking Corzapan 10mg
+Message-ID: <20251114.091422.ewatson@consumer-mail.com>
+--- Full Body ---
+Hello Drug Safety Team,
+
+I am writing this email to report a really scary reaction I just experienced after taking Corzapan 10mg tablets. My doctor prescribed this to me four days ago for mild hypertension and work-related anxiety.
+
+Yesterday morning (November 13th), about an hour after taking my fourth pill, my heart started pounding uncontrollably like it was going to jump right out of my chest. I felt extremely lightheaded, broke out into a cold sweat, and almost passed out on my kitchen floor. My smartwatch alerted me that my resting pulse shot up to 154 bpm while I was just sitting down. I also felt tight in my chest and had trouble catching my breath for nearly two hours.
+
+My husband drove me to our family doctor (Dr. Robert Hayes at Denver Family Medicine) who examined me and told me to immediately stop taking Corzapan. He said it was an acute drug-induced tachycardia and palpitations episode.
+
+I am still feeling fatigued today, but my heart rate has calmed down to 78 bpm. I wanted to report this so other patients are warned. I threw the prescription bottle away, so I don't know the exact batch number, but it was filled last week at the Walgreens on Colfax.
+
+Patient Information:
+Name: Emily Watson
+Age: 42 years old
+Sex: Female
+Location: Denver, Colorado, USA
+Phone: (303) 555-0192
+Email: emily.watson92@consumer-mail.com
+
+Please confirm you received this report.
+Attachments: []
+
+=================== email_04.eml ===================
+From: "Dr. Robert Lang, MD" <rlang@nmh-icu.org>
+To: Clinevo Safety & Quality Intake <drugsafety@clinevotech.com>
+Date: Fri, 14 Nov 2025 14:10:00 -0600
+Subject: CRITICAL ALERT: Sepsis caused by Contaminated Cefatox 1g Vial (Lot #CX54831) - FDA Form 3500A Attached
+Message-ID: <20251114.141000.rlang@nmh-icu.org>
+--- Full Body ---
+URGENT: TO PHARMACOVIGILANCE AND QUALITY COMPLAINTS DEPARTMENTS,
+
+I am submitting an emergency dual-category report involving both an immediate Product Quality Complaint (PQC) and a life-threatening Serious Adverse Event (ICSR).
+
+Earlier today in our ICU, patient Arthur Pendelton (71yo male) developed septic shock and severe hypotension (BP 72/40) shortly after receiving an intravenous infusion of Cefatox 1g (cefatoxime sodium, Lot #CX54831, Exp 08/2025).
+
+Upon inspecting the medication vial, bedside staff discovered that the aluminum crimp collar on the rubber stopper was cracked open, and dark foreign particulate matter was visibly floating in the solution.
+
+We have quarantined all 48 remaining vials of Lot #CX54831 in our central pharmacy. The patient is currently on norepinephrine vasopressor support in critical condition.
+
+Attached is our official completed FDA Form 3500A report with Exhibit 1 (photographic evidence record of the contaminated vial).
+
+Sincerely,
+Robert Lang, MD, FCCM
+Director, Medical Intensive Care Unit
+Northwestern Memorial Hospital, Chicago, IL
+Tel: (312) 555-0320 | Email: rlang@nmh-icu.org
+Attachments: ['vial_contamination_sepsis.pdf']
+
+=================== email_05.eml ===================
+From: "Dra. Elena Morales" <emorales@hospitallapaz.es>
+To: Clinevo Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sat, 15 Nov 2025 11:20:00 +0100
+Subject: URGENTE: Notificación de Reacción Adversa Grave - Necrólisis Epidérmica Tóxica con Lamotrigina (Pt C.O.)
+Message-ID: <20251115.112000.emorales@hospitallapaz.es>
+--- Full Body ---
+Estimado Departamento de Farmacovigilancia,
+
+Remito notificación urgente de una reacción adversa grave con desenlace potencialmente mortal en una paciente de 29 años (Carmen Ortiz, C.O.) tratada con Lamotrigina 100 mg/día por epilepsia mioclónica.
+
+La paciente ha desarrollado un cuadro clínico compatible con Necrólisis Epidérmica Tóxica (Síndrome de Lyell) con desprendimiento dermoepidérmico superior al 35% de la superficie corporal y afectación de mucosas oral y conjuntival. Ha sido ingresada de urgencia en la Unidad de Quemados Críticos del Hospital Universitario La Paz.
+
+El fármaco sospechoso ha sido suspendido de forma inmediata. Adjunto el formulario oficial de notificación de la AEMPS debidamente cumplimentado.
+
+Atentamente,
+Dra. Elena Morales, FEA Dermatología
+Hospital Universitario La Paz, Paseo de la Castellana 261, 28046 Madrid
+Tel: +34 91 555 0244 | Email: emorales@hospitallapaz.es
+Attachments: ['notificacion_ram_madrid.pdf']
+
+=================== email_06.eml ===================
+From: "Dr. Richard Vance, MD" <rvance@columbia-neurology.org>
+To: Clinevo Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sun, 16 Nov 2025 16:05:12 -0500
+Subject: FOLLOW-UP REPORT #1: Case Ref CR-2025-US-00744 - Seizure Resolution s/p Neuroval Discontinuation
+Message-ID: <20251116.160512.rvance@columbia-neurology.org>
+--- Full Body ---
+Dear Pharmacovigilance Team,
+
+This is follow-up report #1 to our initial safety report (Case Ref: CR-2025-US-00744) regarding patient David Miller (52yo male) who experienced a generalized tonic-clonic seizure 48 hours following dose escalation of Neuroval to 400 mg daily.
+
+I am pleased to report that following complete discontinuation of Neuroval on November 2nd, the patient has remained completely seizure-free for 14 consecutive days. Repeat 24-hour video EEG showed normalization of background rhythms without epileptiform discharges. Positive de-challenge is clinically confirmed.
+
+Attached is the updated FDA Form 3500A with Section B and C marked for follow-up resolution.
+
+Sincerely,
+Dr. Richard Vance, MD
+Department of Neurology, Columbia University Medical Center
+New York, NY 10032 | Tel: (212) 555-0199
+Attachments: ['fda_medwatch_followup.pdf']
+
+=================== email_07.eml ===================
+From: "Robert Vance, PharmD" <rvance@metrohealth-pharmacy.org>
+To: Clinevo Product Quality Department <qualitycomplaints@clinevotech.com>
+Date: Mon, 17 Nov 2025 08:30:00 -0600
+Subject: PRODUCT QUALITY COMPLAINT: Compromised Blister Foil & Oxidized Tablets (Lot #BL-8802)
+Message-ID: <20251117.083000.rvance@metrohealth-pharmacy.org>
+--- Full Body ---
+To Quality Assurance & Complaints Investigation,
+
+Our central pharmacy is filing an official Product Quality Complaint regarding Cardioril 10mg blister packs, Lot #BL-8802, Expiration Date: 11/2026.
+
+During routine unit-dose dispensing, pharmacy technicians identified multiple cartons where the aluminum foil backing was unsealed and peeling away from the PVC blister cavities. The enclosed tablets display dark discoloration, surface oxidation, and severe crumbling.
+
+No medication from this shipment was dispensed to patients; zero adverse events have occurred. All 12 boxes (360 blister strips) from Lot #BL-8802 have been quarantined in our pharmacy quarantine cage.
+
+Please find our internal Pharmacy Defect Inspection Form attached. We request immediate replacement and return shipping instructions.
+
+Robert Vance, PharmD, BCPS
+Director of Pharmacy Operations, MetroHealth Medical Center
+Tel: (312) 555-0140 | Email: rvance@metrohealth-pharmacy.org
+Attachments: ['packaging_defect_report.pdf']
+
+=================== email_08.eml ===================
+From: "Karen Patel, RPh" <kpatel@apex-care-pharmacy.com>
+To: Clinevo Product Quality Department <qualitycomplaints@clinevotech.com>
+Date: Tue, 18 Nov 2025 10:15:45 -0500
+Subject: Urgent Quality Notice: Suspected Counterfeit Packaging - Lipocur 20mg (Lot #LP-44109)
+Message-ID: <20251118.101545.kpatel@apex-care-pharmacy.com>
+--- Full Body ---
+Dear Quality Complaints Team,
+
+I am writing as the Pharmacist-in-Charge at Apex Care Pharmacy in Boston, MA. We received a delivery yesterday from a secondary wholesaler containing 10 bottles of Lipocur 20mg tablets (Lot #LP-44109).
+
+Upon physical inspection, we strongly suspect counterfeit or tampered packaging:
+1. The bottle neck lacks the standard induction inner heat-seal.
+2. The expiration date typography on the bottle label does not match our usual commercial stock (font is misaligned and lacks the 2D data matrix barcode).
+3. The bottle cap color is a noticeably darker shade of blue than official product packaging.
+
+We have quarantined all 10 bottles in our pharmacy vault. No bottles have been sold to consumers, and no patients have ingested this stock. Please advise on chain-of-custody pickup for laboratory authentication.
+
+Karen Patel, RPh
+Apex Care Pharmacy #104, Boston, MA
+Tel: (617) 555-0166 | Email: kpatel@apex-care-pharmacy.com
+Attachments: []
+
+=================== email_09.eml ===================
+From: "David Wu, BCPS" <david.wu@ucsf-clinical.edu>
+To: Clinevo Medical Information Department <medinfo@clinevotech.com>
+Date: Wed, 19 Nov 2025 13:40:00 -0800
+Subject: Medical Information Request: Can Corzapan 10mg tablets be crushed for NG-tube administration?
+Message-ID: <20251119.134000.dwu@ucsf-clinical.edu>
+--- Full Body ---
+Dear Medical Information Department,
+
+I am a clinical oncology pharmacist at UCSF Medical Center caring for an elderly patient with severe dysphagia who has an active nasogastric (NG) feeding tube in place.
+
+The patient has been prescribed Corzapan 10mg once daily for chronic hypertension. The package insert indicates film-coated tablets but does not explicitly state whether the tablets can be crushed and suspended in sterile water for enteral feeding tube delivery without altering bioavailability or causing tube occlusion.
+
+Could your medical affairs team please provide any pharmacokinetic or stability data regarding:
+1. Crushing Corzapan 10mg tablets for enteral administration.
+2. Potential adsorption of the active substance to polyurethane enteral feeding tubes.
+3. Co-administration with enteral nutrition formulas.
+
+There is currently no patient adverse event or product defect. This is purely a prospective clinical inquiry.
+
+Best regards,
+David Wu, PharmD, BCPS
+Clinical Pharmacy Specialist, UCSF Health
+San Francisco, CA | Tel: (415) 555-0198
+Attachments: []
+
+=================== email_10.eml ===================
+From: PharmaTech Global Summit <events@pharmasummit-global2026.com>
+To: Drug Safety Department <drugsafety@clinevotech.com>
+Date: Thu, 20 Nov 2025 08:00:00 +0000
+Subject: Early Bird Registration Open: 14th Annual Global AI in Pharmacovigilance & Drug Safety Summit
+Message-ID: <20251120.080000.events@pharmasummit-global2026.com>
+--- Full Body ---
+Join 500+ global safety leaders, regulatory directors, and AI pioneers in Boston, MA on March 24–26, 2026!
+
+Keynote sessions include:
+• Generative AI & LLMs in ICSR Intake Automation
+• GVP Module VI Inspection Readiness in 2026
+• Automating Literature Screening with Multimodal AI
+• Real-World Evidence & Signal Detection Case Studies
+
+Register before December 15th to save $400 with our Early Bird Discount code: SAFETYAI2026.
+Group discounts available for teams of 3 or more.
+
+Click here to reserve your delegate pass: https://www.pharmasummit-global2026.com/register
+To unsubscribe from future event notifications, click here.
+Attachments: []
+
+=================== email_11.eml ===================
+From: "Dr. Elena Rostova, PharmD, BCPS" <e.rostova@massgeneral-pharmacy.org>
+To: Clinevo Medical Information Service <medinfo@clinevotech.com>
+Date: Fri, 21 Nov 2025 09:15:00 -0500
+Subject: Medical Information Request: In-Use Compatibility & Dilution Stability for Cefatox 1g in D5W
+Message-ID: <20251121.091500.erostova@massgeneral-pharmacy.org>
+--- Full Body ---
+Dear Medical Information Team,
+
+I am writing on behalf of our inpatient pharmacy clinical operations team at Massachusetts General Hospital with a stability inquiry regarding Cefatox (cefatoxime sodium) 1g for Injection.
+
+We are standardizing our hospital-wide intravenous infusion protocol for adult surgical prophylaxis in patients with normal renal function. The prescribed dose is 1g IV every 8 hours. Our cleanroom compounding protocol calls for reconstituting each 1g vial with 10 mL Sterile Water for Injection, followed by immediate dilution into a 100 mL Dextrose 5% in Water (D5W) IV infusion bag.
+
+Could Medical Affairs please provide documentation or monograph data addressing:
+1. Chemical stability and potency retention (>95%) of Cefatox 1g in 100 mL D5W at refrigerated temperatures (2 deg C to 8 deg C) for up to 48 hours.
+2. In-use room temperature (20 deg C to 25 deg C) stability during a prolonged 4-hour intravenous infusion.
+3. Compatibility with Y-site co-infusion of standard 0.9% Sodium Chloride or Lactated Ringer's solution.
+
+Please note: There is no adverse patient event, no clinical complication, and no physical defect in our product stock. This inquiry is solely for hospital protocol formulation and compounding guidance.
+
+Thank you for your assistance.
+
+Sincerely,
+Dr. Elena Rostova, PharmD, BCPS
+Senior Clinical Compounding Specialist
+Department of Pharmacy Services, Massachusetts General Hospital
+55 Fruit Street, Boston, MA 02114
+Tel: (617) 555-0144 | Email: e.rostova@massgeneral-pharmacy.org
+Attachments: []
+
+================ PHYSICAL PDFS DUMP ================
+
+=================== pdfs\digital_forms\cioms_form_MK_Cardioril.pdf (1 pages) ===================
+--- PAGE 1 (3813 chars) ---
+CIOMS FORM I
+SUSPECT ADVERSE REACTION REPORT
+Council for International Organizations of Medical Sciences (CIOMS) — Standard Reporting Form
+I. REACTION INFORMATION
+1. PATIENT INITIALS
+M.K.
+1a. COUNTRY
+USA
+2. DATE OF BIRTH
+14-MAY-1967
+2a. AGE
+58 YRS
+3. SEX
+FEMALE
+3a. WEIGHT
+68 kg (150 lbs)
+4. REACTION ONSET DATE
+08-NOV-2025
+5. TODAY'S DATE
+12-NOV-2025
+8–12. CHECK ALL APPROPRIATE TO ADVERSE REACTION:
+[   ] PATIENT DIED                                                     [   ] LIFE-THREATENING
+[ X ] INVOLVED OR PROLONGED INPATIENT HOSPITALIZATION (Admitted:
+10-NOV-2025)
+[   ] PERSISTENT/SIGNIFICANT DISABILITY             [   ] CONGENITAL ANOMALY
+[ X ] OTHER MEDICALLY IMPORTANT CONDITION: YES (Acute Drug-Induced Liver
+Injury)
+6. DESCRIBE REACTION(S) (including relevant medical history, signs, symptoms, and clinical course):
+58-year-old female patient (M.K.) with medical history of essential hypertension (5 yrs) and type 2 diabetes mellitus (4 yrs) initiated Cardioril 20 mg once daily on
+15-OCT-2025. On 08-NOV-2025 (~24 days post-initiation), patient presented with progressive fatigue, anorexia, severe generalized pruritus, dark brown urine,
+and visible scleral icterus with painless clinical jaundice. Outpatient chemistry panel showed profound transaminitis (ALT 540 U/L, AST 420 U/L) and total
+bilirubin 4.8 mg/dL meeting Hy's Law criteria. Patient emergently admitted to MetroHealth Gastroenterology Service on 10-NOV-2025 for acute drug-induced
+liver injury (DILI). Viral hepatitis panel (anti-HAV IgM, HBsAg, anti-HCV, anti-HEV IgM) was non-reactive. Abdominal ultrasound revealed normal liver
+parenchyma without biliary ductal dilatation or cholelithiasis. Cardioril discontinued permanently on admission (10-NOV-2025). Outcome: Recovering with
+trending decrease in transaminases on serial daily testing.
+II. SUSPECT DRUG(S) INFORMATION
+14. SUSPECT DRUG NAME (Brand &
+Generic)
+Cardioril (cardioril hydrochloride)
+15. DAILY DOSE(S)
+20 mg once daily (QD)
+16. ROUTE OF ADMIN.
+Oral (tablet)
+17. INDICATION(S) FOR USE
+Refractory Essential Hypertension
+18. THERAPY DATES (start / stop)
+15-OCT-2025 to 10-NOV-2025
+19. THERAPY DURATION
+26 days
+20. LOT / BATCH NUMBER
+Lot #CR-2025-0981 (Exp:
+08/2027)
+21. ACTION TAKEN
+[X] Drug permanently withdrawn
+III. CONCOMITANT DRUG(S) AND HISTORY
+22. CONCOMITANT DRUG(S) AND DATES OF ADMINISTRATION (exclude drugs used to treat reaction):
+1. Metformin HCl 500 mg PO BID (Indication: Type 2 Diabetes Mellitus; Start: 12-JAN-2021, Ongoing).
+2. Amlodipine besylate 5 mg PO QD (Indication: Hypertension; Start: 05-MAR-2023, Ongoing).
+No over-the-counter NSAIDs, herbal supplements, or acetaminophen use reported.
+RELEVANT MEDICAL HISTORY: Essential hypertension (5 yrs), T2DM (4 yrs). No prior history of hepatobiliary disease, jaundice, or ethanol abuse.
+23. RELEVANT TESTS / LABORATORY DATA:
+RESULT
+UNITS
+REF. RANGE
+INTERPRETATION
+DATE
+Alanine Aminotransferase (ALT / SGPT)
+540
+U/L
+7 – 56
+CRITICAL ELEVATION (>9x ULN)
+10-NOV-2025
+Aspartate Aminotransferase (AST / SGOT)
+420
+U/L
+10 – 40
+CRITICAL ELEVATION (>10x ULN)
+10-NOV-2025
+Total Bilirubin
+4.8
+mg/dL
+0.1 – 1.2
+SEVERE HYPERBILIRUBINEMIA (Hy's
+Law)
+10-NOV-2025
+Alkaline Phosphatase (ALP)
+210
+U/L
+44 – 147
+ELEVATED
+10-NOV-2025
+Serum Creatinine
+0.9
+mg/dL
+0.6 – 1.2
+NORMAL
+10-NOV-2025
+Hepatitis A, B, C Serology (IgM, HBsAg, HCV-Ab)
+Negative
+-
+Negative
+NON-REACTIVE (Viral etiology ruled
+out)
+11-NOV-2025
+IV. MANUFACTURER / REPORTER INFORMATION
+24a. NAME AND ADDRESS OF REPORTER
+Sarah Jenkins, MD, FACP
+Division of Gastroenterology & Hepatology
+MetroHealth Medical Center
+2500 MetroHealth Dr, Chicago, IL 60609, USA
+24b. MFR CONTROL NO.
+CR-2025-US-00891
+24c. DATE RECEIVED BY MFR
+12-NOV-2025
+24d. HEALTH PROFESSIONAL?
+[X] YES    [   ] NO
+24e. OCCUPATION / SPECIALTY
+Physician / Gastroenterologist
+Tel: (312) 555-0188
+
+=================== pdfs\digital_forms\cioms_form_renal_injury.pdf (1 pages) ===================
+--- PAGE 1 (1012 chars) ---
+CIOMS FORM I — ACUTE KIDNEY INJURY SPONTANEOUS REPORT
+International Reporting of Adverse Drug Reactions  |  Case Ref: CIOMS-RENAL-2025-099
+I. REACTION INFORMATION
+1. PATIENT INITIALS: G.T. (George
+Taylor)
+2. AGE: 67 YRS
+3. SEX: MALE
+4. WEIGHT: 76 kg
+5. COUNTRY: USA
+6. DESCRIBE REACTION: 67-year-old male with chronic osteoarthritis initiated Renotril 30 mg PO QD. Baseline Serum Creatinine: 1.0 mg/dL (eGFR 78
+mL/min). On day 14 of treatment, patient presented with oliguria (<400 mL/day) and peripheral edema. Laboratory chemistry revealed Serum Creatinine spiked
+to 4.2 mg/dL (KDIGO Stage 3 Acute Kidney Injury) with BUN 68 mg/dL and potassium 5.6 mEq/L. Renotril permanently withdrawn. Patient hospitalized for 5
+days with aggressive IV hydration. Renal function recovered to baseline (Cr 1.1 mg/dL) at 3 weeks post-discharge.
+Seriousness: [ X ] Inpatient Hospitalization: YES. Suspect Drug: Renotril 30mg, Lot #RN-2025-412. Reporter: Dr. Keith Miller, MD (Nephrology), Vanderbilt
+University Medical Center.
+
+=================== pdfs\digital_forms\cioms_pediatric_oncology.pdf (1 pages) ===================
+--- PAGE 1 (1186 chars) ---
+CIOMS FORM I — PEDIATRIC SPECIAL POPULATION SAFETY REPORT
+Council for International Organizations of Medical Sciences  |  Case Ref: CIOMS-PEDS-2025-081
+I. REACTION INFORMATION (PEDIATRIC PATIENT)
+1. INITIALS: L.T. (Lucas Torres)
+2. AGE: 8 YRS
+2a. DOB: 14-JUL-2017
+3. SEX: MALE
+4. WEIGHT: 26 kg
+DESCRIBE REACTION(S): 8-year-old male with acute lymphoblastic leukemia (ALL) in maintenance phase received intravenous infusion of OncoShield
+50mg/m² (Lot #OS-2025-771). Within 30 minutes, developed severe shaking rigors, high-grade fever (40.1°C / 104.2°F), hypoxemia (SpO2 88% on room air),
+and confluent macular rash. Admitted emergently to Pediatric Intensive Care Unit (PICU) for acute cytokine release syndrome / severe infusion reaction.
+Managed with high-flow oxygen, IV hydrocortisone, and acetaminophen. Seriousness: [ X ] Life-Threatening: YES  |  [ X ] Hospitalization: YES. Outcome:
+Recovered over 48 hours.
+SUSPECT DRUG: OncoShield (peg-oncoshield) 50mg/m² IV  |  LOT: Lot #OS-2025-771 (Exp: 04/2026)
+REPORTER: Dr. Amanda Bennett, MD, FAAP (Pediatric Hematologist-Oncologist), Children's Memorial Hospital, Boston, MA
+Tel: (617) 555-0811 | Email: abennett@childrens-boston.org
+
+=================== pdfs\digital_forms\fda_medwatch_followup.pdf (1 pages) ===================
+--- PAGE 1 (1959 chars) ---
+DEPARTMENT OF HEALTH AND HUMAN SERVICES — FOOD AND DRUG ADMINISTRATION
+MEDWATCH: FORM FDA 3500A (10/15) — MANDATORY ADVERSE EVENT REPORTING
+FOLLOW-UP REPORT #1 (CLINICAL RESOLUTION & DECHALLENGE CONFIRMATION)
+Original Case Reference: CR-2025-US-00744  |  OMB Control No. 0910-0291
+SECTION A: PATIENT IDENTIFIER
+1. PATIENT IDENTIFIER: D.M. (David Miller)
+2. AGE: 52 YRS
+2a. DOB: 11-FEB-1973
+3. SEX: MALE
+4. WEIGHT: 79 kg
+SECTION B: FOLLOW-UP EVENT DESCRIPTION & CLINICAL RESOLUTION
+FOLLOW-UP CLINICAL COURSE (14-DAY POST-DISCONTINUATION REVIEW):
+Initial report dated 02-NOV-2025 documented a witnessed generalized tonic-clonic seizure occurring 48 hours following rapid titration of Neuroval (neuroval
+hydrochloride) from 200 mg to 400 mg daily for neuropathic pain. Patient was admitted emergently to Columbia University Neurological ICU on 02-NOV-2025.
+DECHALLENGE CONFIRMATION: Neuroval was permanently withdrawn on 02-NOV-2025. Follow-up evaluation on 16-NOV-2025 confirms the patient has
+remained entirely seizure-free for 14 consecutive days without requiring ongoing anticonvulsant therapy. Repeat 24-hour ambulatory video EEG completed on
+14-NOV-2025 demonstrated normalization of cerebral background activity with zero epileptiform spike-wave discharges. Brain MRI with contrast showed no
+structural epileptogenic focus. Final Case Outcome: FULLY RECOVERED / RESOLVED. Causality: Probable related to drug exposure.
+SECTION C: SUSPECT PRODUCT DETAILS
+PRODUCT: Neuroval (neuroval HCl) 200mg/400mg
+DOSE: Titrated to 400 mg PO QD
+LOT #: Lot #NV-2025-110 (Exp 09/27)
+THERAPY DATES: 15-OCT-2025 to 02-NOV-2025
+DECHALLENGE: [ X ] YES — Event abated after
+withdrawal
+RECHALLENGE: [ X ] NOT DONE
+SECTION E: INITIAL / FOLLOW-UP REPORTER
+REPORTER: Dr. Richard Vance, MD, PhD (Attending Neurologist)
+Department of Neurology, Columbia University Irving Medical Center
+710 W 168th St, New York, NY 10032 | Tel: (212) 555-0199 | Email: rvance@columbia-neurology.org
+
+=================== pdfs\digital_forms\fda_medwatch_initial_neuroval.pdf (1 pages) ===================
+--- PAGE 1 (835 chars) ---
+FORM FDA 3500A — INITIAL SERIOUS ADVERSE EVENT REPORT
+Department of Health and Human Services — Food and Drug Administration  |  Initial Submission
+SECTION A: PATIENT INFORMATION
+PATIENT IDENTIFIER: D.M. (David Miller)
+AGE: 52 YRS
+SEX: MALE
+WEIGHT: 79 kg
+DESCRIBE EVENT OR PROBLEM (INITIAL ONSET): 52-year-old male prescribed Neuroval (neuroval HCl) for neuropathic pain. Dose was escalated from
+200mg to 400mg daily on 31-OCT-2025. On 02-NOV-2025 (~48h post dose increase), patient suffered a witnessed new-onset generalized tonic-clonic seizure
+lasting 3.5 minutes followed by 20 minutes of post-ictal confusion. Admitted to Neurological ICU. OUTCOMES: [ X ] Hospitalization: YES  |  [ X ]
+Life-Threatening: YES. Suspect Drug: Neuroval 400mg PO, Lot #NV-2025-110. Reporter: Dr. Richard Vance, MD, Columbia University Medical Center.
+
+=================== pdfs\irrelevant\pharmatech_conference_prospectus.pdf (1 pages) ===================
+--- PAGE 1 (924 chars) ---
+14TH ANNUAL GLOBAL PHARMACEUTICAL AI & COMPLIANCE SUMMIT 2026
+SPONSORSHIP & EXHIBITOR PROSPECTUS — BOSTON CONVENTION CENTER, MARCH 24–26, 2026
+WHY SPONSOR PHARMATECH 2026?
+Connect with over 750 senior decision-makers from top 50 pharmaceutical enterprises, regulatory agencies, and AI technology vendors. Our
+attendees represent VPs of Pharmacovigilance, Global Safety Directors, and Chief Digital Health Officers.
+SPONSORSHIP PACKAGES:
+Tier Package
+Booth Space
+Keynote Slot
+Delegate Passes
+Investment
+Diamond Sponsor
+20x20 ft Island
+45-min Mainstage Keynote
+10 VIP Passes
+$45,000
+Platinum Sponsor
+10x20 ft Prime
+30-min Track Keynote
+6 VIP Passes
+$28,000
+Gold Sponsor
+10x10 ft Standard
+Panel Participation
+4 Standard Passes
+$15,000
+CONTACT EXHIBITOR RELATIONS: sales@pharmasummit-global2026.com | Tel: +1 (800) 555-EXPO
+Notice: Commercial marketing flyer. Contains zero clinical patient safety data. Category: Not Relevant.
+
+=================== pdfs\literature_articles\article_01_dili_case.pdf (1 pages) ===================
+--- PAGE 1 (3142 chars) ---
+JOURNAL OF CLINICAL HEPATOLOGY & PHARMACOVIGILANCE |
+VOL 42, NO 4
+DOI: 10.1016/j.jchpv.2025.04.012  |  Peer-Reviewed Clinical Report
+Severe Drug-Induced Autoimmune Hepatitis
+Triggered by Cardioril Therapy
+Julian Montgomery, MD, PhD; Evelyn Vance, MD; Kenneth Ross, MD
+Department of Medicine, Princeton Academic Medical Center,
+Princeton, NJ
+ABSTRACT
+We report an idiosyncratic case of severe acute drug-induced autoimmune-like
+hepatitis in a 61-year-old male following 6 weeks of Cardioril (cardioril
+hydrochloride 40mg daily) administration. Marked hyperbilirubinemia, antinuclear
+antibody (ANA) seroconversion (titer 1:640), and liver biopsy showing interface
+hepatitis were documented. Immediate drug withdrawal resulted in clinical and
+biochemical resolution.
+INTRODUCTION
+Idiosyncratic drug-induced liver injury (DILI) represents a formidable challenge in
+clinical pharmacology. Cardioril is a novel third-generation antihypertensive agent
+targeting vascular smooth muscle receptors. While clinical trials reported mild
+transient aminotransferase elevations in <1.2% of participants, post-marketing
+surveillance is critical for identifying severe immune-mediated reactions.
+CASE PRESENTATION
+A 61-year-old Caucasian male with a 10-year history of refractory hypertension and
+hyperlipidemia was initiated on Cardioril 40 mg PO QD. Baseline hepatic function
+panel was completely normal (ALT 22 U/L, AST 19 U/L, Total Bilirubin 0.6
+mg/dL). Forty-two days following treatment initiation, the patient presented with
+progressive fatigue, nausea, dark urine, and jaundice.
+Physical examination revealed marked scleral icterus and right upper quadrant
+tenderness without hepatosplenomegaly or ascites. Laboratory evaluation
+demonstrated ALT 680 U/L (>12x ULN), AST 510 U/L (>12x ULN), Total
+Bilirubin 6.2 mg/dL, and Alkaline Phosphatase 240 U/L.
+INVESTIGATIONS & CLINICAL COURSE
+Viral serologies for hepatitis A, B, C, and E, cytomegalovirus, and Epstein-Barr
+virus were non-reactive. Autoimmune serology revealed positive antinuclear
+antibodies (ANA 1:640, speckled pattern) and elevated IgG levels (2,100 mg/dL). A
+percutaneous liver biopsy demonstrated severe interface hepatitis with dense portal
+lymphoplasmacytic infiltrate and bridging necrosis, consistent with drug-induced
+autoimmune hepatitis.
+Cardioril was discontinued on admission. A 4-week tapering course of oral
+prednisone (40 mg/day initial) was administered. Over the subsequent 6 weeks,
+serum transaminases and bilirubin normalized completely (ALT 28 U/L, Total Bili
+0.8 mg/dL). Re-challenge was not attempted due to severity.
+DISCUSSION & CONCLUSION
+This report highlights a probable causal relationship between Cardioril exposure and
+drug-induced autoimmune hepatitis (RUCAM score = 8, probable). Healthcare
+practitioners should maintain vigilant liver function monitoring during the first 3
+months of Cardioril initiation.
+REFERENCES
+1. Chalasani N, et al. Practice Parameters: Evaluation of Drug-Induced Liver Injury.
+Am J Gastroenterol. 2021;116(5):878-898.
+2. Fontana RJ. Pathogenesis of idiosyncratic drug-induced liver injury.
+Gastroenterology. 2022;162(5):1370-1388.
+
+=================== pdfs\literature_articles\article_02_sjs_case.pdf (1 pages) ===================
+--- PAGE 1 (2630 chars) ---
+BRITISH JOURNAL OF CLINICAL DERMATOLOGY | CASE
+REPORTS
+DOI: 10.1111/bjcd.2025.10921  |  Published Online: 12-Nov-2025  |  Clinical Case
+Report
+Stevens-Johnson Syndrome Associated
+with Neuroval Administration in a Young
+Adult
+Sanjay Gupta, MD; Priya Sharma, MD
+Department of Dermatology, Johns Hopkins Bayview Medical Center,
+Baltimore, MD
+ABSTRACT
+Stevens-Johnson syndrome (SJS) is a rare, life-threatening mucocutaneous reaction
+characterized by epidermal necrosis and extensive mucosal detachment. We describe
+a definitive case in a 24-year-old female presenting 18 days after initiating Neuroval
+(neuroval HCl 150mg daily) for trigeminal neuralgia. The patient achieved full
+recovery following drug cessation and intravenous immunoglobulin therapy.
+INTRODUCTION
+Neuroval is an emerging neuroactive medication utilized for neuropathic pain
+syndromes and treatment-resistant focal seizures. Serious adverse cutaneous drug
+reactions (SCAR) represent rare but devastating immunological complications.
+Rapid identification and withdrawal of the causative agent remain paramount to
+patient survival.
+CASE PRESENTATION
+A 24-year-old female with newly diagnosed idiopathic trigeminal neuralgia
+commenced Neuroval at 150 mg daily. Eighteen days later, she presented to the
+emergency department with high fevers (39.5°C), burning sensation in both eyes,
+photophobia, and an excruciating painful rash across the face and upper chest.
+On examination, widespread purpuric macules with atypical targetoid morphology
+were noted across the face, neck, and trunk. Extensive epidermal detachment
+involved approximately 8% of total body surface area (BSA). Severe mucosal
+involvement was evident with hemorrhagic crusting of the lips and bilateral purulent
+conjunctivitis.
+CLINICAL MANAGEMENT & OUTCOME
+The patient was admitted to the intensive care burn unit. Neuroval was immediately
+withdrawn. High-dose intravenous immunoglobulin (IVIG, 1 g/kg/day for 3 days)
+and intensive ocular lubrication with topical corticosteroids were initiated.
+Re-epithelialization commenced on hospital day 6 and was complete by day 21
+without permanent visual sequelae. ALDEN (Algorithm of Drug Causality in
+Epidermal Necrolysis) score was calculated at 6, indicating Neuroval as the 'very
+probable' culprit agent.
+CONCLUSION
+Prescribers must educate patients initiating Neuroval to immediately cease
+medication and seek urgent care upon the development of fever, mucosal burning, or
+cutaneous erythema.
+REFERENCES
+1. Mockenhaupt M. The current understanding of Stevens-Johnson syndrome and
+toxic epidermal necrolysis. Expert Rev Clin Immunol. 2021;7(6):803-815.
+
+=================== pdfs\literature_articles\article_03_multicase_series.pdf (1 pages) ===================
+--- PAGE 1 (3533 chars) ---
+THE LANCET REGIONAL HEALTH — EUROPE | CLINICAL CASE
+SERIES
+DOI: 10.1016/j.lanepe.2025.100984  |  Peer-Reviewed Clinical Report
+Cutaneous Adverse Reactions Associated with
+Novel Antihypertensives: A Clinical Series of
+Three Cases
+Marcus Sterling, MD, FRCP; Alistair Finch, MBChB; Eleanor Vance, MD
+Royal Free Hospital, London, United Kingdom & Guy's and St Thomas'
+NHS Foundation Trust
+ABSTRACT
+We document three distinct individual cases of severe cutaneous drug reactions
+occurring secondary to novel antihypertensive therapies across two university
+medical centers. Case 1 describes a 45-year-old male with severe Erythema
+Multiforme Major. Case 2 describes a 62-year-old female presenting with subacute
+cutaneous lupus erythematosus. Case 3 documents a 38-year-old female with acute
+urticaria and periorbital angioedema. All cases responded favorably to prompt drug
+cessation.
+INTRODUCTION
+The expansion of novel antihypertensive pharmacotherapies has coincided with
+sporadic reports of delayed-type hypersensitivity reactions. We present three
+well-characterized independent patient cases identified during a 6-month
+surveillance period.
+PATIENT CASE 1
+A 45-year-old male (Patient A.J., weight 81 kg) with stage II hypertension was
+prescribed Cardioril 20 mg once daily. On day 22 of therapy, he presented with
+extensive symmetrical target lesions with central blistering on the dorsal hands,
+forearms, and lower extremities, accompanied by severe oral mucosal erosions.
+Diagnosis: Erythema Multiforme Major. Histopathology confirmed apoptotic
+keratinocytes with vacuolar basal interface dermatitis. Cardioril was discontinued,
+and systemic methylprednisolone was initiated. Complete resolution was achieved
+within 16 days.
+PATIENT CASE 2
+A 62-year-old female (Patient B.L., weight 64 kg) commenced Corzapan 10 mg
+daily for essential hypertension. After 8 weeks of therapy, she developed widespread
+annular, polycyclic scaly erythematous plaques distributed across sun-exposed areas
+of the upper back and shoulders. Serology revealed high-titer anti-Ro/SSA
+antibodies (>240 U/mL) and ANA 1:320. Diagnosis: Drug-induced subacute
+cutaneous lupus erythematosus (SCLE). Corzapan was discontinued. Lesions
+resolved over 8 weeks with topical tacrolimus.
+PATIENT CASE 3
+A 38-year-old female (Patient C.M., weight 59 kg) with mild hypertension was
+initiated on Cardioril 10 mg daily. Approximately 90 minutes following her initial
+dose, she developed acute generalized urticaria with severe pruritus, dysphonia, and
+marked 
+bilateral 
+periorbital 
+angioedema. 
+Emergency 
+management 
+with
+intramuscular epinephrine 0.3 mg and intravenous diphenhydramine 50 mg aborted
+progression to respiratory compromise. Cardioril was permanently avoided.
+PHARMACOVIGILANCE DISCUSSION
+These three cases underscore the clinical necessity for distinct Individual Case
+Safety Report (ICSR) submission for each patient, despite publication within a
+unified clinical series. Each case features unique demographic profiles, differing
+onset latencies (ranging from 90 minutes to 8 weeks), distinct MedDRA clinical
+reaction phenotypes, and independent de-challenge timelines.
+Safety reporting departments must ensure that multicase journal articles are
+disaggregated into separate regulatory cases to prevent signal dilution.
+REFERENCES
+1. Roujeau JC. Immune mechanisms in drug eruptions. Clin Dermatol.
+2020;38(6):679-688.
+2. EMA Guideline on Good Pharmacovigilance Practices (GVP) Module VI —
+Collection, verification and presentation of adverse reactions.
+
+=================== pdfs\literature_articles\article_04_preclinical_review.pdf (1 pages) ===================
+--- PAGE 1 (2228 chars) ---
+EUROPEAN JOURNAL OF PHARMACEUTICAL SCIENCES |
+PRECLINICAL RESEARCH
+DOI: 10.1016/j.ejps.2025.105412  |  Published Online: 12-Nov-2025  |  Clinical
+Case Report
+Preclinical In-Vitro Metabolic Clearance and
+Hepatic Cytochrome P450 Interactions of
+Cardioril
+Heinrich Mueller, PhD; Klaus Schmidt, PhD
+Institute of Molecular Pharmacology, Technical University of Munich,
+Germany
+ABSTRACT
+The hepatic metabolic pathway of Cardioril was investigated in human liver
+microsomes (HLM) and Sprague-Dawley rat hepatocytes. Cardioril undergoes
+extensive oxidative metabolism predominantly mediated by CYP3A4 and CYP2C9
+enzymes. In-vitro inhibition assays demonstrated an IC50 > 50 µM for CYP2D6 and
+CYP1A2, indicating low potential for metabolic drug-drug interactions in animal
+models.
+INTRODUCTION
+Assessment of metabolic clearance and cytochrome P450 (CYP) inhibition kinetics
+is fundamental during early drug characterization. In the present investigation, we
+delineate the metabolic fate of Cardioril using cryopreserved human and rodent
+hepatocytes. This study contains no human clinical trials or individual patient case
+reports.
+METHODS & EXPERIMENTAL PROCEDURES
+In-vitro incubation of Cardioril (1–100 µM) was performed using pooled human
+liver microsomes (Corning Gentest) in the presence of NADPH-generating systems.
+Metabolite profiling was conducted via high-performance liquid chromatography
+coupled with tandem mass spectrometry (LC-MS/MS). Rat hepatocyte viability was
+monitored via trypan blue exclusion.
+RESULTS & DISCUSSION
+Cardioril demonstrated rapid hepatic extraction with an intrinsic clearance (CLint) of
+42.5 µL/min/mg protein in rat microsomes. No direct cytotoxic effects were
+observed in rodent hepatocytes up to 100 µM concentrations over 24-hour
+continuous exposure.
+PHARMACOVIGILANCE ASSESSMENT
+As this paper represents exclusively non-clinical in-vitro and animal laboratory
+research without identifiable human subjects, it does not meet regulatory criteria for
+ICSR submission under GVP Module VI Section VI.B.1. It is categorized as
+non-reportable literature.
+REFERENCES
+1. Houston JB. Utility of in vitro drug metabolism data in predicting in vivo
+metabolic clearance. Biochem Pharmacol. 2019;47:1469-1479.
+
+=================== pdfs\literature_articles\article_05_meta_analysis_review.pdf (1 pages) ===================
+--- PAGE 1 (2130 chars) ---
+INTERNATIONAL JOURNAL OF CARDIOLOGY REVIEWS |
+SYSTEMATIC REVIEW
+DOI: 10.1016/j.ijcard.2025.110294  |  Published Online: 12-Nov-2025  |  Clinical
+Case Report
+Contemporary Pharmacotherapy for
+Resistant Hypertension: A Systematic
+Literature Review and Meta-Analysis
+Catherine Tremblay, MD; Jean-Luc Moreau, MD
+Department of Cardiology, Montreal Heart Institute & McGill University,
+Canada
+ABSTRACT
+Resistant hypertension affects an estimated 10-15% of treated hypertensive
+populations globally. We systematically reviewed 34 randomized clinical trials
+comprising 28,450 total participants to evaluate the comparative blood pressure
+lowering efficacy and aggregate class adverse event rates of third-generation
+vasodilators. No new individual clinical safety cases are reported.
+INTRODUCTION & OBJECTIVES
+Resistant hypertension remains an independent risk factor for adverse cardiovascular
+events, heart failure, and renal disease progression. Multiple pharmaceutical classes,
+including mineralocorticoid receptor antagonists and novel smooth muscle relaxants,
+have emerged. This review synthesizes aggregate population-level evidence.
+METHODOLOGY
+Systematic electronic searches of MEDLINE, Embase, and the Cochrane Central
+Register of Controlled Trials were executed from January 2015 to October 2025.
+Studies reporting aggregate clinical outcomes were pooled using random-effects
+meta-analytic models.
+SUMMARY OF FINDINGS
+Overall pooled analysis demonstrated a weighted mean reduction in systolic blood
+pressure of 8.4 mmHg (95% CI: 6.2–10.6). Across all pooled cohorts, aggregate
+adverse event frequencies for dizziness, headache, and peripheral edema were
+comparable to placebo controls. No individual patient-level identifiers or novel
+safety signals were identified in the literature sample.
+REGULATORY TRIAGE NOTE
+Systematic reviews and aggregate meta-analyses devoid of individual identifiable
+patient case reports do not constitute ICSR-reportable sources under global
+pharmacovigilance regulations.
+REFERENCES
+1. Carey RM, et al. Resistant Hypertension: Detection, Evaluation, and Management.
+Hypertension. 2020;72:e53-e90.
+
+=================== pdfs\literature_articles\article_06_buried_case_study.pdf (2 pages) ===================
+--- PAGE 1 (3863 chars) ---
+JOURNAL OF CLINICAL ONCOLOGY & IMMUNOTHERAPY | VOL
+18, NO 3
+DOI: 10.1200/JCOI.2025.18.3.412  |  Peer-Reviewed Clinical Report
+Delayed Immune-Mediated Myocarditis
+Secondary to Combination Checkpoint
+Inhibition: Case Report & Surveillance Review
+Robert H. Caldwell, MD; Danielle M. Zhang, MD, PhD; Christopher
+Owens, MD
+Department of Medical Oncology, Dana-Farber Cancer Institute &
+Harvard Medical School, Boston, MA
+ABSTRACT
+Immune checkpoint inhibitors (ICIs) targeting CTLA-4 and PD-1 pathways have
+revolutionized oncologic care but introduce serious immune-related adverse events
+(irAEs). While dermatologic, gastrointestinal, and endocrine toxicities are relatively
+common, cardiotoxicity—specifically fulminant autoimmune myocarditis—remains
+rare (<1.1%) yet carries a mortality rate exceeding 40%. We synthesize current
+surveillance guidelines across multi-institutional registries and document a
+definitive case of delayed-onset fulminant myocarditis in a 68-year-old female
+presenting during cycle 3 of combination immunotherapy, successfully managed
+with pulse-dose corticosteroids and temporary pacing.
+1. INTRODUCTION & IMMUNOLOGICAL MECHANISMS
+The therapeutic paradigm for unresectable and metastatic malignancies has shifted
+toward dual immune checkpoint blockade. By uncoupling inhibitory signals
+mediated by programmed cell death protein 1 (PD-1) and cytotoxic
+T-lymphocyte-associated protein 4 (CTLA-4), these agents potentiate robust
+antitumor CD8+ T-cell responses.
+However, loss of peripheral tolerance can precipitate autoimmune attack against
+somatic tissues sharing antigenic epitopes or vulnerable to dysregulated lymphocytic
+infiltration. Cardiac myocytes express PD-L1 under physiological stress, acting as a
+cardioprotective brake against inflammation. Pharmacological disruption of this axis
+predisposes vulnerable individuals to lymphocytic myocardial infiltration, myocyte
+necrosis, and conduction disruption.
+2. EPIDEMIOLOGY ACROSS GLOBAL SURVEILLANCE
+DATABASES
+Retrospective analyses of WHO VigiBase and institutional pharmacovigilance safety
+repositories indicate that median onset of ICI myocarditis is 34 days following initial
+exposure, typically after 1 or 2 cycles. Nonetheless, atypical presentations emerging
+beyond 60 days or following maintenance transitions require elevated clinical
+vigilance. Serum cardiac troponin-I and T elevations are sensitive (>94%) but lack
+absolute specificity.
+3. COMPREHENSIVE CLINICAL CASE PRESENTATION
+A 68-year-old Caucasian female (Patient H.L., body weight 62 kg) with BRAF
+wild-type stage IV metastatic cutaneous melanoma was initiated on combination
+immunotherapy consisting of Nivolumab (Opdivo) 240 mg IV every 2 weeks and
+Ipilimumab (Yervoy) 1 mg/kg IV every 6 weeks.
+Baseline cardiac evaluation—including 12-lead electrocardiogram (ECG) and
+transthoracic echocardiography—demonstrated normal sinus rhythm, normal QTc
+interval (412 ms), and preserved left ventricular ejection fraction (LVEF 62%).
+Cycles 1 and 2 proceeded uneventfully without clinically significant immune
+toxicities.
+On day 44 post-initiation (12 days following cycle 3 administration), the patient
+presented to the emergency department with progressive exertional dyspnea,
+orthopnea, bilateral lower extremity edema, and profound generalized fatigue over
+the preceding 72 hours. Vital signs on presentation: Blood pressure 88/54 mmHg,
+heart rate 42 bpm (severe bradycardia), respiratory rate 24/min, and oxygen
+saturation 92% on ambient air.
+Emergency 12-lead ECG demonstrated complete (third-degree) atrioventricular
+(AV) heart block with a junctional escape rhythm at 40 bpm. High-sensitivity
+cardiac troponin-T was markedly elevated at 1.84 ng/mL (reference <0.014 ng/mL),
+and NT-proBNP was 4,820 pg/mL. Urgent bedside echocardiogram revealed diffuse
+biventricular hypokinesis with acute LVEF decline to 32%.
+--- PAGE 2 (2460 chars) ---
+4. INVASIVE MONITORING, MANAGEMENT & CLINICAL COURSE
+The patient was urgently transferred to the Cardiac Intensive Care Unit (CICU).
+Immunotherapy 
+was 
+immediately 
+suspended. 
+Due 
+to 
+hemodynamically
+compromising complete heart block, a temporary transvenous pacemaker was
+emergently placed via the right internal jugular vein.
+High-dose pulse intravenous methylprednisolone (1,000 mg IV daily) was initiated
+within 2 hours of presentation. Endomyocardial biopsy performed on hospital day 2
+demonstrated extensive interstitial infiltration of CD4+ and CD8+ T-lymphocytes
+accompanied by multifocal cardiomyocyte necrosis, pathognomonic for grade 4
+immune-mediated myocarditis.
+Due to persistent troponin elevation on day 4, second-line immunosuppression with
+therapeutic plasma exchange (plasmapheresis, 5 total exchanges) was added. Over
+the subsequent 10 days, AV conduction recovered to 1:1 sinus rhythm, and cardiac
+biomarkers progressively declined (troponin-T 0.08 ng/mL).
+The patient was transitioned to an oral prednisone taper (1 mg/kg/day initial) over 8
+weeks. Repeat echocardiogram at week 4 post-discharge revealed recovery of LVEF
+to 54%. Immunotherapy was permanently discontinued.
+5. REGULATORY PHARMACOVIGILANCE DISCUSSION
+Under ICH E2A and GVP Module VI expedited reporting rules, this case fulfills
+seriousness criteria for both inpatient hospitalization and life-threatening medical
+event. The World Health Organization (WHO-UMC) and Naranjo causality
+assessment algorithms yield a score of 8 ('probable').
+Clinical safety reporting teams must recognize that although literature articles may
+contain extensive mechanistic discussion and registry summaries, identifiable
+individual case safety reports (ICSRs) embedded within review articles must be fully
+extracted and expedited to regulatory agencies within mandatory 15-day timelines.
+6. REFERENCES
+1. Mahmood SS, et al. Myocarditis in patients treated with immune checkpoint
+inhibitors. J Am Coll Cardiol. 2018;71(16):1755-1764.
+2. Salem JE, et al. Cardiovascular toxicities associated with immune checkpoint
+inhibitors: 
+an 
+observational, 
+pharmacovigilance 
+study. 
+Lancet 
+Oncol.
+2018;19(12):1579-1589.
+3. Moslehi JJ, et al. Immune checkpoint inhibitor-associated myocarditis: compact
+guide for clinical triage. Circulation. 2021;143(3):234-246.
+4. EMA Guideline on Good Pharmacovigilance Practices (GVP) Module VI —
+Collection, verification and presentation of adverse reactions.
+
+=================== pdfs\literature_articles\article_07_complex_screening_case.pdf (2 pages) ===================
+--- PAGE 1 (4152 chars) ---
+AMERICAN JOURNAL OF RESPIRATORY AND CRITICAL CARE
+MEDICINE | CLINICAL SERIES
+DOI: 10.1164/rccm.2025.09.1182  |  Peer-Reviewed Clinical Report
+Drug-Induced Interstitial Lung Disease
+Associated with Biological and Targeted
+DMARDs: A Two-Case Clinical Observation
+Samantha Reed, MD; Tariq Al-Mansoor, MD; Fiona Gallagher, MD
+Division of Pulmonary & Critical Care Medicine, Johns Hopkins
+University School of Medicine, Baltimore, MD
+ABSTRACT
+Biological disease-modifying antirheumatic drugs (DMARDs) targeting TNF-alpha
+and small-molecule inhibitors have revolutionized management of chronic
+inflammatory arthritides. However, pulmonary parenchymal toxicity—including
+drug-induced interstitial lung disease (DIILD) and cryptogenic organizing
+pneumonia—represents a severe diagnostic challenge. In this report, we evaluate
+non-case aggregate registry cohorts and document two distinct individual patient
+cases of life-threatening pulmonary toxicity occurring secondary to Infliximab and
+Leflunomide, highlighting the imperative for individualized safety disaggregation.
+1. INTRODUCTION & REGISTRY SURVEILLANCE
+Pulmonary involvement in rheumatic diseases can stem from primary underlying
+autoimmune disease or secondary pharmacotherapy toxicity. Disentangling
+underlying disease progression from iatrogenic pulmonary injury requires
+meticulous clinicoradiological correlation.
+2. OBSERVATIONAL REGISTRY ANALYSIS (NON-CASE COHORT)
+We initially reviewed surveillance telemetry from the Mid-Atlantic Rheumatic
+Disease Registry comprising 420 aggregate patients receiving biologic or targeted
+synthetic DMARDs over a 5-year observation interval. In this aggregate cohort,
+non-specific respiratory complaints (mild dry cough, dyspnea on exertion) occurred
+in 14.2% of patients without verifiable objective parenchymal infiltrates. These
+aggregate registry statistics do not represent individual ICSR safety events.
+3. PATIENT CASE REPORT 1: INFLIXIMAB PNEUMONITIS
+A 54-year-old male (Patient T.K., weight 75 kg) with a 6-year history of seropositive
+rheumatoid arthritis was initiated on Infliximab (Remicade) 5 mg/kg IV infusions at
+weeks 0, 2, and 6, followed by 8-week maintenance.
+Twelve days following his fourth infusion, the patient presented with acute high
+fever (38.9 deg C), rapidly progressive hypoxemic respiratory failure (PaO2 54
+mmHg on room air), and severe non-productive cough. High-resolution chest CT
+(HRCT) demonstrated bilateral extensive ground-glass opacities with subpleural
+sparing. Bronchoalveolar lavage (BAL) ruled out Pneumocystis jirovecii, fungal
+pathogens, and viral etiologies, showing marked lymphocytic alveolitis (CD4:CD8
+ratio 3.8).
+The patient was admitted to the Medical Intensive Care Unit (MICU) and required
+non-invasive positive pressure ventilation for 48 hours. Infliximab was permanently
+withdrawn. High-dose systemic methylprednisolone (125 mg IV every 6 hours) was
+administered, resulting in progressive radiological and clinical improvement over 14
+days. Final Diagnosis: Acute drug-induced interstitial pneumonitis. Seriousness:
+Hospitalization: YES, Life-Threatening: YES.
+4. PATIENT CASE REPORT 2: LEFLUNOMIDE-INDUCED COP
+A 41-year-old female (Patient M.S., weight 58 kg) with active psoriatic arthritis was
+prescribed Leflunomide (Arava) 20 mg PO once daily. Prior pulmonary history was
+completely unremarkable.
+At 12 weeks of continuous therapy, the patient developed subacute progressive
+exertional dyspnea, low-grade malaise, and bilateral pleuritic chest discomfort.
+Pulmonary function testing demonstrated restrictive physiology with a 28% decline
+in DLCO. Chest HRCT revealed patchy peripheral and peribronchovascular
+consolidations consistent with Cryptogenic Organizing Pneumonia (COP / BOOP).
+Leflunomide was immediately ceased. Due to its long terminal half-life (14–16
+days), an accelerated elimination washout protocol with oral Cholestyramine (8 g
+three times daily for 11 days) was executed. Prednisone 40 mg PO QD was
+co-administered. Follow-up imaging at 8 weeks confirmed complete clearing of
+consolidations. Seriousness: Inpatient Hospitalization: YES. Positive dechallenge
+was documented.
+--- PAGE 2 (2131 chars) ---
+5. COMPARATIVE CLINICAL & DIAGNOSTIC MATRIX
+Table 1 outlines the comparative clinical, radiological, and therapeutic parameters of
+the two reported cases:
+Case 1 (Infliximab): Male, 54y, 75kg | Onset: 12 days post-infusion | HRCT:
+Diffuse bilateral ground-glass | Management: MICU, Pulse IV steroids | Outcome:
+Resolved.
+Case 2 (Leflunomide): Female, 41y, 58kg | Onset: 12 weeks | HRCT: Patchy
+peribronchovascular consolidations (COP) | Management: Cholestyramine washout
++ oral steroids | Outcome: Resolved.
+6. PHARMACOVIGILANCE & REGULATORY IMPLICATIONS
+This clinical series emphasizes two fundamental principles for automated safety
+intake systems:
+First, screening systems must effectively filter out non-case background literature
+sections (such as the 420-patient observational cohort described in Section 2) that do
+not describe identifiable patient cases.
+Second, multicase articles must be parsed into separate, independent Individual Case
+Safety Reports (ICSRs). Case 1 and Case 2 involve different chemical entities,
+distinct mechanisms of lung injury, differing onset timelines, and divergent rescue
+protocols (pulse steroids vs. cholestyramine washout). Aggregating them into a
+single record violates regulatory compliance.
+7. CONCLUSION & SURVEILLANCE RECOMMENDATIONS
+Clinicians initiating biological and targeted DMARDs must maintain a high index of
+suspicion for parenchymal drug toxicities. Automated pharmacovigilance intake
+systems must incorporate advanced NLP and layout analysis to distinguish between
+aggregate registry summaries and actionable individual patient cases.
+8. REFERENCES
+1. Camus P, et al. Drug-induced and iatrogenic respiratory disease. Eur Respir Rev.
+2020;29(158):200016.
+2. Dixon WG, et al. Serious infection and pulmonary toxicity associated with
+anti-TNF therapy: results from the British Society for Rheumatology Biologics
+Register. Arthritis Rheum. 2019;60(3):641-653.
+3. EMA Guideline on Good Pharmacovigilance Practices (GVP) Module VI —
+Collection, verification and presentation of adverse reactions.
+4. FDA 21 CFR Part 314.80 — Postmarketing reporting of adverse drug experiences.
+
+=================== pdfs\medical_info\cardioril_clinical_monograph_dosing.pdf (1 pages) ===================
+--- PAGE 1 (1427 chars) ---
+CLINICAL PHARMACOLOGY & MEDICAL INFORMATION REFERENCE MONOGRAPH
+CARDIORIL (cardioril hydrochloride) TABLETS — DOSING IN RENAL IMPAIRMENT
+Document Ref: MEDINFO-CARD-2025-019  |  Target: Healthcare Professional Inquiries Only
+1. CLINICAL DOSING RECOMMENDATIONS BY RENAL FUNCTION
+Renal Function Category
+eGFR (mL/min/1.73m²)
+Initial Dose
+Maximum Recommended Dose
+Normal Renal Function
+≥ 90
+20 mg once daily
+40 mg once daily
+Mild Renal Impairment
+60 – 89
+20 mg once daily
+40 mg once daily
+Moderate Impairment (CKD 3)
+30 – 59
+10 mg once daily
+20 mg once daily
+Severe Impairment (CKD 4/5)
+< 30 (non-dialysis)
+5 mg once daily
+10 mg once daily (titrate slowly)
+End-Stage Renal Disease (ESRD)
+Hemodialysis dependent
+Contraindicated
+Not Recommended
+2. PHARMACOKINETICS & DIALYSIS CLEARANCE
+Cardioril is 78% protein-bound. Renal clearance accounts for 42% of systemic drug elimination, with 58% cleared via fecal/biliary pathways. Due to high volume
+of distribution (Vd = 180 L), Cardioril is not significantly cleared by conventional 4-hour high-flux hemodialysis. Supplementary dosing post-dialysis is not
+required. Routine serum potassium monitoring is recommended in patients with baseline eGFR < 45 mL/min.
+Regulatory Notice: This medical information document contains zero patient-specific clinical data, zero adverse drug reactions, and zero product quality
+complaints. It is classified exclusively under Medical Information (MI).
+
+=================== pdfs\medical_info\corzapan_drug_interaction_guide.pdf (1 pages) ===================
+--- PAGE 1 (1167 chars) ---
+MEDICAL INFORMATION MONOGRAPH — FORMULATION COMPATIBILITY
+CORZAPAN (corzapan sodium) 10mg — ENTERAL TUBE STABILITY & CYP INTERACTIONS
+Document Ref: MEDINFO-CORZ-2025-084  |  Professional Inquiry Service
+1. TUBE CRUSHING & SUSPENSION STABILITY GUIDELINES
+Enteral Tube Type
+Compatibility
+Flush Volume
+Occlusion Risk
+Polyurethane Nasogastric (NG)
+Compatible (crush & disperse in 20mL sterile
+water)
+20 mL sterile water flush
+Low (< 0.5%)
+Silicone Gastrostomy (G-tube)
+Compatible (French size ≥ 14Fr)
+30 mL sterile water flush
+Minimal
+Jejunostomy (J-tube)
+Not Recommended (site of absorption bypass)
+N/A
+Moderate
+2. CYP3A4 & CYP2C9 DRUG-DRUG INTERACTION SUMMARY
+Co-administration of Corzapan with potent CYP3A4 inhibitors (e.g. ketoconazole, clarithromycin) results in a 1.8-fold increase in Corzapan AUC0-inf. Dose
+reduction to 5 mg once daily is recommended. Strong CYP3A4 inducers (e.g. rifampin, carbamazepine) decrease systemic exposure by 45%. Therapeutic drug
+monitoring is advised during concurrent antiepileptic therapy.
+Regulatory Note: Clinical pharmacology guidance inquiry. Zero patient exposure, zero adverse events reported. Category: Medical Information.
+
+=================== pdfs\non_english\bericht_uaw_charite_berlin.pdf (1 pages) ===================
+--- PAGE 1 (2025 chars) ---
+BUNDESINSTITUT FÜR ARZNEIMITTEL UND MEDIZINPRODUKTE (BfArM)
+ARZNEIMITTELKOMMISSION DER DEUTSCHEN ÄRZTESCHAFT (AkdÄ)
+BERICHT ÜBER UNERWÜNSCHTE ARZNEIMITTELWIRKUNGEN (UAW-BOGEN)
+Offizieller Meldebogen gemäß § 63b Arzneimittelgesetz (AMG) — Spontanerregung
+1. PATIENTENDATEN
+INITIALEN: H.S. (Hans Schneider)
+GEBURTSDATUM:
+04.08.1962
+ALTER: 63 JAHRE
+GESCHLECHT:
+MÄNNLICH
+GEWICHT: 88 kg
+2. BESCHREIBUNG DER UNERWÜNSCHTEN WIRKUNG (DIAGNOSE & VERLAUF)
+KLINISCHE BESCHREIBUNG: 63-jähriger Patient mit arterieller Hypertonie und chronischer KHK. Initiale Gabe von Cardioril 20 mg oral morgens. Am 15. Tag
+der Therapie entwickelte der Patient akutes Angioödem mit starker Schwellung von Lippen, Zunge und Pharynx, begleitet von ausgeprägter Dyspnoe,
+inspiratorischem Stridor und diffusem Urtikaria-Exanthem am Rumpf. Notfallmäßige Einweisung durch Notarzt in die Notaufnahme der Charité.
+BEHANDLUNG: Intravenöse Gabe von 250 mg Prednisolon, 8 mg Dimetinden, Inhalation mit Adrenalin. Stationäre Aufnahme auf die Internistische
+Intensivstation zur 48-stündigen Überwachung der Atemwege.
+SCHWEREGRAD DER REAKTION:
+[ X ] Lebensbedrohlich: JA      [ X ] Krankenhausaufenthalt erforderlich / verlängert: JA (Intensivstation)
+[   ] Tod: NEIN                        [   ] Bleibende Behinderung: NEIN
+BEGINN DER UAW: 12.11.2025  |  AUSGANG: Wiederhergestellt / Abgeklungen nach Absetzen (Positive Dechallenge).
+3. VERDÄCHTIGES ARZNEIMITTEL
+HANDELSNAME / WIRKSTOFF: Cardioril (Cardioril-HCl)
+20 mg
+DOSIERUNG: 20 mg 1x täglich p.o.
+INDIKATION: Essenzielle Hypertonie
+DAUER DER BEHANDLUNG: 28.10.2025 bis
+12.11.2025
+CHARGEN-NUMMER: Ch.-B.: CR-2025-0814
+(Verf. 09/2027)
+MASSNAHME: [ X ] Arzneimittel dauerhaft
+abgesetzt
+4. ANGABEN ZUR MELDENDEN PERSON
+NAME DES ARZTES: Dr. med. Wolfgang Becker (Facharzt für Kardiologie & Notfallmedizin)
+KLINIK: Charité – Universitätsmedizin Berlin, Campus Virchow-Klinikum, Medizinische Klinik für Kardiologie
+Augustenburger Platz 1, 13353 Berlin, Deutschland | Tel: +49 30 555-0821 | Email: w.becker@charite.de
+
+=================== pdfs\non_english\notificacion_ram_madrid.pdf (1 pages) ===================
+--- PAGE 1 (1854 chars) ---
+SISTEMA ESPAÑOL DE FARMACOVIGILANCIA DE MEDICAMENTOS DE USO HUMANO (SEFV-H)
+AGENCIA ESPAÑOLA DE MEDICAMENTOS Y PRODUCTOS SANITARIOS (AEMPS)
+NOTIFICACIÓN DE SOSPECHA DE REACCIÓN ADVERSA A MEDICAMENTOS (TARJETA AMARILLA)
+A. DATOS DEL PACIENTE
+1. INICIALES: C.O. (Carmen Ortiz)
+2. FECHA NACIMIENTO:
+22-MAR-1996
+2a. EDAD: 29 AÑOS
+3. SEXO: MUJER
+4. PESO: 54 kg
+B. DESCRIPCIÓN DE LA REACCIÓN ADVERSA GRAVE
+DESCRIPCIÓN CLÍNICA: Paciente de 29 años tratada con Lamotrigina (Lamictal) 100 mg/día por epilepsia mioclónica. A las 3 semanas de tratamiento inicia
+exantema macular eritematoso confluente y fiebre de 39,2 °C. En 48 horas evoluciona a desprendimiento dermoepidérmico extenso en láminas afectando cara,
+tronco y extremidades (>35% de la superficie corporal total, SC), con signo de Nikolsky positivo, estomatitis pseudomembranosa grave y conjuntivitis
+pseudomembranosa bilateral con queratitis. Diagnóstico clínico y biopsia cutánea: Necrólisis Epidérmica Tóxica (NET / Síndrome de Lyell) inducida por
+Lamotrigina. Ingresada de urgencia en la Unidad de Quemados Críticos del Hospital Universitario La Paz.
+CRITERIOS DE GRAVEDAD: [ X ] Mortalidad potencial / Amenaza vital      [ X ] Hospitalización o prolongación
+FECHA DE INICIO: 11-NOV-2025  |  DESENLACE: No recuperado (Estado crítico en UCI Quemados).
+C. MEDICAMENTO(S) SOSPECHOSO(S)
+MEDICAMENTO: Lamotrigina (Lamictal) 100 mg
+DOSIS / VÍA: 100 mg/día vía oral
+INDICACIÓN: Epilepsia mioclónica
+FECHAS: 20-OCT-2025 al 11-NOV-2025
+LOTE: Lote #LM-9941 (Caducidad: 05/2027)
+MEDIDA: [ X ] Retirada definitiva
+D. DATOS DEL PROFESIONAL NOTIFICADOR
+NOMBRE: Dra. Elena Morales  |  PROFESIÓN: Médico Especialista (Dermatología)
+CENTRO SANITARIO: Hospital Universitario La Paz — Servicio de Dermatología
+Paseo de la Castellana 261, 28046 Madrid, España | Tel: +34 91 555 0244 | Email: emorales@hospitallapaz.es
+
+=================== pdfs\quality_complaints\packaging_defect_report.pdf (1 pages) ===================
+--- PAGE 1 (1863 chars) ---
+METROHEALTH MEDICAL CENTER — CENTRAL PHARMACY OPERATIONS
+PHARMACEUTICAL PRODUCT QUALITY COMPLAINT & DEFECT LOG
+Standard Operating Procedure QA-PHARM-402 — Mandatory Supplier Incident Notification
+1. COMPLAINT & PRODUCT IDENTIFICATION
+COMPLAINT ID: PQC-MH-2025-088
+DATE LOGGED: 17-NOV-2025
+DISCOVERY AREA: Central Inpatient Unit-Dose
+Packager
+PRODUCT NAME: Cardioril 10mg Film-Coated
+Tablets
+LOT / BATCH: Lot #BL-8802
+EXPIRATION DATE: 11/2026
+PACKAGE TYPE: 10-tablet push-through blister
+cards
+QUANTITY AFFECTED: 12 cartons (360 strips /
+3,600 tablets)
+DISPOSITION: [ X ] 100% Stock Quarantined in
+Vault
+2. DEFECT INVESTIGATION & PHYSICAL FINDINGS
+DEFECT CATEGORY: Packaging Integrity Failure & Chemical Oxidation / Degradation.
+DETAILED DESCRIPTION: During automated inventory intake inspection, pharmacy technicians noted widespread packaging seal failures in Lot #BL-8802.
+The aluminum lidding foil was unsealed and peeling away from the clear PVC/PVDC thermoformed cavities along the top margin of multiple blister strips.
+Enclosed 10mg tablets exposed to ambient humidity exhibited severe surface degradation: dark yellowish-brown speckling/oxidation, softening, edge chipping,
+and friability breakdown.
+PATIENT IMPACT ASSESSMENT:
+• Were any affected units dispensed to patients or wards? NO (Zero patient exposure).
+• Adverse clinical reactions reported: NONE / NOT APPLICABLE.
+• Immediate Corrective Action: All 12 wholesale boxes immediately placed in locked quarantine under Quarantine Seal #Q-2025-094. Manufacturer alert
+dispatched requesting immediate replacement and return authorization.
+3. COMPLAINANT / PHARMACY CONTACT
+COMPLAINANT: Robert Vance, PharmD, BCPS (Director of Pharmacy Operations)
+MetroHealth Medical Center — Department of Pharmacy
+2500 MetroHealth Dr, Chicago, IL 60609 | Tel: (312) 555-0140 | Email: rvance@metrohealth-pharmacy.org
+
+=================== pdfs\quality_complaints\vial_contamination_sepsis.pdf (2 pages) ===================
+--- PAGE 1 (3386 chars) ---
+DEPARTMENT OF HEALTH AND HUMAN SERVICES — FOOD AND DRUG ADMINISTRATION
+MEDWATCH: THE FDA SAFETY INFORMATION AND ADVERSE EVENT REPORTING PROGRAM
+FORM FDA 3500A (10/15) — MANDATORY ADVERSE EVENT & PRODUCT PROBLEM REPORTING
+OMB Control No. 0910-0291  |  For use by User-Facilities, Distributors, and Manufacturers
+SECTION A: PATIENT INFORMATION
+1. PATIENT IDENTIFIER
+A.P. (Arthur Pendelton)
+2. AGE AT TIME OF
+EVENT
+71 YRS
+2a. DATE OF BIRTH
+19-AUG-1954
+3. SEX
+MALE
+4. WEIGHT
+74 kg (163 lbs)
+SECTION B: ADVERSE EVENT, PRODUCT PROBLEM OR ERROR
+1. CHECK ALL THAT APPLY:
+[ X ] ADVERSE EVENT                             [ X ] PRODUCT PROBLEM (e.g., defects / contaminations)
+REPORT TYPE: Mandatory 15-Day Alert
+2. OUTCOMES ATTRIBUTED TO ADVERSE EVENT (Check all that apply):
+[   ] DEATH                                                                       [ X ] LIFE-THREATENING: YES (Septic Shock /
+MAP 45)
+[ X ] HOSPITALIZATION — PROLONGED / CRITICAL CARE ICU
+[   ] DISABILITY OR PERMANENT DAMAGE                         [   ] CONGENITAL ANOMALY
+                                        [ X ] REQUIRED INTERVENTION TO PREVENT DAMAGE
+3. DATE OF EVENT
+14-NOV-2025
+4. DATE OF THIS
+REPORT
+14-NOV-2025
+5. DESCRIBE EVENT OR PROBLEM (Include relevant tests, laboratory data, dates, and defect observations):
+At 11:30 on 14-NOV-2025, in Medical ICU (Northwestern Memorial Hospital), patient Arthur Pendelton (71M, post-op pneumonia) was initiated on an intravenous
+infusion of Cefatox 1g. After ~35mL infused, the bedside nurse noted visible turbidity and dark particulate matter inside the piggyback container. Infusion halted
+immediately. Within 45 minutes, patient developed acute rigors, temperature spike to 39.8°C (103.6°F), severe hypotension (BP 72/40 mmHg, MAP 50), and
+signs of distributive septic shock. Vasopressor therapy (Norepinephrine infusion titrated to 0.14 mcg/kg/min) and broad-spectrum empiric coverage initiated.
+PRODUCT DEFECT EXAMINATION: Visual inspection of vial Lot #CX54831 (Exp 08/25) confirmed a cracked aluminum crimp collar compromising container
+closure integrity, with visible black particulate matter floating in solution. Central pharmacy placed all 48 hospital vials of Lot #CX54831 into immediate
+quarantine. PHOTOGRAPHIC EVIDENCE: Detailed photographic evidence of compromised vial stopper and particulate matter is recorded in EXHIBIT 1 on
+Page 2 of this mandatory submission. Patient remains in critical condition under ICU resuscitation.
+SECTION C: SUSPECT PRODUCT(S) INFORMATION
+1. NAME, STRENGTH, MANUFACTURER
+Cefatox (cefatoxime sodium) 1g for Inj.
+2. DOSE, FREQUENCY & ROUTE
+1g IV piggyback once
+3. THERAPY DATES
+14-NOV-2025 (Single partial dose)
+4. DIAGNOSIS FOR USE
+Post-operative Aspiration Pneumonia
+5. LOT / BATCH NUMBER
+Lot #CX54831
+6. EXPIRATION DATE
+08/2025
+7. EVENT ABATED AFTER STOPPING?
+[   ] Yes    [ X ] No (ICU shock ongoing)
+8. REAPPEARED AFTER REINTRODUCTION?
+[   ] Yes    [   ] No    [ X ] N/A
+9. PRODUCT DEFECT CONFIRMED?
+[ X ] YES (Cracked seal & particulate)
+SECTION E: INITIAL REPORTER INFORMATION
+1. NAME AND ADDRESS OF REPORTER
+Robert Lang, MD, FCCM (Director of Critical Care Medicine)
+Northwestern Memorial Hospital — Medical ICU
+251 E Huron St, Chicago, IL 60611, USA
+2. HEALTH PROFESSIONAL?
+[ X ] YES    [   ] NO
+3. OCCUPATION: Physician / Intensivist
+4. CONTACT TELEPHONE & EMAIL:
+Tel: (312) 555-0320
+Email: rlang@nmh-icu.org
+--- PAGE 2 (1165 chars) ---
+NORTHWESTERN MEMORIAL HOSPITAL — DEPARTMENT OF PHARMACY
+RISK MANAGEMENT & QUALITY ASSURANCE ATTACHMENT
+EXHIBIT 1: PHYSICAL EVIDENCE PHOTO LOG (QUARANTINED VIAL)
+HOSPITAL INCIDENT REF: NMH-ICU-2025-449
+EVIDENCE CUSTODIAN: Central Pharmacy QA
+DATE PHOTOGRAPHED: 14-NOV-2025 12:15
+CST
+PRODUCT: Cefatox 1g for Injection (20ml)
+LOT / BATCH: Lot #CX54831 (Exp 08/25)
+SECURITY QUARANTINE SEAL: #NMH-Q-94821
+PHYSICAL EVIDENCE INSPECTION FINDINGS:
+1. Closure Integrity Compromise: Close examination of the 20mL glass container reveals an irregular mechanical rupture / tear in the aluminum crimp collar
+securing the blue elastomeric stopper. The seal was breached prior to reconstitution.
+2. Foreign Particulate Contamination: Macroscopic particulate matter (multiple dark, black/brown foreign fragments and flakes) is clearly visible suspended
+throughout the reconstituted solution under 2000-lux ambient cleanroom inspection lighting.
+3. Regulatory Status: Immediate manufacturer product quality alert issued; all 48 inventory units placed in locked quarantine.
+Investigator Note: Photograph entered into FDA Form 3500A Section B documentation as primary defect evidence.
+
+=================== pdfs\scanned_handwritten\urgent_care_intake_handwritten.pdf (1 pages) ===================
+--- PAGE 1 (0 chars) ---
+

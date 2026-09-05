@@ -1,0 +1,669 @@
+{
+  "dataset_name": "Clinevo Smart Inbox Synthetic Pharmacovigilance Test Suite",
+  "version": "3.0.0",
+  "scope_definition": "27 logical benchmark cases covering 11 emails and 20 PDFs; attached PDFs are linked through parent email cases.",
+  "synthetic_data_statement": "100% Synthetic style-matched test documents complying with Section 3.E (No real patient data).",
+  "summary_statistics": {
+    "logical_case_count": 27,
+    "physical_email_count": 11,
+    "physical_pdf_count": 20,
+    "physical_image_count": 2
+  },
+  "email_statistics": {
+    "total_emails": 11,
+    "categories": {
+      "Safety_Report_ICSR": 6,
+      "Quality_Complaint_PQC": 2,
+      "Medical_Information_MI": 2,
+      "Not_Relevant": 1,
+      "Multi_Label_ICSR_PQC": 1
+    },
+    "attachment_bearing_emails": 6,
+    "pure_text_emails": 5
+  },
+  "document_statistics": {
+    "total_documents": 20,
+    "flavors": {
+      "Digital_PDF": 5,
+      "Scanned_Handwritten": 1,
+      "Published_Article": 7,
+      "Non_English": 2,
+      "Quality_Complaint_PDF": 2,
+      "Medical_Info_PDF": 2,
+      "Irrelevant_PDF": 1
+    },
+    "documents_with_tables": 8,
+    "documents_with_images": 2,
+    "image_requiring_human_review_flag": 1,
+    "languages": {
+      "English_en": 17,
+      "Spanish_es": 1,
+      "German_de": 1
+    }
+  },
+  "literature_statistics": {
+    "total_articles": 7,
+    "case_bearing_articles": 5,
+    "non_reportable_negative_articles": 2,
+    "total_extractable_patient_cases": 8,
+    "multicase_series_articles": 2,
+    "multipage_articles": 2
+  },
+  "deferred_requirements": {
+    "second_scanned_handwritten_pdf": {
+      "status": "DEFERRED",
+      "reason": "Reserved for final synthetic hand-filled paper form"
+    }
+  },
+  "physical_email_assets": [
+    {
+      "filename": "email_01.eml",
+      "relative_path": "emails/email_01.eml",
+      "size_bytes": 9691,
+      "sha256": "56243921b607a0c63bbe13a61db32c3125ba2a62316fd9fa61428a64e11964fa"
+    },
+    {
+      "filename": "email_02.eml",
+      "relative_path": "emails/email_02.eml",
+      "size_bytes": 282693,
+      "sha256": "17b3bebb8b364f977ba3788f8101fb53c672653bc5e4bdaadbe7f928d7d20025"
+    },
+    {
+      "filename": "email_03.eml",
+      "relative_path": "emails/email_03.eml",
+      "size_bytes": 2266,
+      "sha256": "3d825af854dff06e3eb55e6418b3509ddc6ec2e0f1e6111e463547c7b2ca9220"
+    },
+    {
+      "filename": "email_04.eml",
+      "relative_path": "emails/email_04.eml",
+      "size_bytes": 1149725,
+      "sha256": "e987020dbd6283115ead52bf6a6203ac5d49a3d550150c33a20378800b9a71a7"
+    },
+    {
+      "filename": "email_05.eml",
+      "relative_path": "emails/email_05.eml",
+      "size_bytes": 6874,
+      "sha256": "7e9d6afa4ec62c2dc8d16886332f6451540a8b5906a21c8e2f1bdd64051a7463"
+    },
+    {
+      "filename": "email_06.eml",
+      "relative_path": "emails/email_06.eml",
+      "size_bytes": 6779,
+      "sha256": "5583b0d84872a18ee721099863e10d2a4f5e62ff5cd0ed114da24add5c616378"
+    },
+    {
+      "filename": "email_07.eml",
+      "relative_path": "emails/email_07.eml",
+      "size_bytes": 6820,
+      "sha256": "8b25d9ede0140d16c05f5fdf93dda29a712249c05ad1eb84746afdeff14ecbf5"
+    },
+    {
+      "filename": "email_08.eml",
+      "relative_path": "emails/email_08.eml",
+      "size_bytes": 1716,
+      "sha256": "46e7239ba4dc0766a8fecb13698a7abfcf02f2aee60761e4b98a0507dc0b7408"
+    },
+    {
+      "filename": "email_09.eml",
+      "relative_path": "emails/email_09.eml",
+      "size_bytes": 1847,
+      "sha256": "8f58270cb1f9480b27b954c690a17222e369dc95a5df619aea6425aee8c094be"
+    },
+    {
+      "filename": "email_10.eml",
+      "relative_path": "emails/email_10.eml",
+      "size_bytes": 1298,
+      "sha256": "c1bb498642a9d56d6c43bbcf268eb4422d103cf6fd223e6a3d55499e8f51e07e"
+    },
+    {
+      "filename": "email_11.eml",
+      "relative_path": "emails/email_11.eml",
+      "size_bytes": 2702,
+      "sha256": "555c26a18317f17a3d45caada699066929e5926571b2483434b5f8c22669ec2e"
+    }
+  ],
+  "physical_pdf_assets": [
+    {
+      "filename": "cioms_form_MK_Cardioril.pdf",
+      "relative_path": "pdfs/digital_forms/cioms_form_MK_Cardioril.pdf",
+      "size_bytes": 5489,
+      "sha256": "de45baf6416bfb9cb142932f75dbe5ac6b8c0e018fa47268d8e61413ff4ed06b"
+    },
+    {
+      "filename": "cioms_form_renal_injury.pdf",
+      "relative_path": "pdfs/digital_forms/cioms_form_renal_injury.pdf",
+      "size_bytes": 2709,
+      "sha256": "5b4d99852ea0c09db5dda6c6dec1bee3b3246dd9989fc2432c131b153aa0c86a"
+    },
+    {
+      "filename": "cioms_pediatric_oncology.pdf",
+      "relative_path": "pdfs/digital_forms/cioms_pediatric_oncology.pdf",
+      "size_bytes": 2909,
+      "sha256": "b887439d4a5bfb6a7cba0b4a41c398968069d01ebdb1b1ef07abc2a6dc6f667d"
+    },
+    {
+      "filename": "fda_medwatch_followup.pdf",
+      "relative_path": "pdfs/digital_forms/fda_medwatch_followup.pdf",
+      "size_bytes": 3612,
+      "sha256": "757933d9d61517e705bcade05ba4acfd462032355ff4644989715474b3c4dd0e"
+    },
+    {
+      "filename": "fda_medwatch_initial_neuroval.pdf",
+      "relative_path": "pdfs/digital_forms/fda_medwatch_initial_neuroval.pdf",
+      "size_bytes": 2548,
+      "sha256": "9eb1af28c5442237b9636a22be31612ec320ef06f32fd3fa31818bd23d5bc773"
+    },
+    {
+      "filename": "pharmatech_conference_prospectus.pdf",
+      "relative_path": "pdfs/irrelevant/pharmatech_conference_prospectus.pdf",
+      "size_bytes": 2961,
+      "sha256": "4fdd588911865958bbc44241fecd091fc0d06e79cd2e5424c56241486f559598"
+    },
+    {
+      "filename": "article_01_dili_case.pdf",
+      "relative_path": "pdfs/literature_articles/article_01_dili_case.pdf",
+      "size_bytes": 4790,
+      "sha256": "72526c86dec4942e9d73494d03567282cabd68387d5cba1ee861419b2c98f4b9"
+    },
+    {
+      "filename": "article_02_sjs_case.pdf",
+      "relative_path": "pdfs/literature_articles/article_02_sjs_case.pdf",
+      "size_bytes": 4378,
+      "sha256": "e5cf331c7548435290b16ab57a4c7ead2a8ecd29c96baf0960baac54c9188cad"
+    },
+    {
+      "filename": "article_03_multicase_series.pdf",
+      "relative_path": "pdfs/literature_articles/article_03_multicase_series.pdf",
+      "size_bytes": 5035,
+      "sha256": "9323684ca5d9ab5b4a38bf19abe0b9cd290c3c4dff8aebd80737eb370bf0d883"
+    },
+    {
+      "filename": "article_04_preclinical_review.pdf",
+      "relative_path": "pdfs/literature_articles/article_04_preclinical_review.pdf",
+      "size_bytes": 4095,
+      "sha256": "e5cddbf47b3a84bd167b2a94cbfd87e20a8b4feb6f4e18c5df69f4be7ac8d1f1"
+    },
+    {
+      "filename": "article_05_meta_analysis_review.pdf",
+      "relative_path": "pdfs/literature_articles/article_05_meta_analysis_review.pdf",
+      "size_bytes": 3973,
+      "sha256": "4150bb29a9f45e38a25118f5999bf4cef18891e756c4ff9f0364336cf20ad806"
+    },
+    {
+      "filename": "article_06_buried_case_study.pdf",
+      "relative_path": "pdfs/literature_articles/article_06_buried_case_study.pdf",
+      "size_bytes": 8144,
+      "sha256": "a13f2eabdf43d6dab1b3f1e1c94f58139c23b9b79cbbc3cb84c0842d3bc7e96d"
+    },
+    {
+      "filename": "article_07_complex_screening_case.pdf",
+      "relative_path": "pdfs/literature_articles/article_07_complex_screening_case.pdf",
+      "size_bytes": 8113,
+      "sha256": "49984eaaab51ee72420d7c3c795dc5b1ab5284d9666f34719c998097373c8c5d"
+    },
+    {
+      "filename": "cardioril_clinical_monograph_dosing.pdf",
+      "relative_path": "pdfs/medical_info/cardioril_clinical_monograph_dosing.pdf",
+      "size_bytes": 3444,
+      "sha256": "29466ec6318e0b6dabcf092167978263b238dcddcbc1f5625e0fcc8abc15dbda"
+    },
+    {
+      "filename": "corzapan_drug_interaction_guide.pdf",
+      "relative_path": "pdfs/medical_info/corzapan_drug_interaction_guide.pdf",
+      "size_bytes": 3253,
+      "sha256": "7970946ea2b1169aa1ff82d3b2ba60628facc07dc2ec38ab9c58c4e0318fdcf8"
+    },
+    {
+      "filename": "bericht_uaw_charite_berlin.pdf",
+      "relative_path": "pdfs/non_english/bericht_uaw_charite_berlin.pdf",
+      "size_bytes": 3787,
+      "sha256": "4eb47bec721d079b426c141dc6334e3edf88411b807b759ed24fdc87171fee18"
+    },
+    {
+      "filename": "notificacion_ram_madrid.pdf",
+      "relative_path": "pdfs/non_english/notificacion_ram_madrid.pdf",
+      "size_bytes": 3513,
+      "sha256": "88916379607d4004be5046f732af57210515144b1e700cd54833918b82dbbf8b"
+    },
+    {
+      "filename": "packaging_defect_report.pdf",
+      "relative_path": "pdfs/quality_complaints/packaging_defect_report.pdf",
+      "size_bytes": 3493,
+      "sha256": "cf4a3f3e83a80f4d7645c995a75d393a845a515283ff64e9ef36d3ea3c4d6969"
+    },
+    {
+      "filename": "vial_contamination_sepsis.pdf",
+      "relative_path": "pdfs/quality_complaints/vial_contamination_sepsis.pdf",
+      "size_bytes": 849367,
+      "sha256": "f364bde197642ccbfe2c39ccf8581305a4e007f24ff4c777cdef4fe0e9b76788"
+    },
+    {
+      "filename": "urgent_care_intake_handwritten.pdf",
+      "relative_path": "pdfs/scanned_handwritten/urgent_care_intake_handwritten.pdf",
+      "size_bytes": 207848,
+      "sha256": "c4a410351c165dd50c8d92d3c3d9ccceb8ed69a3f9ece9621b2c0b8603de9b5f"
+    }
+  ],
+  "physical_image_assets": [
+    {
+      "filename": "contaminated_vial_photo.jpg",
+      "relative_path": "pdfs/quality_complaints/contaminated_vial_photo.jpg",
+      "size_bytes": 673846,
+      "sha256": "905df19d6b6117078810d41fe97d0a6a2fe9c1995b798970acd9dd786470b837"
+    },
+    {
+      "filename": "handwritten_clinic_photo.jpg",
+      "relative_path": "pdfs/scanned_handwritten/handwritten_clinic_photo.jpg",
+      "size_bytes": 920811,
+      "sha256": "8b397441ef1c710f48fd5af7c54d08d08e4aca56f886a618a226e9952ef39e89"
+    }
+  ],
+  "attachment_relationships": [
+    {
+      "email": "emails/email_01.eml",
+      "attachment": "pdfs/digital_forms/cioms_form_MK_Cardioril.pdf"
+    },
+    {
+      "email": "emails/email_02.eml",
+      "attachment": "pdfs/scanned_handwritten/urgent_care_intake_handwritten.pdf"
+    },
+    {
+      "email": "emails/email_04.eml",
+      "attachment": "pdfs/quality_complaints/vial_contamination_sepsis.pdf"
+    },
+    {
+      "email": "emails/email_05.eml",
+      "attachment": "pdfs/non_english/notificacion_ram_madrid.pdf"
+    },
+    {
+      "email": "emails/email_06.eml",
+      "attachment": "pdfs/digital_forms/fda_medwatch_followup.pdf"
+    },
+    {
+      "email": "emails/email_07.eml",
+      "attachment": "pdfs/quality_complaints/packaging_defect_report.pdf"
+    }
+  ],
+  "logical_case_inventory": [
+    {
+      "case_id": "CASE-01",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_01.eml",
+      "source_pdf": "pdfs/digital_forms/cioms_form_MK_Cardioril.pdf",
+      "suspect_product": "Cardioril (cardioril hydrochloride)",
+      "reporter": "Sarah Jenkins, MD, FACP",
+      "adverse_event_or_defect": "Acute Drug-Induced Liver Injury (DILI)"
+    },
+    {
+      "case_id": "CASE-02",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_02.eml",
+      "source_pdf": "pdfs/scanned_handwritten/urgent_care_intake_handwritten.pdf",
+      "suspect_product": "InjectaPen",
+      "reporter": "Dr. A. Peterson, MD",
+      "adverse_event_or_defect": "Acute Anaphylaxis (Grade 3)"
+    },
+    {
+      "case_id": "CASE-03",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_03.eml",
+      "source_pdf": null,
+      "suspect_product": "Corzapan 10mg tablets",
+      "reporter": "Emily Watson (Patient / Consumer)",
+      "adverse_event_or_defect": "Drug-Induced Tachycardia (Pulse 154 bpm)"
+    },
+    {
+      "case_id": "CASE-04",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)",
+        "Quality Complaint (PQC)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_04.eml",
+      "source_pdf": "pdfs/quality_complaints/vial_contamination_sepsis.pdf",
+      "suspect_product": "Cefatox (cefatoxime sodium) 1g for Inj.",
+      "reporter": "Robert Lang, MD, FCCM (Director of Critical Care Medicine)",
+      "adverse_event_or_defect": "Distributive Septic Shock"
+    },
+    {
+      "case_id": "CASE-05",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_05.eml",
+      "source_pdf": "pdfs/non_english/notificacion_ram_madrid.pdf",
+      "suspect_product": "Lamotrigina (Lamictal) 100 mg",
+      "reporter": "Dra. Elena Morales (M\u00e9dico Especialista en Dermatolog\u00eda)",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "CASE-06",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_06.eml",
+      "source_pdf": "pdfs/digital_forms/fda_medwatch_followup.pdf",
+      "suspect_product": "Neuroval (neuroval HCl) 200mg/400mg",
+      "reporter": "Dr. Richard Vance, MD, PhD (Attending Neurologist)",
+      "adverse_event_or_defect": "Generalized Tonic-Clonic Seizure - Resolved"
+    },
+    {
+      "case_id": "CASE-07",
+      "type": "email_intake",
+      "primary_category": "Quality Complaint (PQC)",
+      "all_categories": [
+        "Quality Complaint (PQC)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_07.eml",
+      "source_pdf": "pdfs/quality_complaints/packaging_defect_report.pdf",
+      "suspect_product": "Cardioril 10mg Film-Coated Tablets",
+      "reporter": "Robert Vance, PharmD, BCPS (Director of Pharmacy Operations)",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "CASE-08",
+      "type": "email_intake",
+      "primary_category": "Quality Complaint (PQC)",
+      "all_categories": [
+        "Quality Complaint (PQC)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_08.eml",
+      "source_pdf": null,
+      "suspect_product": "Lipocur 20mg tablets",
+      "reporter": "Karen Patel, RPh (Pharmacist-in-Charge)",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "CASE-09",
+      "type": "email_intake",
+      "primary_category": "Medical Information (MI)",
+      "all_categories": [
+        "Medical Information (MI)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_09.eml",
+      "source_pdf": null,
+      "suspect_product": "Corzapan 10mg film-coated tablets",
+      "reporter": "David Wu, PharmD, BCPS (Clinical Pharmacy Specialist)",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "CASE-10",
+      "type": "email_intake",
+      "primary_category": "Not Relevant",
+      "all_categories": [
+        "Not Relevant"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_10.eml",
+      "source_pdf": null,
+      "suspect_product": "Not stated",
+      "reporter": "PharmaTech Global Summit",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "CASE-11",
+      "type": "email_intake",
+      "primary_category": "Medical Information (MI)",
+      "all_categories": [
+        "Medical Information (MI)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_11.eml",
+      "source_pdf": null,
+      "suspect_product": "Cefatox (cefatoxime sodium) 1g for Injection",
+      "reporter": "Dr. Elena Rostova, PharmD, BCPS (Senior Clinical Compounding Specialist)",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "LIT-01",
+      "type": "literature_screening",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_01_dili_case.pdf",
+      "suspect_product": "Cardioril (cardioril hydrochloride)",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Acute Drug-Induced Autoimmune-Like Hepatitis"
+    },
+    {
+      "case_id": "LIT-02",
+      "type": "literature_screening",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_02_sjs_case.pdf",
+      "suspect_product": "Neuroval (neuroval HCl)",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Stevens-Johnson Syndrome (SJS)"
+    },
+    {
+      "case_id": "LIT-03",
+      "type": "literature_screening",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_03_multicase_series.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "LIT-04",
+      "type": "literature_screening",
+      "primary_category": "Not Relevant",
+      "all_categories": [
+        "Not Relevant"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_04_preclinical_review.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "LIT-05",
+      "type": "literature_screening",
+      "primary_category": "Not Relevant",
+      "all_categories": [
+        "Not Relevant"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_05_meta_analysis_review.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "LIT-06",
+      "type": "literature_screening",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_06_buried_case_study.pdf",
+      "suspect_product": "Nivolumab (Opdivo) 240 mg IV q2w + Ipilimumab (Yervoy) 1 mg/kg IV q6w",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Delayed Immune-Mediated Fulminant Myocarditis"
+    },
+    {
+      "case_id": "LIT-07",
+      "type": "literature_screening",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/literature_articles/article_07_complex_screening_case.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "NON-ENG-01",
+      "type": "regulatory_form",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/non_english/notificacion_ram_madrid.pdf",
+      "suspect_product": "Lamotrigina (Lamictal) 100 mg",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Toxic Epidermal Necrolysis"
+    },
+    {
+      "case_id": "NON-ENG-02",
+      "type": "regulatory_form",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/non_english/bericht_uaw_charite_berlin.pdf",
+      "suspect_product": "Cardioril (Cardioril-HCl) 20 mg",
+      "reporter": "Dr. med. Wolfgang Becker (Facharzt f\u00fcr Kardiologie & Notfallmedizin)",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "DIG-03",
+      "type": "regulatory_form",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/digital_forms/cioms_pediatric_oncology.pdf",
+      "suspect_product": "OncoShield (peg-oncoshield)",
+      "reporter": "Dr. Amanda Bennett, MD, FAAP (Pediatric Hematologist-Oncologist)",
+      "adverse_event_or_defect": "Acute Cytokine Release Syndrome / Severe Infusion Reaction"
+    },
+    {
+      "case_id": "DIG-04",
+      "type": "regulatory_form",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/digital_forms/fda_medwatch_initial_neuroval.pdf",
+      "suspect_product": "Neuroval (neuroval HCl)",
+      "reporter": "Dr. Richard Vance, MD",
+      "adverse_event_or_defect": "Witnessed New-Onset Generalized Tonic-Clonic Seizure (3.5 min)"
+    },
+    {
+      "case_id": "DIG-05",
+      "type": "regulatory_form",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/digital_forms/cioms_form_renal_injury.pdf",
+      "suspect_product": "Renotril",
+      "reporter": "Dr. Keith Miller, MD (Nephrology)",
+      "adverse_event_or_defect": "KDIGO Stage 3 Acute Kidney Injury"
+    },
+    {
+      "case_id": "PQC-02",
+      "type": "quality_complaint_document",
+      "primary_category": "Quality Complaint (PQC)",
+      "all_categories": [
+        "Quality Complaint (PQC)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/quality_complaints/packaging_defect_report.pdf",
+      "suspect_product": "Cardioril 10mg Film-Coated Tablets",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "MED-01",
+      "type": "medical_info_document",
+      "primary_category": "Medical Information (MI)",
+      "all_categories": [
+        "Medical Information (MI)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/medical_info/cardioril_clinical_monograph_dosing.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "MED-02",
+      "type": "medical_info_document",
+      "primary_category": "Medical Information (MI)",
+      "all_categories": [
+        "Medical Information (MI)"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/medical_info/corzapan_drug_interaction_guide.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "IRR-01",
+      "type": "irrelevant_document",
+      "primary_category": "Not Relevant",
+      "all_categories": [
+        "Not Relevant"
+      ],
+      "primary_source_type": "pdf",
+      "source_email": null,
+      "source_pdf": "pdfs/irrelevant/pharmatech_conference_prospectus.pdf",
+      "suspect_product": "Not stated",
+      "reporter": "Not stated",
+      "adverse_event_or_defect": "Not stated"
+    }
+  ]
+}

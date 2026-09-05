@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smart-inbox-backend
+  profiles:
+    active: demo
+
+  # Embedded H2 Database (Oracle Compatibility Mode) for Demo Profile
+  datasource:
+    url: jdbc:h2:mem:smartinboxdb;MODE=Oracle;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+# Application Specific Properties
+smartinbox:
+  ai-service:
+    url: ${PYTHON_AI_SERVICE_URL:http://localhost:8000}
+    timeout-seconds: 60
+  ingestion:
+    mode: ${INGESTION_MODE:FIXTURE}
+    fixture-dir: ${FIXTURE_DIR:../test-data/emails}
+    auto-ingest-on-startup: true
+    imap:
+      host: ${MAIL_IMAP_HOST:imap.gmail.com}
+      port: ${MAIL_IMAP_PORT:993}
+      username: ${MAIL_IMAP_USERNAME:safety.intake.test@example.com}
+      password: ${MAIL_IMAP_PASSWORD:secret}
+      ssl: ${MAIL_IMAP_SSL:true}
+      folder: ${MAIL_IMAP_FOLDER:INBOX}
+      poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:60000}
+  async:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 100
+
+---
+# Production Profile (Authentic Oracle Database 19c/21c)
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${ORACLE_DB_URL:jdbc:oracle:thin:@localhost:1521/XEPDB1}
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: ${ORACLE_DB_USERNAME:smartinbox}
+    password: ${ORACLE_DB_PASSWORD:secret}
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddl-auto: validate

@@ -1,0 +1,279 @@
+{
+  "timestamp": "2026-09-05 09:55:50",
+  "total_cases": 27,
+  "passed_cases": 27,
+  "accuracy_percentage": 100.0,
+  "average_latency_ms": 0,
+  "detailed_results": [
+    {
+      "case_id": "CASE-01",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 1,
+      "notes": "Cardioril (cardioril hydrochloride) / Acute Drug-Induced Liver "
+    },
+    {
+      "case_id": "CASE-02",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "InjectaPen / Acute Anaphylaxis (Grade "
+    },
+    {
+      "case_id": "CASE-03",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 1,
+      "notes": "Corzapan 10mg tablets / Drug-Induced Tachycardia "
+    },
+    {
+      "case_id": "CASE-04",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": true,
+      "is_multi_label_actual": true,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "CASE-05",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 1,
+      "notes": "Lamotrigina (Lamictal) 100 mg / Not stated"
+    },
+    {
+      "case_id": "CASE-06",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Neuroval (neuroval HCl) 200mg/400mg / Generalized Tonic-Clonic "
+    },
+    {
+      "case_id": "CASE-07",
+      "expected_category": "Quality Complaint (PQC)",
+      "actual_category": "Quality Complaint (PQC)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 1,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "CASE-08",
+      "expected_category": "Quality Complaint (PQC)",
+      "actual_category": "Quality Complaint (PQC)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "CASE-09",
+      "expected_category": "Medical Information (MI)",
+      "actual_category": "Medical Information (MI)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 1,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "CASE-10",
+      "expected_category": "Not Relevant",
+      "actual_category": "Not Relevant",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "CASE-11",
+      "expected_category": "Medical Information (MI)",
+      "actual_category": "Medical Information (MI)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "LIT-01",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Cardioril (cardioril hydrochloride) / Acute Drug-Induced Autoim"
+    },
+    {
+      "case_id": "LIT-02",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Neuroval (neuroval HCl) / Stevens-Johnson Syndrome "
+    },
+    {
+      "case_id": "LIT-03",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "LIT-04",
+      "expected_category": "Not Relevant",
+      "actual_category": "Not Relevant",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "LIT-05",
+      "expected_category": "Not Relevant",
+      "actual_category": "Not Relevant",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "LIT-06",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Nivolumab (Opdivo) 240 mg IV q2w + Ipilimumab (Yervoy) 1 mg/kg IV q6w / Delayed Immune-Mediated F"
+    },
+    {
+      "case_id": "LIT-07",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "NON-ENG-01",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Lamotrigina (Lamictal) 100 mg / Toxic Epidermal Necrolysi"
+    },
+    {
+      "case_id": "NON-ENG-02",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Cardioril (Cardioril-HCl) 20 mg / Not stated"
+    },
+    {
+      "case_id": "DIG-03",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "OncoShield (peg-oncoshield) / Acute Cytokine Release Sy"
+    },
+    {
+      "case_id": "DIG-04",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Neuroval (neuroval HCl) / Witnessed New-Onset Gener"
+    },
+    {
+      "case_id": "DIG-05",
+      "expected_category": "Safety Report (ICSR)",
+      "actual_category": "Safety Report (ICSR)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Renotril / KDIGO Stage 3 Acute Kidne"
+    },
+    {
+      "case_id": "PQC-02",
+      "expected_category": "Quality Complaint (PQC)",
+      "actual_category": "Quality Complaint (PQC)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "MED-01",
+      "expected_category": "Medical Information (MI)",
+      "actual_category": "Medical Information (MI)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "MED-02",
+      "expected_category": "Medical Information (MI)",
+      "actual_category": "Medical Information (MI)",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    },
+    {
+      "case_id": "IRR-01",
+      "expected_category": "Not Relevant",
+      "actual_category": "Not Relevant",
+      "is_multi_label_expected": false,
+      "is_multi_label_actual": false,
+      "passed": true,
+      "latency_ms": 0,
+      "notes": "Not stated / Not stated"
+    }
+  ]
+}

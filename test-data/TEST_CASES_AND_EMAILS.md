@@ -1,0 +1,713 @@
+# CLINEVO SMART INBOX — CLINICAL TEST CASES & EMAIL CATALOG
+> **Purpose**: Complete reference catalog of all 11 synthetic intake emails and their associated regulatory documents (20 physical PDFs, 2 image assets, benchmark.json, manifest.json).  
+> **Scope**: 27 logical benchmark cases covering 11 emails and 20 PDFs; attached PDFs are linked through parent email cases.  
+> **Compliance & Synthetic Notice**: All documents are synthetic style-matched test documents designed for AI intake evaluation; no real patient data is used.
+
+---
+
+## Summary Matrix of the 11 Test Intake Cases
+
+| Case | Category Bucket | Document Flavor & Attachment | Clinical Scenario | Key Test Objectives |
+| :---: | :--- | :--- | :--- | :--- |
+| **01** | **Safety Report (ICSR)** | **Flavor 1: Digital PDF** (`cioms_form_MK_Cardioril.pdf`) | Hospital physician reporting severe Drug-Induced Liver Injury (DILI) in a 58F patient. | Synthetic style-matched CIOMS Form I layout; structured lab chemistry table (ALT 540, AST 420, Bilirubin 4.8); Hy's Law; serious = hospitalization. |
+| **02** | **Safety Report (ICSR)** | **Flavor 2: Scanned/Handwritten** (`urgent_care_intake_handwritten.pdf`) | Emergency doctor reporting acute anaphylaxis following InjectaPen auto-injector dose. | Real photograph of emergency triage record; blue pen handwriting; vitals table (BP 85/50, HR 128); zero-hallucination policy (suspect dose = `"Not stated"`). |
+| **03** | **Safety Report (ICSR)** | **No Attachment (Pure Email Text)** | Consumer reporting sudden severe tachycardia (154 bpm) and palpitations after taking Corzapan 10mg. | Tests extraction directly from consumer email; dose = 10mg, frequency = `"Not stated"`, lot = `"Not stated"`, weight = `"Not stated"`. |
+| **04** | **Multi-Bucket: Safety + Quality (ICSR + PQC)** | **Flavor 1: Digital PDF + Photo** (`vial_contamination_sepsis.pdf`) | ICU Director reporting contaminated Cefatox 1g vial with cracked crimp seal causing septic shock in 71M patient. | Multi-label classification (both ICSR and PQC); synthetic style-matched 2-page FDA Form 3500A; Exhibit 1 cleanroom photo exhibit; photo review flag. |
+| **05** | **Safety Report (ICSR)** | **Flavor 4: Non-English (Spanish)** (`notificacion_ram_madrid.pdf`) | Madrid hospital physician reporting Toxic Epidermal Necrolysis (TEN) caused by Lamotrigine in a 29F patient. | Language detection (`es`); English translation with links to original Spanish text; synthetic style-matched Spanish AEMPS RAM form. |
+| **06** | **Safety Report (ICSR Follow-up)** | **Flavor 1: Digital PDF** (`fda_medwatch_followup.pdf`) | Neurologist follow-up report confirming seizure episode resolved after Neuroval discontinuation. | Follow-up report linking; synthetic style-matched FDA Form 3500A grid; positive de-challenge outcome documentation. |
+| **07** | **Quality Complaint Only (PQC)** | **Flavor 1: Digital PDF** (`packaging_defect_report.pdf`) | Pharmacy Director reporting Lot #BL-8802 blister packs have breached foil seals with oxidized crumbling tablets. | Pure PQC (Cardioril 10mg, Exp 11/2026, 12 cartons / 360 strips, zero patient exposure, zero adverse events, no photo embedded in PDF). |
+| **08** | **Quality Complaint Only (PQC)** | **No Attachment (Pure Email Text)** | Retail pharmacist reporting suspected counterfeit packaging of Lipocur 20mg (Lot #LP-44109). | Pure PQC from email body (unsealed bottle neck, typography misalignment, cap color difference, zero patient exposure). |
+| **09** | **Medical Information (MI)** | **No Attachment (Pure Email Text)** | Clinical pharmacist inquiring whether Corzapan 10mg tablets can be crushed for feeding tube administration. | Pure MI inquiry #1 (hypothetical product inquiry; zero adverse reactions; zero defects); prevents false-positive ICSR tagging. |
+| **10** | **Not Relevant (Marketing / Spam)** | **No Attachment (Pure Email Text)** | Commercial promotional newsletter invitation for the "Global Pharma Compliance & AI Innovation Summit 2026". | Pure spam/marketing; model must classify as `Not Relevant` with high confidence ($>0.95$) and extract zero clinical entities. |
+| **11** | **Medical Information (MI)** | **No Attachment (Pure Email Text)** | Compounding specialist inquiring regarding Cefatox 1g stability and dilution compatibility in D5W IV infusion bags. | Pure MI inquiry #2 (reconstitution, refrigerated stability, room temp infusion kinetics; zero adverse reactions; zero defects). |
+
+---
+
+## Detailed Clinical Specifications per Case (Canonical Physical Evidence)
+
+### Case 01: Acute Drug-Induced Liver Injury (ICSR)
+- **Category**: `Safety Report (ICSR)` (Confidence: ~0.98)
+- **Attached Document**: `cioms_form_MK_Cardioril.pdf` (Synthetic Style-Matched CIOMS Form I, Digital PDF)
+- **Email File**: `test-data/emails/email_01.eml`
+
+```email
+From: "Dr. Sarah Jenkins, MD" <sjenkins@metrohealth-chicago.org>
+To: Clinevo Safety Mailbox <drugsafety@clinevotech.com>
+Date: Wed, 12 Nov 2025 14:22:10 -0600
+Subject: URGENT: Individual Case Safety Report (ICSR) - Suspect DILI with Cardioril (Pt M.K.)
+Message-ID: <20251112.142210.sjenkins@metrohealth-chicago.org>
+X-Priority: 1
+
+Dear Pharmacovigilance Team,
+
+I am submitting an urgent spontaneous adverse drug reaction report concerning a 58-year-old female patient (M.K.) under my care who developed acute drug-induced liver injury (DILI) and jaundice following treatment with Cardioril 20 mg once daily.
+
+The patient required acute hospital admission on November 10, 2025 due to significantly elevated transaminases (>9x ULN) and hyperbilirubinemia (Total Bili: 4.8 mg/dL) meeting Hy's law criteria. Viral hepatitis serologies and abdominal ultrasound were negative for biliary obstruction.
+
+Cardioril was promptly discontinued on admission, and liver transaminases are beginning to trend down. Please find attached the completed official CIOMS-I reporting form along with the structured hepatic chemistry laboratory panel for your expedited safety evaluation.
+
+Please acknowledge receipt of this regulatory submission.
+
+Sincerely,
+Sarah Jenkins, MD, FACP
+Department of Gastroenterology, MetroHealth Medical Center
+2500 MetroHealth Dr, Chicago, IL 60609
+Tel: (312) 555-0188 | Email: sjenkins@metrohealth-chicago.org
+```
+
+**Expected AI Extraction**:
+- Patient: Initials `M.K.`, DOB `14-MAY-1967`, Age `58 YRS`, Sex `FEMALE`, Weight `68 kg (150 lbs)`.
+- Suspect Drug: `Cardioril (cardioril hydrochloride) 20 mg once daily (QD)`, Lot `Lot #CR-2025-0981 (Exp: 08/2027)`.
+- Adverse Reaction: `Acute Drug-Induced Liver Injury (DILI)`, `Jaundice`, `Scleral Icterus`, `Dark Brown Urine`. Onset: `08-NOV-2025`.
+- Laboratory Matrix: ALT `540 U/L`, AST `420 U/L`, Total Bilirubin `4.8 mg/dL`, ALP `210 U/L`, Serum Creatinine `0.9 mg/dL`, Viral Serology `Negative`.
+- Seriousness: `Hospitalization: YES`, `Life-Threatening: NO`, `Death: NO`.
+- Sourcing: Citations linked to `cioms_form_MK_Cardioril.pdf:Page1:Box1-3a, Box6, Box14-21, Box23, Box24a`.
+
+---
+
+### Case 02: Acute Anaphylaxis (Scanned Handwritten Intake)
+- **Category**: `Safety Report (ICSR)` (Confidence: ~0.82 due to handwriting)
+- **Attached Document**: `urgent_care_intake_handwritten.pdf` (Real photograph of bedside clinical intake record)
+- **Email File**: `test-data/emails/email_02.eml`
+
+```email
+From: "Dr. A. Peterson, MD" <a.peterson@stmarys-hospital.org>
+To: Clinevo Drug Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sun, 10 Dec 2023 15:30:00 -0500
+Subject: URGENT: Adverse Drug Event Report - Acute Anaphylaxis s/p InjectaPen (Pt Jane Doe)
+Message-ID: <20231210.153000.apeterson@stmarys-hospital.org>
+X-Priority: 1
+
+Dear Pharmacovigilance Department,
+
+I am urgently submitting an initial adverse event report for a 33-year-old female patient (Jane Doe, DOB: 05/18/1990) who presented to St. Mary's Emergency Department in severe acute anaphylactic shock 20 minutes following self-injection of InjectaPen.
+
+Patient presented with generalized urticaria, marked lip and perioral angioedema, inspiratory stridor, and profound hypotension (BP 85/50, HR 128). Immediate emergency intervention was initiated: Epinephrine 0.3 mg IM, high-flow oxygen, IV fluid resuscitation, and admission to the emergency unit.
+
+Attached is the photograph of our emergency intake and triage record completed at bedside.
+
+Sincerely,
+Dr. A. Peterson, MD
+Emergency Department, St. Mary's General Hospital
+NPI: 9876543210 | Email: a.peterson@stmarys-hospital.org
+```
+
+**Expected AI Extraction (Zero-Hallucination Policy)**:
+- Patient: Name `Jane Doe`, DOB `05/18/1990`, Age `33`, Sex `F`, Weight: `"Not stated"`.
+- Suspect Drug: Name `InjectaPen`, Dose: `"Not stated"`, Lot: `"Not stated"`. *(Zero-hallucination mandate: Dose is not stated on triage sheet or in email; must not be guessed).*
+- Emergency Treatment: `Epinephrine 0.3 mg IM, high-flow oxygen, IV fluid resuscitation` *(Separately documented from suspect product).*
+- Adverse Reaction: `Acute Anaphylaxis (Grade 3)`, `Generalized Urticaria / Hives`, `Facial & Perioral Angioedema`, `Inspiratory Stridor`.
+- Triage Vitals: BP `85/50`, HR `128 bpm`, SpO2 `91%`.
+- Seriousness: `Life-Threatening: YES`, `Hospitalization: YES`, `Death: NO`.
+- Sourcing: Citations linked to `urgent_care_intake_handwritten.pdf:Page1`.
+
+---
+
+### Case 03: Consumer Palpitations & Tachycardia (Pure Email ICSR)
+- **Category**: `Safety Report (ICSR)` (Confidence: ~0.90)
+- **Attached Document**: None (Pure Email Text)
+- **Email File**: `test-data/emails/email_03.eml`
+
+```email
+From: Emily Watson <emily.watson92@consumer-mail.com>
+To: Clinevo Drug Safety Intake <drugsafety@clinevotech.com>
+Date: Fri, 14 Nov 2025 09:14:22 -0700
+Subject: Terrible heart palpitations and dizzy spells after taking Corzapan 10mg
+Message-ID: <20251114.091422.ewatson@consumer-mail.com>
+
+Hello Drug Safety Team,
+
+I am writing this email to report a really scary reaction I just experienced after taking Corzapan 10mg tablets. My doctor prescribed this to me four days ago for mild hypertension and work-related anxiety.
+
+Yesterday morning (November 13th), about an hour after taking my fourth pill, my heart started pounding uncontrollably like it was going to jump right out of my chest. I felt extremely lightheaded, broke out into a cold sweat, and almost passed out on my kitchen floor. My smartwatch alerted me that my resting pulse shot up to 154 bpm while I was just sitting down. I also felt tight in my chest and had trouble catching my breath for nearly two hours.
+
+My husband drove me to our family doctor (Dr. Robert Hayes at Denver Family Medicine) who examined me and told me to immediately stop taking Corzapan. He said it was an acute drug-induced tachycardia and palpitations episode.
+
+I am still feeling fatigued today, but my heart rate has calmed down to 78 bpm. I wanted to report this so other patients are warned. I threw the prescription bottle away, so I don't know the exact batch number, but it was filled last week at the Walgreens on Colfax.
+
+Patient Information:
+Name: Emily Watson
+Age: 42 years old
+Sex: Female
+Location: Denver, Colorado, USA
+Phone: (303) 555-0192
+Email: emily.watson92@consumer-mail.com
+
+Please confirm you received this report.
+```
+
+**Expected AI Extraction**:
+- Patient: Name `Emily Watson`, Age `42 years old`, Sex `Female`, Weight: `"Not stated"`.
+- Suspect Drug: `Corzapan 10mg tablets`, Dose: `10mg`, Frequency: `"Not stated"` *(Email mentions taking 4th pill after 4 days, but explicit frequency schedule is not stated)*, Lot: `"Not stated"`.
+- Adverse Reaction: `Drug-Induced Tachycardia (Pulse 154 bpm)`, `Heart Palpitations`, `Dizzy Spells / Extreme Lightheadedness`, `Near-Syncope`, `Chest Tightness`, `Shortness of Breath`.
+- Dechallenge: `Positive (Corzapan stopped by Dr. Robert Hayes; resting pulse normalized to 78 bpm)`.
+- Seriousness: `Hospitalization: NO`, `Life-Threatening: NO`, `Death: NO`.
+- Sourcing: `emails/email_03.eml:Body`.
+
+---
+
+### Case 04: Contaminated Vial Causing Septic Shock (Multi-Bucket: ICSR + PQC)
+- **Category**: `Safety Report (ICSR)` AND `Quality Complaint (PQC)` (Multi-Label, Confidence: ~0.95)
+- **Attached Document**: `vial_contamination_sepsis.pdf` (Synthetic Style-Matched 2-Page FDA Form 3500A + Exhibit 1 Evidence Photo Log)
+- **Email File**: `test-data/emails/email_04.eml`
+
+```email
+From: "Dr. Robert Lang, MD" <rlang@nmh-icu.org>
+To: Clinevo Safety & Quality Intake <drugsafety@clinevotech.com>
+Date: Fri, 14 Nov 2025 14:10:00 -0600
+Subject: CRITICAL ALERT: Sepsis caused by Contaminated Cefatox 1g Vial (Lot #CX54831) - FDA Form 3500A Attached
+Message-ID: <20251114.141000.rlang@nmh-icu.org>
+
+URGENT: TO PHARMACOVIGILANCE AND QUALITY COMPLAINTS DEPARTMENTS,
+
+I am submitting an emergency dual-category report involving both an immediate Product Quality Complaint (PQC) and a life-threatening Serious Adverse Event (ICSR).
+
+Earlier today in our ICU, patient Arthur Pendelton (71yo male) developed septic shock and severe hypotension (BP 72/40) shortly after receiving an intravenous infusion of Cefatox 1g (cefatoxime sodium, Lot #CX54831, Exp 08/2025).
+
+Upon inspecting the medication vial, bedside staff discovered that the aluminum crimp collar on the rubber stopper was cracked open, and dark foreign particulate matter was visibly floating in the solution.
+
+We have quarantined all 48 remaining vials of Lot #CX54831 in our central pharmacy. The patient is currently on norepinephrine vasopressor support in critical condition.
+
+Attached is our official completed FDA Form 3500A report with Exhibit 1 (photographic evidence record of the contaminated vial).
+
+Sincerely,
+Robert Lang, MD, FCCM
+Director, Medical Intensive Care Unit
+Northwestern Memorial Hospital, Chicago, IL
+Tel: (312) 555-0320 | Email: rlang@nmh-icu.org
+```
+
+**Expected AI Extraction**:
+- Multi-label: Categories `["Safety Report (ICSR)", "Quality Complaint (PQC)"]`.
+- Quality Complaint: Product `Cefatox (cefatoxime sodium) 1g for Inj.`, Lot `Lot #CX54831`, Expiry `08/2025`, Defect: `Irregular mechanical rupture/tear in aluminum crimp collar, compromised blue elastomeric stopper closure integrity, visible dark black foreign particulate matter suspended in reconstituted solution`.
+- Quarantine: `All 48 remaining hospital vials of Lot #CX54831 quarantined under Seal #NMH-Q-94821`.
+- Meaningful Image Flag: `photo_present: true`, `photo_requires_human_review: true` (Recorded in Exhibit 1 on Page 2).
+- Patient: `A.P. (Arthur Pendelton)`, DOB `19-AUG-1954`, Age `71 YRS`, Sex `MALE`, Weight `74 kg (163 lbs)`.
+- Adverse Reaction: `Distributive Septic Shock`, `Acute Rigors`, `Hyperthermia (Temperature spike 39.8 C / 103.6 F)`, `Severe Hypotension (BP 72/40 mmHg, MAP 50)`.
+- Seriousness: `Life-Threatening: YES`, `Hospitalization: YES`, `Death: NO`.
+- Reporter: `Robert Lang, MD, FCCM (Director of Critical Care Medicine), Northwestern Memorial Hospital, Chicago, IL`.
+- Sourcing: Citations linked to `vial_contamination_sepsis.pdf:Page1:SectionB & SectionC (PQC)`, `Page1:SectionA & SectionB (ICSR)`, `Page2:Exhibit1 (Photo)`.
+
+---
+
+### Case 05: Spanish Toxic Epidermal Necrolysis (Non-English ICSR)
+- **Category**: `Safety Report (ICSR)` (Confidence: ~0.95)
+- **Language**: Spanish (`es`) -> Auto-translated to English with original language preserved
+- **Attached Document**: `notificacion_ram_madrid.pdf` (Synthetic Style-Matched Spanish AEMPS Yellow Card / Tarjeta Amarilla)
+- **Email File**: `test-data/emails/email_05.eml`
+
+```email
+From: "Dra. Elena Morales" <emorales@hospitallapaz.es>
+To: Clinevo Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sat, 15 Nov 2025 11:20:00 +0100
+Subject: URGENTE: Notificación de Reacción Adversa Grave - Necrólisis Epidérmica Tóxica con Lamotrigina (Pt C.O.)
+Message-ID: <20251115.112000.emorales@hospitallapaz.es>
+
+Estimado Departamento de Farmacovigilancia,
+
+Remito notificación urgente de una reacción adversa grave con desenlace potencialmente mortal en una paciente de 29 años (Carmen Ortiz, C.O.) tratada con Lamotrigina 100 mg/día por epilepsia mioclónica.
+
+La paciente ha desarrollado un cuadro clínico compatible con Necrólisis Epidérmica Tóxica (Síndrome de Lyell) con desprendimiento dermoepidérmico superior al 35% de la superficie corporal y afectación de mucosas oral y conjuntival. Ha sido ingresada de urgencia en la Unidad de Quemados Críticos del Hospital Universitario La Paz.
+
+El fármaco sospechoso ha sido suspendido de forma inmediata. Adjunto el formulario oficial de notificación de la AEMPS debidamente cumplimentado.
+
+Atentamente,
+Dra. Elena Morales, FEA Dermatología
+Hospital Universitario La Paz, Paseo de la Castellana 261, 28046 Madrid
+Tel: +34 91 555 0244 | Email: emorales@hospitallapaz.es
+```
+
+**Expected AI Extraction**:
+- Detected Language: `es` (Spanish).
+- Category: `Safety Report (ICSR)`.
+- Patient: `C.O. (Carmen Ortiz)`, DOB `22-MAR-1996`, Age `29 AÑOS`, Sex `MUJER`, Weight `54 kg`, Indication `Epilepsia mioclónica`.
+- Suspect Drug: `Lamotrigina (Lamictal) 100 mg`, Dose `100 mg/día vía oral`, Lot `Lote #LM-9941 (Caducidad: 05/2027)`.
+- Translated Adverse Reaction: `Toxic Epidermal Necrolysis (TEN / Lyell Syndrome) with sheet-like epidermal detachment >35% body surface area, positive Nikolsky sign, pseudomembranous stomatitis and conjunctivitis`.
+- Seriousness: `Life-Threatening: YES`, `Hospitalization: YES`, `Death: NO`.
+- Reporter: `Dra. Elena Morales (FEA Dermatología), Hospital Universitario La Paz, Madrid, España`.
+- Sourcing: `notificacion_ram_madrid.pdf:Page1`.
+
+---
+
+### Case 06: Follow-up De-challenge Report (FDA Form 3500A ICSR)
+- **Category**: `Safety Report (ICSR)` (Follow-up, Confidence: ~0.95)
+- **Attached Document**: `fda_medwatch_followup.pdf` (Synthetic Style-Matched FDA Form 3500A Follow-up)
+- **Email File**: `test-data/emails/email_06.eml`
+
+```email
+From: "Dr. Richard Vance, MD" <rvance@columbia-neurology.org>
+To: Clinevo Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sun, 16 Nov 2025 16:05:12 -0500
+Subject: FOLLOW-UP REPORT #1: Case Ref CR-2025-US-00744 - Seizure Resolution s/p Neuroval Discontinuation
+Message-ID: <20251116.160512.rvance@columbia-neurology.org>
+
+Dear Pharmacovigilance Team,
+
+This is follow-up report #1 to our initial safety report (Case Ref: CR-2025-US-00744) regarding patient David Miller (52yo male) who experienced a generalized tonic-clonic seizure 48 hours following dose escalation of Neuroval to 400 mg daily.
+
+I am pleased to report that following complete discontinuation of Neuroval on November 2nd, the patient has remained completely seizure-free for 14 consecutive days. Repeat 24-hour video EEG showed normalization of background rhythms without epileptiform discharges. Positive de-challenge is clinically confirmed.
+
+Attached is the updated FDA Form 3500A with Section B and C marked for follow-up resolution.
+
+Sincerely,
+Dr. Richard Vance, MD
+Department of Neurology, Columbia University Medical Center
+New York, NY 10032 | Tel: (212) 555-0199
+```
+
+**Expected AI Extraction**:
+- Category: `Safety Report (ICSR)`.
+- Report Type: `Follow-up Report #1 (Clinical Resolution & Dechallenge Confirmation)`.
+- Patient: `D.M. (David Miller)`, DOB `11-FEB-1973`, Age `52 YRS`, Sex `MALE`, Weight `79 kg`.
+- Suspect Drug: `Neuroval (neuroval HCl) 200mg/400mg`, Dose `Titrated to 400 mg PO QD`, Lot `Lot #NV-2025-110 (Exp 09/27)`.
+- Clinical Outcome: `Seizures resolved without anticonvulsant therapy; 24h video EEG on 14-NOV-2025 normalized; Positive de-challenge confirmed on 16-NOV-2025 review`.
+- Reporter: `Dr. Richard Vance, MD, PhD, Department of Neurology, Columbia University Irving Medical Center, New York, NY`.
+- Sourcing: `fda_medwatch_followup.pdf:Page1`.
+
+---
+
+### Case 07: Blister Foil Breach Defect (Quality Complaint Only)
+- **Category**: `Quality Complaint (PQC)` ONLY (Confidence: ~0.98)
+- **Attached Document**: `packaging_defect_report.pdf` (Synthetic Pharmacy Defect Inspection Form)
+- **Email File**: `test-data/emails/email_07.eml`
+
+```email
+From: "Robert Vance, PharmD" <rvance@metrohealth-pharmacy.org>
+To: Clinevo Product Quality Department <qualitycomplaints@clinevotech.com>
+Date: Mon, 17 Nov 2025 08:30:00 -0600
+Subject: PRODUCT QUALITY COMPLAINT: Compromised Blister Foil & Oxidized Tablets (Lot #BL-8802)
+Message-ID: <20251117.083000.rvance@metrohealth-pharmacy.org>
+
+To Quality Assurance & Complaints Investigation,
+
+Our central pharmacy is filing an official Product Quality Complaint regarding Cardioril 10mg blister packs, Lot #BL-8802, Expiration Date: 11/2026.
+
+During routine unit-dose dispensing, pharmacy technicians identified multiple cartons where the aluminum foil backing was unsealed and peeling away from the PVC blister cavities. The enclosed tablets display dark discoloration, surface oxidation, and severe crumbling.
+
+No medication from this shipment was dispensed to patients; zero adverse events have occurred. All 12 boxes (360 blister strips) from Lot #BL-8802 have been quarantined in our pharmacy quarantine cage.
+
+Please find our internal Pharmacy Defect Inspection Form attached. We request immediate replacement and return shipping instructions.
+
+Robert Vance, PharmD, BCPS
+Director of Pharmacy Operations, MetroHealth Medical Center
+Tel: (312) 555-0140 | Email: rvance@metrohealth-pharmacy.org
+```
+
+**Expected AI Extraction**:
+- Category: `Quality Complaint (PQC)` ONLY.
+- Product: `Cardioril 10mg Film-Coated Tablets`, Lot `Lot #BL-8802`, Expiration `11/2026`.
+- Package: `10-tablet push-through blister cards`, Quantity Affected: `12 cartons (360 strips / 3,600 tablets)`.
+- Defect: `Packaging Integrity Failure & Chemical Oxidation / Degradation. Aluminum lidding foil unsealed and peeling away from PVC/PVDC cavities; tablets display dark discoloration, surface oxidation, softening, friability breakdown`.
+- Disposition: `100% Stock Quarantined in Vault under Seal #Q-2025-094`.
+- Photo in PDF: `None (No photo embedded in PDF)`.
+- Patient / Adverse Event: `None / Not Applicable` (Explicitly verified as zero patient exposure).
+- Reporter: `Robert Vance, PharmD, BCPS (Director of Pharmacy Operations), MetroHealth Medical Center, Chicago, IL`.
+- Sourcing: `packaging_defect_report.pdf:Page1`.
+
+---
+
+### Case 08: Suspected Counterfeit Packaging (Pure Email PQC)
+- **Category**: `Quality Complaint (PQC)` ONLY (Confidence: ~0.98)
+- **Attached Document**: None (Pure Email Text)
+- **Email File**: `test-data/emails/email_08.eml`
+
+```email
+From: "Karen Patel, RPh" <kpatel@apex-care-pharmacy.com>
+To: Clinevo Product Quality Department <qualitycomplaints@clinevotech.com>
+Date: Tue, 18 Nov 2025 10:15:45 -0500
+Subject: Urgent Quality Notice: Suspected Counterfeit Packaging - Lipocur 20mg (Lot #LP-44109)
+Message-ID: <20251118.101545.kpatel@apex-care-pharmacy.com>
+
+Dear Quality Complaints Team,
+
+I am writing as the Pharmacist-in-Charge at Apex Care Pharmacy in Boston, MA. We received a delivery yesterday from a secondary wholesaler containing 10 bottles of Lipocur 20mg tablets (Lot #LP-44109).
+
+Upon physical inspection, we strongly suspect counterfeit or tampered packaging:
+1. The bottle neck lacks the standard induction inner heat-seal.
+2. The expiration date typography on the bottle label does not match our usual commercial stock (font is misaligned and lacks the 2D data matrix barcode).
+3. The bottle cap color is a noticeably darker shade of blue than official product packaging.
+
+We have quarantined all 10 bottles in our pharmacy vault. No bottles have been sold to consumers, and no patients have ingested this stock. Please advise on chain-of-custody pickup for laboratory authentication.
+
+Karen Patel, RPh
+Apex Care Pharmacy #104, Boston, MA
+Tel: (617) 555-0166 | Email: kpatel@apex-care-pharmacy.com
+```
+
+**Expected AI Extraction**:
+- Category: `Quality Complaint (PQC)` ONLY.
+- Product: `Lipocur 20mg tablets`, Lot `Lot #LP-44109`, Quantity: `10 bottles`.
+- Defects: `1. Bottle neck lacks standard induction inner heat-seal. 2. Expiration date typography misaligned and lacks 2D data matrix barcode. 3. Bottle cap is noticeably darker shade of blue`.
+- Disposition: `Quarantined in pharmacy vault; requesting chain-of-custody pickup for lab authentication`.
+- Patient / Adverse Event: `None / Not Applicable`.
+- Reporter: `Karen Patel, RPh (Pharmacist-in-Charge), Apex Care Pharmacy #104, Boston, MA`.
+- Sourcing: `emails/email_08.eml:Body`.
+
+---
+
+### Case 09: Feeding Tube Crushing Inquiry (Pure Email MI #1)
+- **Category**: `Medical Information (MI)` ONLY (Confidence: ~0.97)
+- **Attached Document**: None (Pure Email Text)
+- **Email File**: `test-data/emails/email_09.eml`
+
+```email
+From: "David Wu, BCPS" <david.wu@ucsf-clinical.edu>
+To: Clinevo Medical Information Department <medinfo@clinevotech.com>
+Date: Wed, 19 Nov 2025 13:40:00 -0800
+Subject: Medical Information Request: Can Corzapan 10mg tablets be crushed for NG-tube administration?
+Message-ID: <20251119.134000.dwu@ucsf-clinical.edu>
+
+Dear Medical Information Department,
+
+I am a clinical oncology pharmacist at UCSF Medical Center caring for an elderly patient with severe dysphagia who has an active nasogastric (NG) feeding tube in place.
+
+The patient has been prescribed Corzapan 10mg once daily for chronic hypertension. The package insert indicates film-coated tablets but does not explicitly state whether the tablets can be crushed and suspended in sterile water for enteral feeding tube delivery without altering bioavailability or causing tube occlusion.
+
+Could your medical affairs team please provide any pharmacokinetic or stability data regarding:
+1. Crushing Corzapan 10mg tablets for enteral administration.
+2. Potential adsorption of the active substance to polyurethane enteral feeding tubes.
+3. Co-administration with enteral nutrition formulas.
+
+There is currently no patient adverse event or product defect. This is purely a prospective clinical inquiry.
+
+Best regards,
+David Wu, PharmD, BCPS
+Clinical Pharmacy Specialist, UCSF Health
+San Francisco, CA | Tel: (415) 555-0198
+```
+
+**Expected AI Extraction**:
+- Category: `Medical Information (MI)` ONLY.
+- Product: `Corzapan 10mg film-coated tablets`.
+- Questions Asked: `Can tablets be crushed and suspended in sterile water for NG enteral feeding tube delivery? Potential adsorption to polyurethane tubes? Co-administration compatibility with enteral nutrition formulas?`
+- Adverse Reaction / Product Defect: `None / Not Applicable`.
+- Reporter: `David Wu, PharmD, BCPS, UCSF Health, San Francisco, CA`.
+- Sourcing: `emails/email_09.eml:Body`.
+
+---
+
+### Case 10: Pharmaceutical Conference Marketing (Not Relevant / Spam)
+- **Category**: `Not Relevant` ONLY (Confidence: ~0.99)
+- **Attached Document**: None (Pure Email Text)
+- **Email File**: `test-data/emails/email_10.eml`
+
+```email
+From: PharmaTech Global Summit <events@pharmasummit-global2026.com>
+To: Drug Safety Department <drugsafety@clinevotech.com>
+Date: Thu, 20 Nov 2025 08:00:00 +0000
+Subject: Early Bird Registration Open: 14th Annual Global AI in Pharmacovigilance & Drug Safety Summit
+Message-ID: <20251120.080000.events@pharmasummit-global2026.com>
+
+Join 500+ global safety leaders, regulatory directors, and AI pioneers in Boston, MA on March 24–26, 2026!
+
+Keynote sessions include:
+• Generative AI & LLMs in ICSR Intake Automation
+• GVP Module VI Inspection Readiness in 2026
+• Automating Literature Screening with Multimodal AI
+• Real-World Evidence & Signal Detection Case Studies
+
+Register before December 15th to save $400 with our Early Bird Discount code: SAFETYAI2026.
+Group discounts available for teams of 3 or more.
+
+Click here to reserve your delegate pass: https://www.pharmasummit-global2026.com/register
+To unsubscribe from future event notifications, click here.
+```
+
+**Expected AI Extraction**:
+- Category: `Not Relevant` ONLY.
+- AI Reason: *"Commercial marketing advertisement for an industry conference. Contains zero patient safety data, zero product quality defects, and zero clinical product questions."*
+- Extracted Entities: All empty / `"Not stated"`.
+- Sourcing: `emails/email_10.eml:Body`.
+
+---
+
+### Case 11: Cefatox IV Dilution & Stability Inquiry (Pure Email MI #2)
+- **Category**: `Medical Information (MI)` ONLY (Confidence: ~0.98)
+- **Attached Document**: None (Pure Email Text)
+- **Email File**: `test-data/emails/email_11.eml`
+
+```email
+From: "Dr. Elena Rostova, PharmD, BCPS" <e.rostova@massgeneral-pharmacy.org>
+To: Clinevo Medical Information Service <medinfo@clinevotech.com>
+Date: Fri, 21 Nov 2025 09:15:00 -0500
+Subject: Medical Information Request: In-Use Compatibility & Dilution Stability for Cefatox 1g in D5W
+Message-ID: <20251121.091500.erostova@massgeneral-pharmacy.org>
+
+Dear Medical Information Team,
+
+I am writing on behalf of our inpatient pharmacy clinical operations team at Massachusetts General Hospital with a stability inquiry regarding Cefatox (cefatoxime sodium) 1g for Injection.
+
+We are standardizing our hospital-wide intravenous infusion protocol for adult surgical prophylaxis in patients with normal renal function. The prescribed dose is 1g IV every 8 hours. Our cleanroom compounding protocol calls for reconstituting each 1g vial with 10 mL Sterile Water for Injection, followed by immediate dilution into a 100 mL Dextrose 5% in Water (D5W) IV infusion bag.
+
+Could Medical Affairs please provide documentation or monograph data addressing:
+1. Chemical stability and potency retention (>95%) of Cefatox 1g in 100 mL D5W at refrigerated temperatures (2 deg C to 8 deg C) for up to 48 hours.
+2. In-use room temperature (20 deg C to 25 deg C) stability during a prolonged 4-hour intravenous infusion.
+3. Compatibility with Y-site co-infusion of standard 0.9% Sodium Chloride or Lactated Ringer's solution.
+
+Please note: There is no adverse patient event, no clinical complication, and no physical defect in our product stock. This inquiry is solely for hospital protocol formulation and compounding guidance.
+
+Thank you for your assistance.
+
+Sincerely,
+Dr. Elena Rostova, PharmD, BCPS
+Senior Clinical Compounding Specialist
+Department of Pharmacy Services, Massachusetts General Hospital
+55 Fruit Street, Boston, MA 02114
+Tel: (617) 555-0144 | Email: e.rostova@massgeneral-pharmacy.org
+```
+
+**Expected AI Extraction**:
+- Category: `Medical Information (MI)` ONLY.
+- Product: `Cefatox (cefatoxime sodium) 1g for Injection`.
+- Questions Asked: `Refrigerated stability in 100 mL D5W (48h), room-temp infusion stability (4h), and Y-site compatibility with normal saline or Lactated Ringer's`.
+- Adverse Reaction / Product Defect: `None / Not Applicable`.
+- Reporter: `Dr. Elena Rostova, PharmD, BCPS, Massachusetts General Hospital, Boston, MA`.
+- Sourcing: `emails/email_11.eml:Body`.
+
+---
+
+## PART II: Published Medical Literature Articles (LIT-01 to LIT-07)
+> **Regulatory Context**: Literature screening engine evaluates medical journal reprints (EMA GVP Module VI Section VI.B.1 & FDA 21 CFR 314.80).  
+> **Key Objective**: Filter non-reportable review articles, accurately extract clinical cases from multi-column layouts, and split multi-case clinical series into separate individual ICSR records (**+30% Bonus Requirement**).
+
+### LIT-01: Severe Drug-Induced Autoimmune Hepatitis (Single Case)
+- **Document File**: `test-data/pdfs/literature_articles/article_01_dili_case.pdf`
+- **Format**: 2-Column Academic Journal Layout (1 page)
+- **Citation**: *Journal of Clinical Hepatology & Pharmacovigilance*, Vol 42, No 4, DOI: `10.1016/j.jchpv.2025.04.012`
+- **Authors**: Julian Montgomery, MD, PhD; Evelyn Vance, MD; Kenneth Ross, MD (Princeton Academic Medical Center, NJ)
+- **Category**: `Safety Report (ICSR)` (Reportable: YES — Identifiable single patient)
+- **Clinical Summary**:
+  - Patient: 61-year-old Caucasian male, 10-year refractory hypertension.
+  - Drug: Cardioril 40 mg PO QD for 42 days.
+  - Reaction: Idiosyncratic drug-induced autoimmune-like hepatitis, jaundice, dark urine, fatigue.
+  - Labs: ALT 680 U/L (>12x ULN), AST 510 U/L (>12x ULN), Total Bilirubin 6.2 mg/dL, ANA titer 1:640, liver biopsy showing interface hepatitis with bridging necrosis.
+  - De-challenge: Cardioril discontinued; oral prednisone taper; transaminases normalized in 6 weeks.
+- **Expected AI Extraction**:
+  - `category`: `["Safety Report (ICSR)"]`
+  - `patient`: `{"age": "61-year-old", "sex": "male", "history": "10-year history of refractory hypertension and hyperlipidemia"}`
+  - `product`: `{"name": "Cardioril (cardioril hydrochloride)", "dose": "40 mg PO QD", "latency": "42 days"}`
+  - `reaction`: `{"terms": ["Drug-Induced Autoimmune-Like Hepatitis", "Jaundice", "Scleral Icterus"], "serious": true, "hospitalization": true}`
+  - `source_citation`: `"article_01_dili_case.pdf:Page1"`
+
+---
+
+### LIT-02: Stevens-Johnson Syndrome with Neuroval (Single Case)
+- **Document File**: `test-data/pdfs/literature_articles/article_02_sjs_case.pdf`
+- **Format**: 2-Column Academic Journal Layout (1 page)
+- **Citation**: *British Journal of Clinical Dermatology*, Case Reports, DOI: `10.1111/bjcd.2025.10921`
+- **Authors**: Sanjay Gupta, MD; Priya Sharma, MD (Johns Hopkins Bayview Medical Center)
+- **Category**: `Safety Report (ICSR)` (Reportable: YES — Identifiable single patient)
+- **Clinical Summary**:
+  - Patient: 24-year-old female with idiopathic trigeminal neuralgia.
+  - Drug: Neuroval (neuroval HCl) 150 mg daily for 18 days.
+  - Reaction: Stevens-Johnson syndrome (SJS), high fever (39.5°C), purpuric targetoid macules, 8% BSA epidermal detachment, lip hemorrhagic crusting, bilateral purulent conjunctivitis.
+  - Outcome: ICU burn unit admission; IVIG (1 g/kg/day for 3 days); complete re-epithelialization by day 21. Serious: YES (Life-Threatening & Hospitalization).
+- **Expected AI Extraction**:
+  - `category`: `["Safety Report (ICSR)"]`
+  - `patient`: `{"age": "24-year-old", "sex": "female", "indication": "Idiopathic trigeminal neuralgia"}`
+  - `product`: `{"name": "Neuroval (neuroval HCl)", "dose": "150 mg daily", "latency": "18 days"}`
+  - `reaction`: `{"terms": ["Stevens-Johnson Syndrome (SJS)", "Epidermal Detachment (~8% BSA)", "Lip Hemorrhagic Crusting"], "serious": true, "life_threatening": true, "hospitalization": true}`
+  - `source_citation`: `"article_02_sjs_case.pdf:Page1"`
+
+---
+
+### LIT-03: Cutaneous Adverse Reactions Series — 3 Distinct Patients (+30% Bonus Test Asset)
+- **Document File**: `test-data/pdfs/literature_articles/article_03_multicase_series.pdf`
+- **Format**: 2-Column Academic Journal Layout (Clinical Case Series, 1 page)
+- **Citation**: *The Lancet Regional Health — Europe*, DOI: `10.1016/j.lanepe.2025.100984`
+- **Authors**: Marcus Sterling, MD, FRCP; Alistair Finch, MBChB; Eleanor Vance, MD (Royal Free Hospital & Guy's and St Thomas' NHS Trust, London)
+- **Category**: `Safety Report (ICSR)` — **MULTI-CASE CLINICAL SERIES**
+- **Crucial Engine Requirement (+30% Bonus)**: Literature engine must recognize this document describes **3 separate independent patients** and split it into **3 distinct ICSR records** rather than aggregating them into 1 record.
+- **Patient Case Breakdown**:
+  1. **Patient 1 (A.J.)**: 45-year-old male, weight 81 kg. Drug: Cardioril 20 mg once daily (onset day 22). Reaction: Severe Erythema Multiforme Major. Serious: YES (Hospitalization).
+  2. **Patient 2 (B.L.)**: 62-year-old female, weight 64 kg. Drug: Corzapan 10 mg daily (onset 8 weeks). Reaction: Subacute Cutaneous Lupus Erythematosus (SCLE), Anti-Ro/SSA >240 U/mL. Serious: NO.
+  3. **Patient 3 (C.M.)**: 38-year-old female, weight 59 kg. Drug: Cardioril 10 mg daily (onset 90 min). Reaction: Acute Generalized Urticaria and Periorbital Angioedema. Serious: YES (Life-Threatening / Emergency IM epinephrine).
+- **Expected AI Extraction**:
+  - `multicase_detected`: `true`, `total_cases_extracted`: `3`
+  - `split_records`: 3 independent ICSR records with individual patient facts.
+  - `source_citations`: `"article_03_multicase_series.pdf:Page1:Col1-Col2"`
+
+---
+
+### LIT-04: Preclinical In-Vitro & Animal Metabolism (Non-Reportable Negative Review)
+- **Document File**: `test-data/pdfs/literature_articles/article_04_preclinical_review.pdf`
+- **Format**: 2-Column Academic Journal Layout (1 page)
+- **Citation**: *European Journal of Pharmaceutical Sciences*, DOI: `10.1016/j.ejps.2025.105412`
+- **Authors**: Heinrich Mueller, PhD; Klaus Schmidt, PhD (Technical University of Munich)
+- **Category**: `Not Relevant` / `Literature: Non-Reportable`
+- **Clinical Context**: In-vitro metabolic clearance and CYP450 interaction assays in Sprague-Dawley rat hepatocytes and human liver microsomes. Zero human subjects, zero clinical cases.
+- **Expected AI Decision**:
+  - `reportable_to_health_authority`: `false`
+  - `exclusion_reason`: *"Preclinical in-vitro and rat hepatocyte metabolic clearance study. Contains zero human subjects and zero clinical cases (GVP Module VI Section VI.B.1 exempt)."*
+
+---
+
+### LIT-05: Meta-Analysis & Systematic Review (Non-Reportable Negative Review)
+- **Document File**: `test-data/pdfs/literature_articles/article_05_meta_analysis_review.pdf`
+- **Format**: 2-Column Academic Journal Layout (1 page)
+- **Citation**: *International Journal of Cardiology Reviews*, DOI: `10.1016/j.ijcard.2025.110294`
+- **Authors**: Catherine Tremblay, MD; Jean-Luc Moreau, MD (Montreal Heart Institute & McGill University)
+- **Category**: `Not Relevant` / `Literature: Non-Reportable`
+- **Clinical Context**: Systematic review of 34 RCTs (28,450 aggregate participants). Reports pooled odds ratios. Zero individual identifiable patient reports.
+- **Expected AI Decision**:
+  - `reportable_to_health_authority`: `false`
+  - `exclusion_reason`: *"Systematic review and meta-analysis of 34 clinical trials (28,450 aggregate patients). Reports pooled odds ratios without individual identifiable patient case reports."*
+
+---
+
+### LIT-06: Delayed Fulminant Myocarditis (2-Page Buried Clinical Case)
+- **Document File**: `test-data/pdfs/literature_articles/article_06_buried_case_study.pdf`
+- **Format**: 2-Page Two-Column Academic Journal Layout (Dense, realistic multi-page paper)
+- **Citation**: *Journal of Clinical Oncology & Immunotherapy*, Vol 18, No 3, DOI: `10.1200/JCOI.2025.18.3.412`
+- **Authors**: Robert H. Caldwell, MD; Danielle M. Zhang, MD, PhD; Christopher Owens, MD (Dana-Farber Cancer Institute & Harvard Medical School)
+- **Category**: `Safety Report (ICSR)` (Reportable: YES — Identifiable single patient buried after heavy background discussion)
+- **Clinical Summary**:
+  - Page 1: Abstract, extensive background on checkpoint inhibitor biology (PD-1 / CTLA-4 axis), epidemiological incidence rates from WHO VigiBase registries.
+  - Case Presentation (buried across Page 1 & Page 2): 68-year-old female (Patient H.L., 62 kg) with metastatic melanoma receiving Nivolumab (Opdivo) 240 mg IV q2w + Ipilimumab (Yervoy) 1 mg/kg IV q6w. Developed severe acute fulminant myocarditis on day 44 (cycle 3), complete 3rd-degree AV block, troponin-T 1.84 ng/mL, LVEF decline to 32%, CICU admission, temporary transvenous pacing, pulse methylprednisolone 1,000mg/day, and plasmapheresis.
+- **Expected AI Extraction**:
+  - `category`: `["Safety Report (ICSR)"]`
+  - `patient`: `{"identifier": "Patient H.L.", "age": "68-year-old", "sex": "female", "weight": "62 kg"}`
+  - `product`: `{"name": "Nivolumab (Opdivo) + Ipilimumab (Yervoy)", "latency": "Day 44 post-initiation (Cycle 3)"}`
+  - `reaction`: `{"terms": ["Delayed Immune-Mediated Fulminant Myocarditis", "Complete (Third-Degree) AV Heart Block", "Acute LVEF Decline to 32%"], "serious": true, "life_threatening": true, "hospitalization": true}`
+  - `source_citation`: `"article_06_buried_case_study.pdf:Page1:Col2 to Page2:Col1"`
+
+---
+
+### LIT-07: Drug-Induced Interstitial Lung Disease (2-Page Multi-Case + Registry Screening)
+- **Document File**: `test-data/pdfs/literature_articles/article_07_complex_screening_case.pdf`
+- **Format**: 2-Page Two-Column Academic Journal Layout
+- **Citation**: *American Journal of Respiratory and Critical Care Medicine*, DOI: `10.1164/rccm.2025.09.1182`
+- **Authors**: Samantha Reed, MD; Tariq Al-Mansoor, MD; Fiona Gallagher, MD (Johns Hopkins University School of Medicine)
+- **Category**: `Safety Report (ICSR)` — **MULTI-CASE SCREENING (2 Patients + Non-Case Registry Filtering)**
+- **Clinical Summary**:
+  - Contains a distracting section describing a 420-patient non-case observational registry cohort (must be filtered out as non-reportable background).
+  - Patient 1: 54-year-old male (Patient T.K., 75 kg) with rheumatoid arthritis receiving Infliximab (Remicade) 5 mg/kg IV infusions. Developed acute severe interstitial pneumonitis, bilateral ground-glass opacities, hypoxemia (PaO2 54 mmHg). Serious: YES (MICU, mechanical ventilation).
+  - Patient 2: 41-year-old female (Patient M.S., 58 kg) with psoriatic arthritis receiving Leflunomide (Arava) 20 mg PO QD. Developed Cryptogenic Organizing Pneumonia (COP / BOOP), DLCO decline 28%. Serious: YES (Hospitalized, recovered after cholestyramine washout and prednisone).
+- **Expected AI Extraction**:
+  - `multicase_detected`: `true`, `total_cases_extracted`: `2`
+  - `non_case_cohort_filtered`: `true` (420-patient cohort ignored)
+  - `split_records`: 2 independent ICSR records.
+  - `source_citation`: `"article_07_complex_screening_case.pdf:Page1-Page2"`
+
+---
+
+## PART III: Additional Regulatory Forms & Specialized Test Documents
+
+### NON-ENG-02: German Charité Berlin BfArM UAW Meldebogen
+- **Document File**: `test-data/pdfs/non_english/bericht_uaw_charite_berlin.pdf`
+- **Form Standard**: Synthetic Style-Matched German BfArM UAW Reporting Form (§ 63b AMG).
+- **Originating Clinic**: Charité – Universitätsmedizin Berlin, Campus Virchow-Klinikum.
+- **Language**: German (`de`)
+- **Clinical Scenario**:
+  - Patient: Hans Schneider (H.S.), 63 Jahre alt, männlich, 88 kg.
+  - Verdächtiges Arzneimittel: Cardioril (Cardioril-HCl) 20 mg 1x täglich p.o., Ch.-B.: CR-2025-0814.
+  - Unerwünschte Wirkung: Akutes Angioödem von Lippen, Zunge und Pharynx, schwere Dyspnoe, inspiratorischer Stridor, diffuses Urtikaria-Exanthem.
+  - Schweregrad: Lebensbedrohlich: JA, Stationäre Aufnahme (Intensivstation Charité): JA.
+  - Meldender Arzt: Dr. med. Wolfgang Becker (Charité Berlin).
+- **Expected AI Extraction**:
+  - `detected_language`: `"de"`
+  - `category`: `["Safety Report (ICSR)"]`
+  - `translated_reaction`: `"Acute Angioedema of Lips, Tongue, and Pharynx, Severe Dyspnea, Inspiratory Stridor, Diffuse Urticaria"`
+  - `seriousness`: `{"life_threatening": true, "hospitalization": true}`
+  - `traceability_link`: Links back to original German terms in `bericht_uaw_charite_berlin.pdf:Page1`.
+
+---
+
+### DIG-03: CIOMS Form I — Pediatric Oncology Acute Cytokine Release
+- **Document File**: `test-data/pdfs/digital_forms/cioms_pediatric_oncology.pdf`
+- **Form Standard**: Synthetic Style-Matched CIOMS Form I Special Population Grid
+- **Scenario**: 8-year-old male (Lucas Torres, L.T., 26 kg) with ALL maintenance receiving OncoShield 50mg/m² IV (Lot #OS-2025-771). Developed acute cytokine release syndrome (rigors, fever 40.1°C, hypoxemia SpO2 88%, PICU admission).
+- **Category**: `Safety Report (ICSR)` (Special Population: Pediatric, Seriousness: Life-threatening & PICU Hospitalization).
+- **Reporter**: Dr. Amanda Bennett, MD, FAAP (Children's Memorial Hospital, Boston, MA).
+
+---
+
+### DIG-04: FDA Form 3500A — Initial Neuroval Seizure Report
+- **Document File**: `test-data/pdfs/digital_forms/fda_medwatch_initial_neuroval.pdf`
+- **Form Standard**: Synthetic Style-Matched FDA MedWatch 3500A Grid
+- **Scenario**: Initial report for 52-year-old male (David Miller, D.M., 79 kg) who suffered a new-onset generalized tonic-clonic seizure 48 hours following Neuroval dose escalation to 400mg daily. Admitted to Neuro ICU.
+- **Category**: `Safety Report (ICSR)` (Initial report pairing with follow-up `fda_medwatch_followup.pdf` in Case 06).
+- **Reporter**: Dr. Richard Vance, MD (Columbia University Medical Center).
+
+---
+
+### DIG-05: CIOMS Form I — Acute Kidney Injury / KDIGO Stage 3
+- **Document File**: `test-data/pdfs/digital_forms/cioms_form_renal_injury.pdf`
+- **Form Standard**: Synthetic Style-Matched CIOMS Form I Grid
+- **Scenario**: 67-year-old male (George Taylor, G.T., 76 kg) initiated Renotril 30mg PO QD. Developed oliguria, serum creatinine spike from 1.0 to 4.2 mg/dL (KDIGO 3 AKI), BUN 68 mg/dL, potassium 5.6 mEq/L. Hospitalized 5 days.
+- **Category**: `Safety Report (ICSR)` (Seriousness: Inpatient Hospitalization).
+- **Reporter**: Dr. Keith Miller, MD (Nephrology, Vanderbilt University Medical Center).
+
+---
+
+### MED-01: Cardioril Clinical Monograph & Renal Dosing Reference
+- **Document File**: `test-data/pdfs/medical_info/cardioril_clinical_monograph_dosing.pdf`
+- **Form Standard**: Synthetic Clinical Pharmacology Reference Monograph
+- **Content**: Detailed clinical dosing recommendations stratified by eGFR (Normal, Mild, Moderate CKD 3, Severe CKD 4/5, ESRD hemodialysis) and dialysis clearance kinetics.
+- **Category**: `Medical Information (MI)` ONLY (Zero patient data, zero adverse reactions, zero quality defects).
+
+---
+
+### MED-02: Corzapan Formulation Stability & Enteral Tube Interaction Guide
+- **Document File**: `test-data/pdfs/medical_info/corzapan_drug_interaction_guide.pdf`
+- **Form Standard**: Synthetic Medical Affairs Formulation Compatibility Table
+- **Content**: Enteral tube flushing protocols, crushing stability across NG, G-tube, and J-tube administration, and CYP3A4/CYP2C9 pharmacokinetic interaction tables.
+- **Category**: `Medical Information (MI)` ONLY (Pure pharmacology guidance inquiry reference).
+
+---
+
+### IRR-01: PharmaTech Global AI Summit Sponsorship Prospectus
+- **Document File**: `test-data/pdfs/irrelevant/pharmatech_conference_prospectus.pdf`
+- **Form Standard**: Synthetic Commercial Event Flyer & Sponsorship Pricing Matrix
+- **Content**: Sponsorship tiers ($45,000 Diamond, $28,000 Platinum, $15,000 Gold), booth layouts, attendee demographics for pharma marketing.
+- **Category**: `Not Relevant` ONLY (Spam / Commercial Marketing).
+
+---
+
+## PART IV: Master Evaluation & Ingestion Artifacts
+
+### 1. `manifest.json` — System Inventory & Ingestion Catalog
+- **Location**: [`test-data/manifest.json`](file:///c:/projects/SmartInbox/test-data/manifest.json)
+- **Role**: Structured catalog indexing all assets with separated physical assets and logical case inventory:
+  - `physical_email_assets`: 11 `.eml` files with exact SHA-256 hashes.
+  - `physical_pdf_assets`: 20 `.pdf` files with exact SHA-256 hashes.
+  - `physical_image_assets`: 2 `.jpg` files with exact SHA-256 hashes.
+  - `attachment_relationships`: Explicit mapping of the 6 emails with attached PDFs.
+  - `logical_case_inventory`: 27 benchmark cases.
+  - `deferred_requirements`: Explicitly tracking the 2nd handwritten PDF reserved for live user sheet.
+
+### 2. `benchmark.json` — Ground Truth Evaluation Key
+- **Location**: [`test-data/ground_truth/benchmark.json`](file:///c:/projects/SmartInbox/test-data/ground_truth/benchmark.json)
+- **Role**: 27 comprehensive gold-standard ground truth cases built 100% from physical source files:
+  - Covers every single physical asset on disk.
+  - Zero-hallucination verified: Case 02 dose is `"Not stated"`, Case 03 frequency is `"Not stated"`.
+  - Canonical reporters and defect descriptions matched to physical evidence.
+
+---
+
+## PART V: Final Minimum Assignment Requirements & Compliance Audit Checklist
+
+### Physical File Audit Against Clinevo Assignment Requirements
+
+| Data / Test Asset | Minimum Required | Target to Create | Current Physical Status | Audit Result | Remaining |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Intake `.eml` emails** | 10 | 10–11 | **11 files on disk** (`email_01.eml` to `email_11.eml`) | **PASS** | **0** |
+| **Safety Report (ICSR) examples** | Covered in emails | 6+ | **6 emails + 10 PDFs** | **PASS** | **0** |
+| **Quality Complaint (PQC)-only examples** | 2 | 2 | **2 emails** (Case 07, 08) + **2 PDFs** | **PASS** | **0** |
+| **Medical Information (MI)-only examples** | 2 | 2 | **2 emails** (Case 09, 11) + **2 PDFs** (MED-01, 02) | **PASS** | **0** |
+| **Not Relevant / Marketing examples** | 1 | 1+ | **1 email** (Case 10) + **1 PDF** (IRR-01) | **PASS** | **0** |
+| **Multi-label ICSR + PQC example** | At least 1 | 1+ | **1 case** (Case 04 MedWatch + contaminated vial) | **PASS** | **0** |
+| **Normal digital PDFs** | 5 | 5+ | **5 files on disk** (`digital_forms/*.pdf`) + 5 others | **PASS** | **0** |
+| **Scanned / handwritten PDFs** | 2 | 2 | **1 file on disk** (`urgent_care_intake_handwritten.pdf`) | **DEFERRED** | **1** |
+| **Case-bearing article PDFs** | 5 | 5 | **5 files on disk** (Articles 01, 02, 03, 06, 07) | **PASS** | **0** |
+| **Non-reportable negative article PDFs**| Recommended | 2 | **2 files on disk** (Articles 04, 05) | **PASS** | **0** |
+| **Total Literature Articles** | 5 | 7 | **7 files on disk** (`literature_articles/*.pdf`) | **PASS** | **0** |
+| **Non-English PDFs** | 2 | 2 | **2 files on disk** (`notificacion_ram_madrid.pdf`, `bericht_uaw_charite_berlin.pdf`) | **PASS** | **0** |
+| **PDF containing structured table(s)** | Required | 2+ | **8 PDFs on disk** (CIOMS labs, MedWatch grids, dosing tables) | **PASS** | **0** |
+| **PDF containing meaningful image(s)** | Required | 2+ | **2 PDFs on disk** (handwritten intake, vial contamination) | **PASS** | **0** |
+| **Image requiring human-review flag** | Required | 1+ | **1 photo exhibit** (cracked crimp seal with particulate) | **PASS** | **0** |
+| **Documents with deliberately missing fields**| Required | 2+ | **Cases 02, 03, 08, 09** (testing `"Not stated"`) | **PASS** | **0** |
+| **Field-level source/page traceability** | Required | All docs | **Full ground truth citations** in `benchmark.json` | **PASS** | **0** |
+| **Machine-readable ground truth JSON** | Required | 1 file | **1 file on disk** (`benchmark.json` covering all 27 cases) | **PASS** | **0** |
+| **Dataset manifest** | Recommended | 1 file | **1 file on disk** (`manifest.json` with separated assets) | **PASS** | **0** |
+| **Total Physical PDFs Verified** | 19 | 20 | **20 files on disk** (21st deferred for user photo) | **95% PASS** | **1** |
