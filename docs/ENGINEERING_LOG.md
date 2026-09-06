@@ -33,6 +33,19 @@ This document captures the chronological engineering narrative of the Clinevo Sm
     3. `docs/ENGINEERING_LOG.md` — Unified chronological engineering history, ADRs, trade-offs, failure analyses, and technical details.
   - *Action*: Removed obsolete historical generation and inspection scripts from `scripts/`, eliminated ephemeral scratch files, and verified all unit and integration tests.
 
+- **Event: Step 1 Foundational Data Contracts Definition**
+  - *Context*: Initiated Step 1 of the evidence-grounded architecture, decoupling monolithic extraction into atomic Fact ledgers, first-class Evidence, category-specific domain payloads, and common envelopes.
+  - *Implementation*:
+    1. `FactStatus`: Enforced 4 semantic states (`CONFIRMED`, `NOT_STATED`, `UNCERTAIN`, `CONFLICT`).
+    2. `VerificationResult`: Enforced 3 NLI outcomes (`SUPPORTS`, `CONTRADICTS`, `INSUFFICIENT`).
+    3. `Evidence`: Implemented first-class evidence linking source ID, evidence type (`email_body`, `pdf_text`, `defect_image`, etc.), verbatim snippet, and visual/character coordinates.
+    4. `Fact`: Atomic, category-independent clinical fact model with status, confidence, normalized value, and evidence links.
+    5. Category Payloads: Decoupled `IcsrPayload`, `PqcPayload`, `MiPayload`, and `NotRelevantPayload`.
+    6. `CaseEnvelope`: Common top-level contract supporting multi-label triage, document summary (10–15 sentences), reviewer summary, category payloads, and unified fact ledger.
+    7. `ReviewerBrief`: Reviewer-facing synthesis with curated `ReviewFocusItem`s and quantitative certainty statistics.
+    8. `LLMProvider`: Clean abstract provider contract implemented by `GeminiProvider` without coupling downstream logic to vendor SDKs.
+  - *Validation*: 10/10 contract unit tests passed in `test_data_contracts.py`. Existing parsers and baseline suites untouched.
+
 ---
 
 ### [2026-09-05] — Milestone: Angular Reviewer Workspace & Viewport Usability Verification
