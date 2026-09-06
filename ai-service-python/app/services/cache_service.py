@@ -358,7 +358,7 @@ class CacheService:
                 reaction=reaction,
                 concomitant_drugs=[],
                 lab_tests=labs,
-                clinical_narrative=str(case.get("narrative", f"Clinical case narrative for {case_id} based on physical source evidence.")),
+                clinical_narrative=str(case.get("narrative", "Clinical narrative not stated in source.")),
                 facts=all_icsr_facts
             )
             envelope_facts.extend(all_icsr_facts)

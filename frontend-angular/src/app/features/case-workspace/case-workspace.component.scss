@@ -994,6 +994,11 @@ $not-stated-dot: #94a3b8;
     border: 1px solid #e2e8f0;
     padding: 12px;
     border-radius: 3px;
+
+    &.narrative-empty {
+      color: $text-muted;
+      font-style: italic;
+    }
   }
 }
 
@@ -1007,14 +1012,52 @@ $not-stated-dot: #94a3b8;
       border-radius: 3px;
       margin-bottom: 10px;
 
-      .inq-label { font-size: 0.8rem; font-weight: 700; color: $brand-primary; }
+      .inq-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+
+        .inq-label { font-size: 0.8rem; font-weight: 700; color: $brand-primary; }
+        .btn-evidence-inline {
+          font-size: 0.72rem;
+          font-weight: 600;
+          padding: 2px 8px;
+          background: #ffffff;
+          border: 1px solid #93c5fd;
+          border-radius: 3px;
+          color: $brand-primary;
+          cursor: pointer;
+          transition: background 0.15s ease;
+          &:hover { background: #dbeafe; }
+        }
+      }
+
       .inq-list {
-        margin: 6px 0 0 16px;
+        margin: 6px 0 0 20px;
         padding: 0;
         font-size: 0.85rem;
-        line-height: 1.4;
+        line-height: 1.5;
         color: $text-main;
+
+        li {
+          margin-bottom: 4px;
+        }
       }
+    }
+
+    .mi-context-box, .mi-info-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #64748b;
+      padding: 8px 10px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      color: $text-main;
+
+      strong { color: $text-secondary; }
+      p { margin: 4px 0 0 0; line-height: 1.45; }
     }
 
     .mi-meta-grid {
@@ -1093,6 +1136,29 @@ $not-stated-dot: #94a3b8;
         &.chip-confirmed.active { background: #059669; border-color: #059669; }
         &.chip-not-stated.active { background: #64748b; border-color: #64748b; }
       }
+    }
+  }
+
+  .empty-facts-state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 14px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 4px;
+    margin: 8px 0 12px 0;
+
+    .empty-icon {
+      font-size: 1.3rem;
+      color: #64748b;
+    }
+
+    .empty-text {
+      font-size: 0.82rem;
+      color: $text-main;
+      strong { font-weight: 600; display: block; margin-bottom: 2px; }
+      .empty-sub { font-size: 0.75rem; color: $text-secondary; margin: 0; }
     }
   }
 

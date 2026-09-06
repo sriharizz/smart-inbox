@@ -102,3 +102,120 @@ def test_build_brief_focus_items_attention():
     assert ReviewFocusCategory.MISSING_CRITICAL_FIELD in focus_cats
     assert ReviewFocusCategory.PHOTO_DEFECT_INSPECTION in focus_cats
     assert ReviewFocusCategory.MULTILINGUAL_TRANSLATION in focus_cats
+
+
+def test_build_brief_arbitrary_novel_email():
+    """
+    Proves that a completely new, unseen email with novel wording and custom fields
+    generates a valid, robust ReviewerBrief without hardcoded conditionals.
+    """
+    triage = TriageResult(
+        primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+        is_multi_label=False,
+        labels=[TriageLabel(category=CategoryEnum.SAFETY_REPORT_ICSR, confidence=0.88, reason="Severe rash and Stevens-Johnson syndrome")],
+        executive_summary="Unseen case: Stevens-Johnson syndrome after novel antibiotic therapy."
+    )
+    # Novel fields not in original benchmark
+    facts = [
+        Fact(field="reconstitution_volume", value="10 mL sterile water", status=FactStatus.CONFIRMED, confidence=0.92),
+        Fact(field="adverse_event", value="Stevens-Johnson Syndrome", status=FactStatus.CONFIRMED, confidence=0.96),
+        Fact(field="suspect_product", value="CefoNovel 500mg", status=FactStatus.CONFIRMED, confidence=0.94),
+        Fact(field="patient_age", value="42 years", status=FactStatus.CONFIRMED, confidence=0.95),
+        Fact(field="reporter_name", value="Dr. Gregory House", status=FactStatus.CONFIRMED, confidence=0.91),
+        Fact(field="concurrent_medication", value="Acetaminophen", status=FactStatus.CONFIRMED, confidence=0.89)
+    ]
+    envelope = CaseEnvelope(
+        envelope_id="novel-env-999",
+        message_id="msg-novel-arbitrary-001",
+        source_filename="arbitrary_doctor_email.eml",
+        triage=triage,
+        document_summary="Attending physician reports severe SJS presentation in 42yo patient receiving CefoNovel.",
+        reviewer_summary="Expedited ICSR for Stevens-Johnson syndrome.",
+        fact_ledger=facts
+    )
+
+    brief = reviewer_brief_builder.build_brief(envelope)
+
+    assert brief.case_id == "msg-novel-arbitrary-001"
+    assert brief.primary_category == "Safety Report (ICSR)"
+    assert brief.fact_stats.total_facts == 6
+    assert brief.fact_stats.confirmed_count == 6
+    assert len(brief.review_focus) == 0  # Clean state: no missing critical fields or conflicts
+
+
+def test_build_brief_medical_information_no_spurious_warnings():
+    """
+    Proves that pure Medical Information inquiry briefs do not trigger false
+    ICSR missing critical field warnings.
+    """
+    from app.schemas.category_payloads import MiPayload
+
+    triage = TriageResult(
+        primary_category=CategoryEnum.MEDICAL_INFORMATION_MI,
+        is_multi_label=False,
+        labels=[TriageLabel(category=CategoryEnum.MEDICAL_INFORMATION_MI, confidence=0.97, reason="Stability inquiry")],
+        executive_summary="Inquiry regarding reconstitution stability and refrigeration."
+    )
+    mi_facts = [
+        Fact(field="product_or_topic", value="Cefatox 1g", status=FactStatus.CONFIRMED, confidence=0.98),
+        Fact(field="inquiry_type", value="Stability & Dilution", status=FactStatus.CONFIRMED, confidence=0.95),
+        Fact(field="question_text", value="1. What is the refrigerated stability in D5W? 2. Is it Y-site compatible with furosemide?", status=FactStatus.CONFIRMED, confidence=0.96)
+    ]
+    mi_payload = MiPayload(
+        product_or_topic="Cefatox 1g",
+        inquiry_type="Stability & Dilution",
+        question_text="1. What is the refrigerated stability in D5W? 2. Is it Y-site compatible with furosemide?",
+        clinical_context="Adult surgical ward compounding",
+        information_requested="Reconstitution stability data"
+    )
+    envelope = CaseEnvelope(
+        envelope_id="mi-env-888",
+        message_id="msg-mi-inquiry-01",
+        source_filename="hospital_pharmacy_query.eml",
+        triage=triage,
+        mi=mi_payload,
+        fact_ledger=mi_facts
+    )
+
+    brief = reviewer_brief_builder.build_brief(envelope)
+
+    assert brief.primary_category == "Medical Information (MI)"
+    assert brief.urgency == "STANDARD"
+    # Verify no ICSR missing critical fields were incorrectly generated
+    assert len(brief.missing_critical_fields) == 0
+    assert not any(item.category == ReviewFocusCategory.MISSING_CRITICAL_FIELD for item in brief.review_focus)
+
+
+def test_build_brief_not_relevant_minimal():
+    """
+    Proves that Not Relevant cases do not produce spurious missing-field warnings.
+    """
+    from app.schemas.category_payloads import NotRelevantPayload
+
+    triage = TriageResult(
+        primary_category=CategoryEnum.NOT_RELEVANT,
+        is_multi_label=False,
+        labels=[TriageLabel(category=CategoryEnum.NOT_RELEVANT, confidence=0.99, reason="Commercial vendor solicitation")],
+        executive_summary="Commercial spam for office supplies."
+    )
+    nr_payload = NotRelevantPayload(
+        relevance_determination="Not Relevant",
+        exclusion_reason="Commercial marketing email unrelated to pharmacovigilance."
+    )
+    envelope = CaseEnvelope(
+        envelope_id="nr-env-777",
+        message_id="msg-spam-01",
+        source_filename="vendor_catalog.eml",
+        triage=triage,
+        not_relevant=nr_payload,
+        fact_ledger=[]
+    )
+
+    brief = reviewer_brief_builder.build_brief(envelope)
+
+    assert brief.primary_category == "Not Relevant"
+    assert brief.urgency == "STANDARD"
+    assert brief.fact_stats.total_facts == 0
+    assert len(brief.missing_critical_fields) == 0
+    assert len(brief.review_focus) == 0
+

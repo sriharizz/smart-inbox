@@ -2,7 +2,7 @@ export type FactStatus = 'CONFIRMED' | 'NOT_STATED' | 'UNCERTAIN' | 'CONFLICT';
 export type ConfidenceLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 export type ValidationGatingStatus = 'READY_FOR_REVIEW' | 'REVIEW_WITH_WARNINGS' | 'BLOCKED_BY_INTEGRITY_ERROR';
 export type CaseUrgency = 'CRITICAL' | 'EXPEDITED' | 'STANDARD';
-export type FactSection = 'PATIENT' | 'REPORTER' | 'PRODUCT' | 'EVENT' | 'PQC' | 'MI' | 'GENERAL';
+export type FactSection = 'PATIENT' | 'REPORTER' | 'PRODUCT' | 'EVENT' | 'PQC' | 'MI' | 'GENERAL' | string;
 
 export enum ReviewFocusCategory {
   UNCERTAIN_HANDWRITING = 'UNCERTAIN_HANDWRITING',
@@ -63,14 +63,18 @@ export interface PqcBriefDetails {
   photoDetected: boolean;
   photoDescription?: string;
   requiresHumanReview: boolean;
+  evidence?: EvidenceRef;
 }
 
 export interface MiBriefDetails {
   productName: string;
   inquiryType: string;
   inquirySummary: string;
+  clinicalContext?: string;
+  informationRequested?: string;
   responseUrgency: string;
   questions: string[];
+  evidence?: EvidenceRef;
 }
 
 export interface NotRelevantBriefDetails {

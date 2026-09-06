@@ -345,3 +345,39 @@ The test corpus consists of 27 canonical cases evaluated across 11 physical `.em
 | **Model Redundancy** | Google GenAI (`gemini-3.5-flash` with `gemini-3.5-flash-lite` fallback). | Deploy abstract multi-vendor model gateway with dynamic failover across Vertex AI, AWS Bedrock, and Azure OpenAI. |
 | **Message Broker** | In-memory `ThreadPoolTaskExecutor`. | Deploy distributed event bus (Apache Kafka or AWS SQS) with dead-letter queues and guaranteed delivery. |
 | **Regulatory Validation**| Verified against synthetic benchmark test suites. | Execute formal GAMP 5 Category 4/5 Computer System Validation (IQ/OQ/PQ) and 21 CFR Part 11 electronic signature workflows. |
+
+---
+
+## 6. Step 7 Hardening Pass — Reviewer Experience Robustness & Arbitrary Email Adaptation
+
+### 6.1 Objectives & Architectural Mandates
+Following initial Step 7 implementation, a hardening pass was executed to ensure the human review experience adapts purely to the semantic data contract (`CaseEnvelope` -> `ReviewerBrief` -> UI projection) without benchmark-specific assumptions (`CASE-001`, hardcoded sender/subject checks, or filename heuristics):
+- **Arbitrary Email Adaptation**: Any valid incoming email (known benchmark or arbitrary future inquiry/complaint) is processed purely through data-driven category payloads and generic fact mapping.
+- **Medical Information (MI) Fix**: Surfaced actual extracted inquiry parameters (product/topic, discrete numbered questions, clinical/procedural context, and evidence traceability). Suppressed irrelevant clinical forms and replaced generic empty fact tables with honest contextual notices.
+- **Real Clinical Narrative**: Eliminated all placeholder text. The ICSR clinical narrative is projected deterministically from canonical envelope fields (`clinical_narrative`, `clinical_course`, `event_description`, `chronology`). If unstated in source, a neutral `"Clinical narrative not stated in source."` indicator is shown without fabrication.
+- **Generic Fact Ledger**: Implemented dynamic field label generation (`formatFieldLabel`) supporting camelCase, snake_case, and kebab-case without hardcoded field registries. Unknown or future fields render gracefully with evidence links, confidence, and verification status.
+- **Not Relevant Suppression**: Suppressed clinical tables, missing-field warnings, and ICSR/PQC forms for non-pharmacovigilance communications. Displays only classification, confidence, exclusion rationale, and source snippet.
+- **Truthful Validation & Compliance Wording**: Softened wording implying clinical infallibility. Replaced over-reaching compliance claims with *"Structural and evidence-integrity checks passed. Human confirmation required."* and renamed audit trail to *"Review Audit Trail"* / *"Audit History"*.
+
+### 6.2 Data Flow & Component Mapping
+```
+CaseEnvelope (Python AI Engine)
+  │ (Categorical payloads: ICSR, PQC, MI, NotRelevant)
+  ▼
+Spring Boot REST API (DTOs & Entities)
+  │ (MessageEntity + Category Entities with alias getters)
+  ▼
+ReviewerBriefBuilder (Angular Presentation Projection)
+  │ (Deterministic mapping, question extraction, generic fact labeling)
+  ▼
+CaseWorkspaceComponent (Two-Pane Reviewer Workstation)
+  ├── Left: Native Document & Source Evidence Viewer
+  └── Right: Category-Appropriate Reviewer Brief (MI, PQC, ICSR, or Minimal Exclusion)
+```
+
+### 6.3 Robustness & Defensive Strategy
+1. **Null-Safety & Optional Field Handling**: All projections use defensive optional chaining and fallback defaults (`[]`, `null`, neutral strings). No UI crash occurs when optional fields or category payloads are omitted.
+2. **Groq Provider Circuit Breaker**: Added HTTP 429 rate-limit backoff circuit breaker (`_rate_limited_until`) in `llm_provider.py`. When API limits are reached, the system fails fast to `INSUFFICIENT` without blocking pipeline workers or throwing uncaught exceptions.
+3. **Evidence Location Flexibility**: Generalized `reviewer_brief_builder.py` location handling to accept both string locations and structured `LocationReference` objects seamlessly (`str(ev.location or '').lower()`).
+4. **Authoritative Fact Preservation**: Enhanced fact ledger consolidation to update existing field statuses, confidence, and evidence citations with authoritative values rather than skipping pre-populated keys.
+

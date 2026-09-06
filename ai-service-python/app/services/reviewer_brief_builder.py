@@ -31,23 +31,33 @@ class ReviewerBriefBuilder:
         """Constructs a comprehensive, reviewer-focused ReviewerBrief from a CaseEnvelope."""
         # 1. Basic Metadata
         case_id = envelope.message_id or envelope.source_filename or envelope.envelope_id
+        received_date = envelope.received_date or "Not stated"
+
+        # Categories
+        primary_cat = envelope.triage.primary_category.value if hasattr(envelope.triage.primary_category, "value") else str(envelope.triage.primary_category)
+        all_cats = [lbl.category.value for lbl in envelope.triage.labels] if envelope.triage.labels else [primary_cat]
+
         subject = envelope.document_summary[:80] if envelope.document_summary != "Not stated" else "Clinical Safety Intake"
         if envelope.icsr and envelope.icsr.patient and envelope.icsr.patient.identifier != "Not stated":
             subject = f"ICSR: {envelope.icsr.patient.identifier}"
             if envelope.icsr.reaction and envelope.icsr.reaction.adverse_event != "Not stated":
                 subject += f" - {envelope.icsr.reaction.adverse_event}"
+        elif envelope.pqc and envelope.pqc.product_name != "Not stated":
+            subject = f"PQC: {envelope.pqc.product_name}"
+            if envelope.pqc.defect_type != "Not stated":
+                subject += f" - {envelope.pqc.defect_type}"
+        elif envelope.mi and envelope.mi.product_or_topic != "Not stated":
+            subject = f"MI: {envelope.mi.product_or_topic}"
+            if envelope.mi.inquiry_type != "Not stated":
+                subject += f" - {envelope.mi.inquiry_type}"
+        elif "not relevant" in primary_cat.lower():
+            subject = envelope.document_summary[:80] if envelope.document_summary != "Not stated" else "Non-Pharmacovigilance Communication"
 
         sender = "Healthcare Provider / Consumer"
         if envelope.icsr and envelope.icsr.reporter and envelope.icsr.reporter.name != "Not stated":
             sender = envelope.icsr.reporter.name
             if envelope.icsr.reporter.institution != "Not stated":
                 sender += f" ({envelope.icsr.reporter.institution})"
-
-        received_date = envelope.received_date or "Not stated"
-
-        # Categories
-        primary_cat = envelope.triage.primary_category.value if hasattr(envelope.triage.primary_category, "value") else str(envelope.triage.primary_category)
-        all_cats = [lbl.category.value for lbl in envelope.triage.labels] if envelope.triage.labels else [primary_cat]
 
         # 2. Fact Statistics & Audit
         stats = FactSummaryStats(
@@ -91,8 +101,14 @@ class ReviewerBriefBuilder:
         for f in envelope.fact_ledger:
             if f.status == FactStatus.UNCERTAIN:
                 primary_ev = f.evidence[0] if f.evidence else None
+                is_handwriting = any(
+                    "handwritten" in (ev.verbatim_snippet or "").lower() or
+                    "ocr" in (ev.verbatim_snippet or "").lower() or
+                    "scan" in str(ev.location or "").lower()
+                    for ev in f.evidence
+                )
                 review_focus.append(ReviewFocusItem(
-                    category=ReviewFocusCategory.UNCERTAIN_HANDWRITING if "scanned" in envelope.source_filename.lower() else ReviewFocusCategory.CATEGORY_AMBIGUITY,
+                    category=ReviewFocusCategory.UNCERTAIN_HANDWRITING if is_handwriting else ReviewFocusCategory.CATEGORY_AMBIGUITY,
                     field_affected=f.field,
                     headline=f"Uncertain Extraction: {f.field}",
                     detail=f"Mention exists ('{f.value}') but cannot be confirmed with high confidence. Source verification recommended.",
@@ -100,18 +116,37 @@ class ReviewerBriefBuilder:
                     action_suggested="Inspect source context and confirm"
                 ))
 
-        # C. Missing Critical Fields
-        for f in envelope.fact_ledger:
-            if f.status == FactStatus.NOT_STATED and f.field in cls.CRITICAL_FIELDS:
-                missing_critical_fields.append(f.field)
-                review_focus.append(ReviewFocusItem(
-                    category=ReviewFocusCategory.MISSING_CRITICAL_FIELD,
-                    field_affected=f.field,
-                    headline=f"Critical Field Unstated: {f.field}",
-                    detail=f"Regulatory parameter '{f.field}' was omitted from the intake transmission. Anti-hallucination guard verified absence.",
-                    evidence_ref=None,
-                    action_suggested="Confirm absence or initiate targeted follow-up query"
-                ))
+        # C. Missing Critical Fields (Category-Aware: only checked for applicable clinical/quality categories)
+        is_not_rel = "not relevant" in primary_cat.lower()
+        has_icsr = any("icsr" in c.lower() or "safety report" in c.lower() for c in all_cats)
+        has_pqc = any("pqc" in c.lower() or "quality complaint" in c.lower() for c in all_cats)
+        has_mi = any("mi" in c.lower() or "medical info" in c.lower() for c in all_cats)
+
+        icsr_crit = {"suspect_product", "adverse_event", "patient_age", "reporter_name"}
+        pqc_crit = {"product_name", "defect_type", "lot_number"}
+        mi_crit = {"question_text", "product_or_topic"}
+
+        if not is_not_rel:
+            for f in envelope.fact_ledger:
+                if f.status == FactStatus.NOT_STATED:
+                    is_crit = False
+                    if has_icsr and f.field in icsr_crit:
+                        is_crit = True
+                    elif has_pqc and f.field in pqc_crit:
+                        is_crit = True
+                    elif has_mi and f.field in mi_crit:
+                        is_crit = True
+
+                    if is_crit:
+                        missing_critical_fields.append(f.field)
+                        review_focus.append(ReviewFocusItem(
+                            category=ReviewFocusCategory.MISSING_CRITICAL_FIELD,
+                            field_affected=f.field,
+                            headline=f"Critical Field Unstated: {f.field}",
+                            detail=f"Regulatory parameter '{f.field}' was omitted from the intake transmission. Anti-hallucination guard verified absence.",
+                            evidence_ref=None,
+                            action_suggested="Confirm absence or initiate targeted follow-up query"
+                        ))
 
         # D. Physical Defect Photo Review
         if envelope.pqc and envelope.pqc.requires_human_review:

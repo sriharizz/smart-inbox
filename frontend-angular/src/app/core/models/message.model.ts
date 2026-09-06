@@ -59,10 +59,14 @@ export interface PqcReport {
 
 export interface MedicalInfo {
   id?: number;
-  productName: string;
-  inquiryType: string;
-  inquirySummary: string;
-  responseUrgency: string;
+  productOrTopic?: string;
+  productName?: string;
+  inquiryType?: string;
+  questionText?: string;
+  inquirySummary?: string;
+  clinicalContext?: string;
+  informationRequested?: string;
+  responseUrgency?: string;
   sourceCitationsJson?: string;
 }
 
@@ -87,6 +91,8 @@ export interface IntakeMessage {
   icsrReport?: IcsrReport;
   pqcReport?: PqcReport;
   medicalInfo?: MedicalInfo;
+  facts?: any[];
+  factLedger?: any[];
 }
 
 export interface MessageSummary {

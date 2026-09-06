@@ -44,12 +44,14 @@ public class MedicalInfoEntity {
 
     public String getProductOrTopic() { return productOrTopic; }
     public void setProductOrTopic(String productOrTopic) { this.productOrTopic = productOrTopic; }
+    public String getProductName() { return productOrTopic; }
 
     public String getInquiryType() { return inquiryType; }
     public void setInquiryType(String inquiryType) { this.inquiryType = inquiryType; }
 
     public String getQuestionText() { return questionText; }
     public void setQuestionText(String questionText) { this.questionText = questionText; }
+    public String getInquirySummary() { return questionText; }
 
     public String getSourceCitationsJson() { return sourceCitationsJson; }
     public void setSourceCitationsJson(String sourceCitationsJson) { this.sourceCitationsJson = sourceCitationsJson; }

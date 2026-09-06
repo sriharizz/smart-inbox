@@ -206,7 +206,7 @@
       <!-- Edit Mode Toolbar (When Active) -->
       <div class="edit-toolbar" *ngIf="isEditing">
         <div class="edit-toolbar-info">
-          <strong>Reviewer Correction Mode</strong> — Changes will be committed with timestamp and username to Part 11 audit trail.
+          <strong>Reviewer Correction Mode</strong> — Modifications will be committed with timestamp and reviewer identity to the audit history.
         </div>
         <div class="edit-toolbar-actions">
           <button type="button" class="btn-edit-cancel" (click)="onCancelOverride()" [disabled]="isSubmittingAction">Cancel</button>
@@ -216,7 +216,7 @@
 
       <!-- Mandatory Justification Box (When Editing) -->
       <div class="justification-card" *ngIf="isEditing">
-        <label class="just-label required">Clinical / Regulatory Justification (Mandatory for Audit Trail):</label>
+        <label class="just-label required">Reviewer Justification (Required for Audit Trail):</label>
         <textarea 
           class="just-input" 
           rows="2" 
@@ -279,7 +279,7 @@
               </span>
             </div>
             <div class="gate-disclaimer">
-              Automated data-contract & consistency checks passed. Gating denotes structural integrity, not clinical infallibility.
+              Automated structural integrity and evidence-grounding checks completed. Gating denotes document processing readiness, not clinical infallibility.
             </div>
           </div>
         </div>
@@ -326,8 +326,8 @@
         <div class="card clean-state-card" *ngIf="brief.reviewFocus.length === 0">
           <span class="clean-icon">✓</span>
           <div>
-            <strong>AI Preparation Complete — No Integrity Issues Detected</strong>
-            <p class="clean-sub">All critical regulatory parameters verified against source documentation.</p>
+            <strong>Structural and evidence-integrity checks passed. Human confirmation required.</strong>
+            <p class="clean-sub">No conflicting evidence, handwriting ambiguities, or unstated critical parameters detected.</p>
           </div>
         </div>
 
@@ -391,11 +391,32 @@
           </div>
           <div class="mi-body">
             <div class="inquiry-box">
-              <span class="inq-label">Inquired Question(s):</span>
-              <ul class="inq-list">
+              <div class="inq-title-row">
+                <span class="inq-label">Inquired Question(s):</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-inline" 
+                  *ngIf="brief.miDetails.evidence" 
+                  (click)="openEvidenceForMi(brief.miDetails)">
+                  🔍 Trace Inquiry Evidence
+                </button>
+              </div>
+              <ol class="inq-list">
                 <li *ngFor="let q of brief.miDetails.questions">{{ q }}</li>
-              </ul>
+              </ol>
             </div>
+
+            <!-- Supporting Clinical / Procedural Context -->
+            <div class="mi-context-box" *ngIf="brief.miDetails.clinicalContext">
+              <strong>Supporting Clinical / Procedural Context:</strong>
+              <p>{{ brief.miDetails.clinicalContext }}</p>
+            </div>
+
+            <!-- Specific Information Requested -->
+            <div class="mi-info-box" *ngIf="brief.miDetails.informationRequested">
+              <strong>Information Requested:</strong> {{ brief.miDetails.informationRequested }}
+            </div>
+
             <div class="mi-meta-grid">
               <div><strong>Product / Topic:</strong> {{ brief.miDetails.productName }}</div>
               <div><strong>Response Urgency:</strong> {{ brief.miDetails.responseUrgency }}</div>
@@ -436,10 +457,10 @@
           <div class="card-header">
             <div class="narr-hdr-group">
               <span class="card-title">Clinical Narrative</span>
-              <span class="narr-sub">AI-prepared chronological synthesis</span>
+              <span class="narr-sub">Source chronological clinical synthesis</span>
             </div>
           </div>
-          <div class="narrative-body">
+          <div class="narrative-body" [class.narrative-empty]="brief.clinicalNarrative === 'Clinical narrative not stated in source.'">
             {{ brief.clinicalNarrative }}
           </div>
         </div>
@@ -488,8 +509,25 @@
             </div>
           </div>
 
-          <!-- Fact Table -->
-          <table class="fact-ledger-table">
+          <!-- Honest Contextual Empty State -->
+          <div class="empty-facts-state" *ngIf="filteredFacts.length === 0">
+            <span class="empty-icon">ℹ️</span>
+            <div class="empty-text">
+              <strong *ngIf="selectedCategoryTab === 'MI' || (brief.primaryCategory.includes('MI') && selectedCategoryTab === 'ALL')">
+                Category-specific inquiry details are shown in the Medical Information section above.
+              </strong>
+              <strong *ngIf="selectedFactStatusFilter !== 'ALL'">
+                No extracted facts match the selected certainty filter ('{{ selectedFactStatusFilter }}').
+              </strong>
+              <strong *ngIf="selectedFactStatusFilter === 'ALL' && selectedCategoryTab !== 'MI' && !brief.primaryCategory.includes('MI')">
+                No structured facts were extracted for this category.
+              </strong>
+              <p class="empty-sub">All available source citations and parameters can be inspected in the primary document pane.</p>
+            </div>
+          </div>
+
+          <!-- Fact Table (Rendered only when facts exist) -->
+          <table class="fact-ledger-table" *ngIf="filteredFacts.length > 0">
             <thead>
               <tr>
                 <th class="th-field">Parameter</th>
@@ -563,10 +601,10 @@
           </table>
         </div>
 
-        <!-- 6. PART 11 IMMUTABLE AUDIT TRAIL (Collapsible) -->
+        <!-- 6. REVIEW AUDIT TRAIL (Collapsible) -->
         <div class="card audit-card">
           <div class="card-header clickable" (click)="showAuditTrail = !showAuditTrail">
-            <span class="card-title">Part 11-Oriented Immutable Audit Trail</span>
+            <span class="card-title">Review Audit Trail</span>
             <span class="toggle-icon">{{ showAuditTrail ? '▲ Hide' : '▼ View History' }}</span>
           </div>
 

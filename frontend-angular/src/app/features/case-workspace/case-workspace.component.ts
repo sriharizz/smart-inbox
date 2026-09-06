@@ -203,6 +203,28 @@ export class CaseWorkspaceComponent implements OnInit {
     }
   }
 
+  openEvidenceForMi(mi: any) {
+    if (!mi || !mi.evidence) return;
+    this.activeEvidence = {
+      fieldKey: 'mi_inquiry',
+      fieldLabel: 'Medical Information Inquiry',
+      factValue: mi.inquirySummary || mi.productName,
+      ...mi.evidence
+    };
+    this.navigateViewerForEvidence(mi.evidence);
+  }
+
+  openEvidenceForPqc(pqc: any) {
+    if (!pqc || !pqc.evidence) return;
+    this.activeEvidence = {
+      fieldKey: 'pqc_defect',
+      fieldLabel: 'Product Quality Defect',
+      factValue: pqc.defectDescription || pqc.defectType,
+      ...pqc.evidence
+    };
+    this.navigateViewerForEvidence(pqc.evidence);
+  }
+
   closeEvidence() {
     this.activeEvidence = undefined;
   }
@@ -333,7 +355,7 @@ export class CaseWorkspaceComponent implements OnInit {
         this.brief = ReviewerBriefBuilder.buildFromMessage(updated);
         this.isEditing = false;
         this.isSubmittingAction = false;
-        this.actionSuccessMessage = 'Reviewer corrections committed and logged to immutable audit trail.';
+        this.actionSuccessMessage = 'Reviewer corrections committed and logged to audit history.';
         this.loadAuditTrail(this.message.id);
         this.cdr.markForCheck();
         setTimeout(() => {

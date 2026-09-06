@@ -125,10 +125,18 @@ class GroqProvider(LLMProvider):
         self._default_model = default_model or settings.GROQ_VERIFIER_MODEL
         self._timeout = timeout or float(settings.REQUEST_TIMEOUT_SECONDS)
         self._client = client
+        self._rate_limited_until: float = 0.0
 
     @property
     def provider_name(self) -> str:
         return "groq"
+
+    def is_healthy(self) -> bool:
+        if not self._api_key:
+            return False
+        if self._rate_limited_until > time.time():
+            return False
+        return True
 
     def generate_content(
         self,
@@ -140,6 +148,8 @@ class GroqProvider(LLMProvider):
         import httpx
         if not self._api_key:
             raise RuntimeError("GROQ_API_KEY is not configured. Verify .env or environment variables.")
+        if self._rate_limited_until > time.time():
+            raise RuntimeError("Groq provider is currently rate-limited (HTTP 429). Circuit breaker open.")
 
         target_model = model or self._default_model
         messages = []
@@ -168,6 +178,8 @@ class GroqProvider(LLMProvider):
                 resp = client.post(url, headers=headers, json=payload)
 
         if resp.status_code != 200:
+            if resp.status_code == 429:
+                self._rate_limited_until = time.time() + 60.0
             err_text = resp.text[:200]
             logger.warning(f"Groq API returned HTTP {resp.status_code}: {err_text}")
             resp.raise_for_status()

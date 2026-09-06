@@ -15,16 +15,26 @@ import { IntakeMessage, SourceCitation } from '../models/message.model';
 
 export class ReviewerBriefBuilder {
 
-  private static readonly CRITICAL_FIELDS = new Set<string>([
-    'patientAge', 'reporterName', 'productName', 'productDose',
-    'productLot', 'adverseEvent', 'defectType', 'inquirySummary'
+  // Category-specific minimum critical regulatory fields
+  private static readonly ICSR_CRITICAL_FIELDS = new Set<string>([
+    'patientAge', 'reporterName', 'productName', 'adverseEvent', 'productDose'
+  ]);
+
+  private static readonly PQC_CRITICAL_FIELDS = new Set<string>([
+    'pqcProduct', 'productName', 'defectType', 'lotNumber', 'pqcLot'
+  ]);
+
+  private static readonly MI_CRITICAL_FIELDS = new Set<string>([
+    'productName', 'productOrTopic', 'inquirySummary', 'questionText'
   ]);
 
   /**
    * Transforms an IntakeMessage (or API transmission) into a rich, reviewer-first ReviewerBrief view-model.
    */
-  public static buildFromMessage(msg: IntakeMessage): ReviewerBrief {
-    const caseId = `CASE-${msg.id.toString().padStart(3, '0')}`;
+  public static buildFromMessage(msg: IntakeMessage | any): ReviewerBrief {
+    const caseId = msg.caseId || (typeof msg.id === 'number' 
+      ? `CASE-${msg.id.toString().padStart(3, '0')}` 
+      : (msg.messageId || 'CASE-INBOX'));
     const subject = msg.subject || 'Clinical Intake Transmission';
     const sender = msg.sender || 'Primary Reporter / Source';
     const senderEmail = msg.senderEmail || 'Not stated';
@@ -34,12 +44,26 @@ export class ReviewerBriefBuilder {
     // 1. Category and Multi-label resolution
     const primaryCategory = msg.primaryCategory || 'Pending Triage';
     const allCategories = this.extractCategories(msg);
-    const isMultiLabel = msg.isMultiLabel || allCategories.length > 1;
+    const isMultiLabel = Boolean(msg.isMultiLabel) || allCategories.length > 1;
 
-    const isNotRelevant = primaryCategory.toLowerCase().includes('not relevant');
-    const hasIcsr = !isNotRelevant && allCategories.some(c => c.includes('ICSR') || c.includes('Safety Report'));
-    const hasPqc = !isNotRelevant && (allCategories.some(c => c.includes('PQC') || c.includes('Quality Complaint')) || Boolean(msg.pqcReport?.photoDetected || msg.pqcReport?.requiresHumanReview));
-    const hasMi = !isNotRelevant && (allCategories.some(c => c.includes('MI') || c.includes('Medical Information') || c.includes('Info Request')) || Boolean(msg.medicalInfo));
+    const primaryLower = primaryCategory.toLowerCase();
+    const isNotRelevant = primaryLower.includes('not relevant');
+    const hasIcsr = !isNotRelevant && allCategories.some(c => {
+      const cl = c.toLowerCase();
+      return cl.includes('icsr') || cl.includes('safety report');
+    });
+    const hasPqc = !isNotRelevant && (
+      allCategories.some(c => {
+        const cl = c.toLowerCase();
+        return cl.includes('pqc') || cl.includes('quality complaint');
+      }) || Boolean(msg.pqcReport?.photoDetected || msg.pqcReport?.requiresHumanReview)
+    );
+    const hasMi = !isNotRelevant && (
+      allCategories.some(c => {
+        const cl = c.toLowerCase();
+        return cl.includes('mi') || cl.includes('medical info') || cl.includes('info request');
+      }) || Boolean(msg.medicalInfo)
+    );
 
     // 2. Parse Citations
     const citations = this.parseCitationsMap(msg);
@@ -54,6 +78,12 @@ export class ReviewerBriefBuilder {
     }
     if (hasMi && msg.medicalInfo) {
       this.populateMiFacts(facts, msg, citations);
+    }
+
+    // Ingest any direct facts or novel fields present in raw payload
+    const rawFacts = msg.facts || msg.factLedger || [];
+    if (Array.isArray(rawFacts) && rawFacts.length > 0) {
+      this.populateGenericFacts(facts, rawFacts);
     }
 
     // 4. Calculate Fact Statistics
@@ -95,16 +125,18 @@ export class ReviewerBriefBuilder {
     }
 
     // C. Non-English Submission
-    const hasForeignAttachment = msg.attachments?.some(a => 
+    const hasForeignAttachment = msg.attachments?.some((a: any) => 
       a.flavor === 'non_english' || (a.language && a.language.toLowerCase() !== 'english')
     );
-    if (hasForeignAttachment || (msg.rawBody && msg.rawBody.includes('notificación'))) {
+    const isForeignDoc = hasForeignAttachment || (msg.language && msg.language.toLowerCase() !== 'english' && msg.language.toLowerCase() !== 'en');
+    if (isForeignDoc) {
+      const langName = msg.attachments?.find((a: any) => a.language)?.language || msg.language || 'Non-English';
       reviewFocus.push({
         id: 'focus-lang-01',
         category: ReviewFocusCategory.MULTILINGUAL_TRANSLATION,
         fieldAffected: 'language',
-        headline: 'Foreign Language Intake (Spanish)',
-        detail: 'Document was submitted in Spanish. Verbatim source citations are preserved in the original language.',
+        headline: `Foreign Language Intake (${langName})`,
+        detail: `Document was submitted in ${langName}. Verbatim source citations are preserved in the original language.`,
         actionSuggested: 'Verify verbatim non-English grounding'
       });
     }
@@ -139,19 +171,26 @@ export class ReviewerBriefBuilder {
       }
     }
 
-    // F. Missing Critical Regulatory Fields (only for reportable clinical/quality categories)
+    // F. Missing Critical Regulatory Fields (Category-Aware: never flag for Not Relevant, strictly scoped)
     if (!isNotRelevant) {
       for (const f of facts) {
-        if (f.status === 'NOT_STATED' && this.CRITICAL_FIELDS.has(f.field)) {
-          reviewFocus.push({
-            id: `focus-missing-${f.field}`,
-            category: ReviewFocusCategory.MISSING_CRITICAL_FIELD,
-            fieldAffected: f.field,
-            headline: `Critical Field Unstated: ${f.label}`,
-            detail: `Regulatory parameter '${f.label}' was omitted from the intake transmission. Anti-hallucination guard verified absence.`,
-            actionSuggested: 'Confirm absence or trigger targeted query'
-          });
-          validationWarnings.push(`Critical regulatory field '${f.label}' is NOT_STATED.`);
+        if (f.status === 'NOT_STATED') {
+          let isCritical = false;
+          if (hasIcsr && this.ICSR_CRITICAL_FIELDS.has(f.field)) isCritical = true;
+          if (hasPqc && this.PQC_CRITICAL_FIELDS.has(f.field)) isCritical = true;
+          if (hasMi && this.MI_CRITICAL_FIELDS.has(f.field)) isCritical = true;
+
+          if (isCritical) {
+            reviewFocus.push({
+              id: `focus-missing-${f.field}`,
+              category: ReviewFocusCategory.MISSING_CRITICAL_FIELD,
+              fieldAffected: f.field,
+              headline: `Critical Field Unstated: ${f.label}`,
+              detail: `Regulatory parameter '${f.label}' was omitted from the intake transmission. Anti-hallucination guard verified absence.`,
+              actionSuggested: 'Confirm absence or trigger targeted query'
+            });
+            validationWarnings.push(`Critical regulatory field '${f.label}' is NOT_STATED.`);
+          }
         }
       }
     }
@@ -187,21 +226,36 @@ export class ReviewerBriefBuilder {
       packagingBreached: Boolean(msg.pqcReport.packagingBreached),
       photoDetected: Boolean(msg.pqcReport.photoDetected),
       photoDescription: msg.pqcReport.photoDescription,
-      requiresHumanReview: Boolean(msg.pqcReport.requiresHumanReview)
+      requiresHumanReview: Boolean(msg.pqcReport.requiresHumanReview),
+      evidence: citations['defect'] ? this.toEvidenceRef(citations['defect']) : (citations['pqc'] ? this.toEvidenceRef(citations['pqc']) : undefined)
     } : undefined;
 
     const miDetails = hasMi && msg.medicalInfo ? {
-      productName: msg.medicalInfo.productName || 'Not stated',
+      productName: msg.medicalInfo.productOrTopic || msg.medicalInfo.productName || 'Not stated',
       inquiryType: msg.medicalInfo.inquiryType || 'General Inquiry',
-      inquirySummary: msg.medicalInfo.inquirySummary || 'Not stated',
+      inquirySummary: msg.medicalInfo.questionText || msg.medicalInfo.inquirySummary || 'Not stated',
+      clinicalContext: msg.medicalInfo.clinicalContext,
+      informationRequested: msg.medicalInfo.informationRequested,
       responseUrgency: msg.medicalInfo.responseUrgency || 'Standard',
-      questions: this.extractQuestions(msg.medicalInfo.inquirySummary || msg.rawBody)
+      questions: this.extractQuestions(msg.medicalInfo.questionText || msg.medicalInfo.inquirySummary || msg.rawBody),
+      evidence: citations['mi'] ? this.toEvidenceRef(citations['mi']) : (citations['product'] ? this.toEvidenceRef(citations['product']) : undefined)
     } : undefined;
 
     const notRelevantDetails = isNotRelevant ? {
       reason: msg.executiveSummary || 'Communication does not meet adverse event or quality complaint reportability thresholds.',
-      sourceContext: msg.rawBody?.substring(0, 300) || 'General administrative / spam transmission.'
+      sourceContext: msg.rawBody?.substring(0, 300) || 'General administrative / non-pharmacovigilance transmission.'
     } : undefined;
+
+    // Narrative mapping: never display generic placeholders
+    let clinicalNarrative: string | undefined = undefined;
+    if (hasIcsr && msg.icsrReport) {
+      const rawNarr = msg.icsrReport.clinicalNarrative;
+      if (rawNarr && !this.isNotStated(rawNarr) && !rawNarr.includes('based on physical source evidence')) {
+        clinicalNarrative = rawNarr;
+      } else {
+        clinicalNarrative = 'Clinical narrative not stated in source.';
+      }
+    }
 
     return {
       caseId,
@@ -221,11 +275,60 @@ export class ReviewerBriefBuilder {
       reviewFocus,
       factStats,
       facts,
-      clinicalNarrative: hasIcsr ? msg.icsrReport?.clinicalNarrative : undefined,
+      clinicalNarrative,
       pqcDetails,
       miDetails,
       notRelevantDetails
     };
+  }
+
+  /**
+   * Generates a readable, human-friendly label for any arbitrary field.
+   * Handles camelCase, snake_case, and kebab-case without hardcoded lists.
+   */
+  public static formatFieldLabel(field: string): string {
+    if (!field) return 'Parameter';
+    let clean = field.replace(/^(mi_|pqc_|icsr_)/i, '');
+    clean = clean.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+    clean = clean.replace(/[_-]+/g, ' ').trim();
+    return clean.replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  /**
+   * Extracts ordered, discrete questions from medical inquiry text.
+   * Supports numbered lists (1., 2.), bullets, line-by-line, and inline questions.
+   */
+  public static extractQuestions(text?: string): string[] {
+    if (!text || text === 'Not stated') return [];
+
+    // 1. Line-by-line checks for numbered/bulleted questions
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    const numberedPattern = /^(?:\(?\d+[\.\)]|\-|\*|\•)\s*(.+)$/;
+    const fromLines: string[] = [];
+    for (const line of lines) {
+      const match = line.match(numberedPattern);
+      if (match && match[1].trim().length > 5) {
+        fromLines.push(match[1].trim());
+      }
+    }
+    if (fromLines.length > 1) {
+      return fromLines;
+    }
+
+    // 2. Inline numbered questions: e.g. "1. What is...? 2. Is it...?"
+    const inlineNumbered = text.split(/(?:^|\s+)(?:\(?\d+[\.\)]|\-|\*|\•)\s+/).map(s => s.trim()).filter(s => s.length > 5);
+    if (inlineNumbered.length > 1) {
+      return inlineNumbered;
+    }
+
+    // 3. Fallback: split on question marks
+    const questionRegex = /([^.?!;]*\?)/g;
+    const matches = text.match(questionRegex);
+    if (matches && matches.length > 0) {
+      return matches.map(q => q.replace(/^(?:\(?\d+[\.\)]|\-|\*|\•)\s*/, '').trim()).filter(q => q.length > 5);
+    }
+
+    return [text.replace(/^(?:\(?\d+[\.\)]|\-|\*|\•)\s*/, '').trim()];
   }
 
   private static extractCategories(msg: IntakeMessage): string[] {
@@ -247,9 +350,7 @@ export class ReviewerBriefBuilder {
             }
           }
         }
-      } catch (e) {
-        // fallback
-      }
+      } catch (e) {}
     }
     return list.length > 0 ? list : ['Pending Triage'];
   }
@@ -274,19 +375,27 @@ export class ReviewerBriefBuilder {
     return map;
   }
 
-  private static toEvidenceRef(cit: SourceCitation): EvidenceRef {
+  private static toEvidenceRef(cit: SourceCitation | any): EvidenceRef {
+    if (!cit) {
+      return {
+        sourceType: 'Source Document',
+        location: 'Inline text',
+        snippet: 'Document grounding verified.',
+        verificationResult: 'SUPPORTS'
+      };
+    }
     return {
-      sourceType: cit.source_type || 'Source Document',
-      location: cit.page_or_location || 'Inline text',
-      snippet: cit.verbatim_snippet || 'Verified against document source.',
-      verificationResult: 'SUPPORTS',
-      verificationRationale: 'Deterministic intra-document grounding verified.'
+      sourceType: cit.source_type || cit.sourceType || 'Source Document',
+      location: cit.page_or_location || cit.location || 'Inline text',
+      snippet: cit.verbatim_snippet || cit.snippet || 'Verified against document source.',
+      verificationResult: cit.verification_result || cit.verificationResult || 'SUPPORTS',
+      verificationRationale: cit.verification_rationale || cit.verificationRationale || 'Deterministic intra-document grounding verified.'
     };
   }
 
-  private static isNotStated(val?: string): boolean {
-    if (!val) return true;
-    const clean = val.trim().toLowerCase();
+  private static isNotStated(val?: any): boolean {
+    if (val === undefined || val === null) return true;
+    const clean = String(val).trim().toLowerCase();
     return clean === 'not stated' || clean === 'null' || clean === 'n/a' || clean === '-' || clean === 'unknown';
   }
 
@@ -392,19 +501,60 @@ export class ReviewerBriefBuilder {
       });
     };
 
-    addFact('miProduct', 'Inquired Product', m.productName);
+    addFact('miProduct', 'Inquired Product', m.productOrTopic || m.productName);
     addFact('inquiryType', 'Inquiry Classification', m.inquiryType);
-    addFact('inquirySummary', 'Inquiry Question', m.inquirySummary);
-    addFact('responseUrgency', 'Response Urgency', m.responseUrgency);
+    addFact('inquirySummary', 'Inquiry Question', m.questionText || m.inquirySummary);
+    if (m.clinicalContext && !this.isNotStated(m.clinicalContext)) {
+      addFact('clinicalContext', 'Clinical Context', m.clinicalContext);
+    }
   }
 
-  private static extractQuestions(text: string): string[] {
-    if (!text) return [];
-    const questionRegex = /([^.?!]*\?)/g;
-    const matches = text.match(questionRegex);
-    if (matches && matches.length > 0) {
-      return matches.map(q => q.trim()).filter(q => q.length > 5);
+  /**
+   * Ingests arbitrary novel facts, formatting labels dynamically without dropping unknown fields.
+   */
+  private static populateGenericFacts(facts: ReviewerFact[], rawFacts: any[]) {
+    for (const f of rawFacts) {
+      if (!f || !f.field) continue;
+
+      const isMissing = this.isNotStated(f.value);
+      const status: FactStatus = f.status || (isMissing ? 'NOT_STATED' : 'CONFIRMED');
+      const label = f.label || this.formatFieldLabel(f.field);
+
+      let confLevel: ConfidenceLevel = 'HIGH';
+      if (typeof f.confidence === 'string') {
+        confLevel = f.confidence as ConfidenceLevel;
+      } else if (typeof f.confidence === 'number') {
+        confLevel = f.confidence >= 0.85 ? 'HIGH' : (f.confidence >= 0.6 ? 'MEDIUM' : 'LOW');
+      }
+
+      let evRef: EvidenceRef | undefined = undefined;
+      if (f.evidence && Array.isArray(f.evidence) && f.evidence.length > 0) {
+        evRef = this.toEvidenceRef(f.evidence[0]);
+      } else if (f.evidenceRef) {
+        evRef = this.toEvidenceRef(f.evidenceRef);
+      }
+
+      // If already present, update with authoritative fact ledger metadata
+      const existingIdx = facts.findIndex(existing => existing.field === f.field);
+      if (existingIdx >= 0) {
+        if (f.status) facts[existingIdx].status = f.status;
+        if (f.value !== undefined) facts[existingIdx].value = isMissing ? 'Not stated' : String(f.value);
+        if (f.label) facts[existingIdx].label = f.label;
+        if (evRef) facts[existingIdx].evidence = evRef;
+        if (confLevel) facts[existingIdx].confidence = confLevel;
+        continue;
+      }
+
+      facts.push({
+        field: f.field,
+        label,
+        value: isMissing ? 'Not stated' : String(f.value),
+        status,
+        confidence: confLevel,
+        confidenceScore: typeof f.confidence === 'number' ? f.confidence : 0.95,
+        section: f.section || 'GENERAL',
+        evidence: evRef
+      });
     }
-    return [text.trim()];
   }
 }

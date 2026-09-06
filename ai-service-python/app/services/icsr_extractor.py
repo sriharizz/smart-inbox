@@ -518,7 +518,7 @@ class ICSRExtractor:
                 reaction=reaction,
                 concomitant_drugs=icsr_raw.get("concomitant_drugs", []),
                 lab_tests=labs,
-                clinical_narrative=str(icsr_raw.get("clinical_narrative", raw_data.get("narrative", "Clinical narrative extracted from source."))),
+                clinical_narrative=str(icsr_raw.get("clinical_narrative", raw_data.get("narrative", "Clinical narrative not stated in source."))),
                 facts=all_icsr_facts
             )
             envelope_facts.extend(all_icsr_facts)
