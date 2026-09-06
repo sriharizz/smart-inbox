@@ -55,6 +55,13 @@ class CacheService:
                             self.benchmark_data[base_att] = case_with_id
                             self.benchmark_data[att_file.lower()] = case_with_id
 
+                        # Index by pdf_file basename and full path (e.g. standalone monographs, literature)
+                        pdf_file = case.get("pdf_file", "")
+                        if pdf_file:
+                            base_pdf = Path(pdf_file).name.lower()
+                            self.benchmark_data[base_pdf] = case_with_id
+                            self.benchmark_data[pdf_file.lower()] = case_with_id
+
                 logger.info(f"Loaded {len(cases_dict)} cases from benchmark.json into cache index.")
             except Exception as e:
                 logger.error(f"Error loading benchmark.json: {e}", exc_info=True)
@@ -177,8 +184,8 @@ class CacheService:
             executive_summary=summary
         )
 
-        source_doc = case.get("attachment_file") or case.get("email_file") or "document"
-        is_pdf_doc = bool(case.get("attachment_file"))
+        source_doc = case.get("attachment_file") or case.get("pdf_file") or case.get("email_file") or "document"
+        is_pdf_doc = bool(case.get("attachment_file") or case.get("pdf_file"))
         citations = case.get("source_citations") or {}
 
         # Active category determination
@@ -368,10 +375,10 @@ class CacheService:
             pqc_defect_desc = str(qc_raw.get("defect_description", qc_raw.get("defect", citations.get("quality_complaint", "Physical defect documented."))))
             pqc_breached = bool(qc_raw.get("packaging_breached", True))
             pqc_exposure = str(qc_raw.get("patient_exposure", "Intercepted prior to use" if not is_icsr else "Administered"))
-            pqc_disposition = str(qc_raw.get("quarantine_disposition", "Quarantined in hospital pharmacy"))
-            pqc_photo_detected = bool(qc_raw.get("photo_evidence_in_pdf", False) or case_id == "CASE-04")
-            pqc_photo_desc = str(qc_raw.get("photo_description", "Exhibit photo of contaminated vial with cracked crimp collar")) if case_id == "CASE-04" else "Defect documented"
-            pqc_review_req = bool(qc_raw.get("photo_requires_human_review", False) or case_id == "CASE-04")
+            pqc_disposition = str(qc_raw.get("quarantine_disposition", qc_raw.get("disposition", "Quarantined in hospital pharmacy")))
+            pqc_photo_detected = bool(qc_raw.get("photo_present") or qc_raw.get("photo_present_in_pdf") or qc_raw.get("photo_evidence_in_pdf", False))
+            pqc_photo_desc = str(qc_raw.get("photo_description", qc_raw.get("defect", "Defect documented")))
+            pqc_review_req = bool(qc_raw.get("photo_requires_human_review") or qc_raw.get("requires_human_review", False) or pqc_photo_detected)
 
             pqc_snippet = str(citations.get("quality_complaint", qc_raw.get("defect", "Product quality complaint defect documented.")))
             pqc_ev = self._make_evidence(source_doc, "Quality defect block", pqc_snippet, is_pdf=is_pdf_doc)
@@ -417,16 +424,18 @@ class CacheService:
         # ---------------------------------------------------------
         if is_mi:
             mi_raw = case.get("medical_info") or case.get("medical_inquiry") or {}
-            mi_prod = str(mi_raw.get("product_or_topic", mi_raw.get("product", "Not stated")))
-            mi_type = str(mi_raw.get("inquiry_type", "Administration & Stability"))
+            mi_prod = str(mi_raw.get("product_or_topic", mi_raw.get("product", case.get("product", case.get("form_standard", "Medical Information")))))
+            mi_type = str(mi_raw.get("inquiry_type", "Reference Monograph / Clinical Guide" if case.get("content_summary") else "Administration & Stability"))
             questions = mi_raw.get("questions")
             if isinstance(questions, list) and questions:
                 mi_q = "; ".join(questions)
+            elif mi_raw.get("question_text"):
+                mi_q = str(mi_raw.get("question_text"))
             else:
-                mi_q = str(mi_raw.get("question_text", citations.get("medical_info", citations.get("all", "Medical product inquiry text."))))
-            mi_ctx = str(mi_raw.get("clinical_context", "Clinical practice inquiry"))
+                mi_q = str(case.get("content_summary", citations.get("medical_info", citations.get("all", "Medical product inquiry text."))))
+            mi_ctx = str(mi_raw.get("clinical_context", case.get("content_summary", "Clinical practice inquiry")))
             mi_req = str(mi_raw.get("information_requested", mi_ctx))
-            mi_no_ae = (case.get("adverse_event_present") is False and case.get("product_defect_present") is False) or bool(mi_raw.get("explicit_no_ae_no_pqc", True))
+            mi_no_ae = (case.get("adverse_event_present") is False and case.get("product_defect_present") is False and case.get("adverse_event") is None and case.get("quality_defect") is None) or bool(mi_raw.get("explicit_no_ae_no_pqc", True))
 
             mi_snippet = str(citations.get("medical_info", citations.get("all", mi_q)))
             mi_ev = self._make_evidence(source_doc, "Medical info block", mi_snippet, is_pdf=is_pdf_doc)

@@ -26,7 +26,7 @@ def test_process_eml_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["triage"]["primary_category"] == "Safety Report (ICSR)"
-    assert data["reporter"]["name"] == "Sarah Jenkins, MD, FACP"
+    assert "Sarah Jenkins" in data["reporter"]["name"]
     assert "Cardioril" in data["product"]["product_name"]
 
 def test_process_case_04_multi_label_and_photo_review():

@@ -219,3 +219,202 @@ def test_api_process_eml_envelope_endpoint():
     assert "fact_ledger" in data
     assert len(data["fact_ledger"]) > 0
     assert data["icsr"] is not None
+
+def test_generalized_rescue_medication_segregation():
+    """Validates that emergency rescue medication is segregated and suspect dose remains Not stated."""
+    raw_data = {
+        "language_detected": "English",
+        "icsr": {
+            "patient": {"identifier": "J.D.", "age": "33", "sex": "Female", "status": "CONFIRMED"},
+            "reporter": {"name": "Dr. Peterson", "role": "Physician", "status": "CONFIRMED"},
+            "product": {"product_name": "InjectaPen", "dose": "Not stated", "status": "NOT_STATED"},
+            "reaction": {"adverse_event": "Acute Anaphylaxis", "status": "CONFIRMED"},
+            "clinical_narrative": "Patient experienced anaphylaxis. Epinephrine 0.3mg IM administered as emergency resuscitation."
+        }
+    }
+    triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+        labels=[TriageLabel(category=CategoryEnum.SAFETY_REPORT_ICSR, confidence=0.95, reason="Adverse event")],
+        executive_summary="Emergency anaphylaxis."
+    )
+    envelope = icsr_extractor._build_envelope_from_data(
+        raw_data=raw_data,
+        triage_result=triage,
+        source_filename="emergency_intake.pdf",
+        message_id="test-msg-02",
+        start_time=0.0,
+        is_icsr=True,
+        is_pqc=False,
+        is_mi=False,
+        is_not_relevant=False
+    )
+    dose_fact = next(f for f in envelope.fact_ledger if f.field == "product_dose")
+    assert dose_fact.value == "Not stated"
+    assert dose_fact.status == FactStatus.NOT_STATED
+    assert len(dose_fact.evidence) == 0
+    assert "Epinephrine 0.3mg IM" in envelope.icsr.clinical_narrative
+
+def test_generalized_indication_vs_reaction_separation():
+    """Validates that unstated indication is preserved as NOT_STATED rather than inferred from reaction."""
+    raw_data = {
+        "icsr": {
+            "patient": {"identifier": "Pt A", "treated_indication": "Not stated", "status": "CONFIRMED"},
+            "product": {"product_name": "Cardioril", "indication": "Not stated", "dose": "20mg", "status": "CONFIRMED"},
+            "reaction": {"adverse_event": "Drug-Induced Liver Injury", "status": "CONFIRMED"}
+        }
+    }
+    triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+        labels=[TriageLabel(category=CategoryEnum.SAFETY_REPORT_ICSR, confidence=0.92, reason="ICSR")],
+        executive_summary="DILI report."
+    )
+    envelope = icsr_extractor._build_envelope_from_data(
+        raw_data=raw_data,
+        triage_result=triage,
+        source_filename="report.pdf",
+        message_id="test-msg-ind",
+        start_time=0.0,
+        is_icsr=True,
+        is_pqc=False,
+        is_mi=False,
+        is_not_relevant=False
+    )
+    ind_fact = next(f for f in envelope.fact_ledger if f.field == "indication")
+    assert ind_fact.value == "Not stated"
+    assert ind_fact.status == FactStatus.NOT_STATED
+    assert envelope.icsr.product.indication == "Not stated"
+
+def test_generalized_reporter_role_qualification():
+    """Validates reporter role distinction between Consumer/Patient and Physician."""
+    consumer_raw = {
+        "icsr": {
+            "reporter": {"name": "Jane Consumer", "role": "Consumer / Patient", "status": "CONFIRMED", "citation": {"source_type": "email_body", "verbatim_snippet": "I am writing about my palpitations"}}
+        }
+    }
+    triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+        labels=[TriageLabel(category=CategoryEnum.SAFETY_REPORT_ICSR, confidence=0.9, reason="ICSR")],
+        executive_summary="Self-reported palpitations."
+    )
+    envelope = icsr_extractor._build_envelope_from_data(
+        raw_data=consumer_raw,
+        triage_result=triage,
+        source_filename="consumer.eml",
+        message_id="test-msg-rep",
+        start_time=0.0,
+        is_icsr=True,
+        is_pqc=False,
+        is_mi=False,
+        is_not_relevant=False
+    )
+    rep_fact = next(f for f in envelope.fact_ledger if f.field == "reporter_role")
+    assert "Consumer" in rep_fact.value or "Patient" in rep_fact.value
+    assert rep_fact.status == FactStatus.CONFIRMED
+
+def test_multilingual_evidence_preservation_and_normalization():
+    """Validates that non-English citations retain verbatim source text while values are standardized."""
+    es_raw = {
+        "language_detected": "Spanish",
+        "icsr": {
+            "reaction": {
+                "adverse_event": "Toxic Epidermal Necrolysis",
+                "status": "CONFIRMED",
+                "citation": {
+                    "source_type": "pdf_text",
+                    "page_or_location": "Page 1",
+                    "verbatim_snippet": "Necrólisis Epidérmica Tóxica grave en >35% superficie corporal"
+                }
+            }
+        }
+    }
+    triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+        labels=[TriageLabel(category=CategoryEnum.SAFETY_REPORT_ICSR, confidence=0.96, reason="RAM")],
+        executive_summary="Spanish RAM."
+    )
+    envelope = icsr_extractor._build_envelope_from_data(
+        raw_data=es_raw,
+        triage_result=triage,
+        source_filename="notificacion_madrid.pdf",
+        message_id="test-msg-es",
+        start_time=0.0,
+        is_icsr=True,
+        is_pqc=False,
+        is_mi=False,
+        is_not_relevant=False
+    )
+    ae_fact = next(f for f in envelope.fact_ledger if f.field == "adverse_event")
+    assert ae_fact.value == "Toxic Epidermal Necrolysis"
+    assert len(ae_fact.evidence) == 1
+    assert "Necrólisis Epidérmica Tóxica" in ae_fact.evidence[0].verbatim_snippet
+
+def test_pure_pqc_and_mi_cross_category_isolation():
+    """Validates that pure PQC and pure MI produce null ICSR and enforce category boundaries."""
+    # Pure PQC
+    pqc_raw = {
+        "pqc": {
+            "product_name": "Cardioril 10mg",
+            "lot_number": "BL-8802",
+            "defect_type": "Packaging Integrity Failure",
+            "defect_description": "Aluminum lidding foil unsealed",
+            "packaging_breached": True,
+            "patient_exposure": "None / Intercepted in pharmacy",
+            "requires_human_review": False
+        }
+    }
+    pqc_triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.QUALITY_COMPLAINT_PQC,
+        labels=[TriageLabel(category=CategoryEnum.QUALITY_COMPLAINT_PQC, confidence=0.98, reason="PQC")],
+        executive_summary="Defect complaint."
+    )
+    env_pqc = icsr_extractor._build_envelope_from_data(
+        raw_data=pqc_raw,
+        triage_result=pqc_triage,
+        source_filename="pqc.pdf",
+        message_id="test-pqc",
+        start_time=0.0,
+        is_icsr=False,
+        is_pqc=True,
+        is_mi=False,
+        is_not_relevant=False
+    )
+    assert env_pqc.icsr is None
+    assert env_pqc.pqc is not None
+    assert env_pqc.pqc.product_name == "Cardioril 10mg"
+
+    # Pure MI
+    mi_raw = {
+        "mi": {
+            "product_or_topic": "Corzapan 10mg",
+            "inquiry_type": "Enteral Administration",
+            "question_text": "Can Corzapan 10mg tablets be crushed for NG-tube administration?",
+            "explicit_no_ae_no_pqc": True
+        }
+    }
+    mi_triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.INFO_REQUEST_MI,
+        labels=[TriageLabel(category=CategoryEnum.INFO_REQUEST_MI, confidence=0.97, reason="MI")],
+        executive_summary="Crushing inquiry."
+    )
+    env_mi = icsr_extractor._build_envelope_from_data(
+        raw_data=mi_raw,
+        triage_result=mi_triage,
+        source_filename="mi.eml",
+        message_id="test-mi",
+        start_time=0.0,
+        is_icsr=False,
+        is_pqc=False,
+        is_mi=True,
+        is_not_relevant=False
+    )
+    assert env_mi.icsr is None
+    assert env_mi.pqc is None
+    assert env_mi.mi is not None
+    assert env_mi.mi.explicit_no_ae_no_pqc is True
+

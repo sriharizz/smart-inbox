@@ -56,20 +56,33 @@ class Normalizer:
         return country_str.title()
 
     @staticmethod
+    def normalize_sex(sex_str: Optional[str]) -> Optional[str]:
+        if not sex_str or sex_str.strip().lower() in ("not stated", "unknown", "n/a", ""):
+            return None
+        s = sex_str.strip().lower()
+        if s in ("f", "female", "fem", "mujer", "weiblich", "femenino", "w"):
+            return "Female"
+        if s in ("m", "male", "masc", "hombre", "männlich", "masculino"):
+            return "Male"
+        return sex_str.capitalize()
+
+    @staticmethod
     def normalize_date(date_str: Optional[str]) -> Optional[str]:
         if not date_str or date_str.strip().lower() in ("not stated", "unknown", "n/a", ""):
             return None
         raw = date_str.strip()
-        # Try standard formats: YYYY-MM-DD, DD/MM/YYYY, DD-Mon-YYYY, Month DD, YYYY
+        # Try standard formats: YYYY-MM-DD, DD/MM/YYYY, DD.MM.YYYY, DD-Mon-YYYY, Month DD, YYYY
         formats = [
             "%Y-%m-%d",
             "%d/%m/%Y",
             "%m/%d/%Y",
+            "%d.%m.%Y",
             "%d-%b-%Y",
             "%d-%B-%Y",
             "%B %d, %Y",
             "%b %d, %Y",
-            "%Y/%m/%d"
+            "%Y/%m/%d",
+            "%Y.%m.%d"
         ]
         for fmt in formats:
             try:
@@ -81,6 +94,10 @@ class Normalizer:
         m = re.search(r"(\d{4})-(\d{2})-(\d{2})", raw)
         if m:
             return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+        # Check regex for DD.MM.YYYY pattern inside string
+        m_dot = re.search(r"(\d{2})\.(\d{2})\.(\d{4})", raw)
+        if m_dot:
+            return f"{m_dot.group(3)}-{m_dot.group(2)}-{m_dot.group(1)}"
         return None
 
 normalizer = Normalizer()

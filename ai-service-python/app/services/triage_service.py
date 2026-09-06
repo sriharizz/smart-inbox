@@ -14,7 +14,7 @@ Your task is to sort incoming medical communications (emails and attached docume
    Look for: Identifiable patient, identifiable reporter, suspect product, adverse outcome (even loosely present).
 2. 'Quality Complaint (PQC)': Physical, chemical, microbiological, or packaging defect with the drug product itself.
    Look for: Broken seal, contaminated vial, particulate matter, packaging breach, counterfeit, discolored tablets, labeling defect.
-3. 'Info Request (MI)': Medical inquiry or question regarding dosing, administration, stability, drug interactions, or off-label use without any adverse event and without any product defect.
+3. 'Medical Information (MI)': Medical inquiry or question regarding dosing, administration, stability, drug interactions, or off-label use without any adverse event and without any product defect.
 4. 'Not Relevant': Marketing spam, commercial conferences, administrative chatter, HR communications, or vendor solicitations.
 
 CRITICAL RULES:
@@ -26,10 +26,10 @@ CRITICAL RULES:
 Return ONLY a valid JSON object matching this schema:
 {
   "is_multi_label": boolean,
-  "primary_category": "Safety Report (ICSR)" | "Quality Complaint (PQC)" | "Info Request (MI)" | "Not Relevant",
+  "primary_category": "Safety Report (ICSR)" | "Quality Complaint (PQC)" | "Medical Information (MI)" | "Not Relevant",
   "labels": [
     {
-      "category": "Safety Report (ICSR)" | "Quality Complaint (PQC)" | "Info Request (MI)" | "Not Relevant",
+      "category": "Safety Report (ICSR)" | "Quality Complaint (PQC)" | "Medical Information (MI)" | "Not Relevant",
       "confidence": float (0.0 to 1.0),
       "reason": "1-line regulatory rationale"
     }

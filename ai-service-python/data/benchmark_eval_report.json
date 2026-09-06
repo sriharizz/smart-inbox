@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-09-05 14:54:13",
+  "timestamp": "2026-09-06 15:18:54",
   "total_cases": 27,
   "passed_cases": 27,
   "accuracy_percentage": 100.0,
-  "average_latency_ms": 1026,
+  "average_latency_ms": 4143,
   "detailed_results": [
     {
       "case_id": "CASE-01",
@@ -12,7 +12,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 2613,
+      "latency_ms": 10175,
       "notes": "Cardioril (cardioril hydrochloride) / Acute Drug-Induced Liver "
     },
     {
@@ -22,8 +22,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 8024,
-      "notes": "InjectaPen / Acute Anaphylaxis (Grade "
+      "latency_ms": 11620,
+      "notes": "Dose strictly 'Not stated' (Verified)"
     },
     {
       "case_id": "CASE-03",
@@ -32,8 +32,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1650,
-      "notes": "Corzapan 10mg tablets / Drug-Induced Tachycardia "
+      "latency_ms": 7038,
+      "notes": "Frequency strictly 'Not stated' (Verified)"
     },
     {
       "case_id": "CASE-04",
@@ -42,8 +42,8 @@
       "is_multi_label_expected": true,
       "is_multi_label_actual": true,
       "passed": true,
-      "latency_ms": 7426,
-      "notes": "Cefatox (cefatoxime sodium) 1g for Inj. / Distributive Septic Shock"
+      "latency_ms": 13920,
+      "notes": "Robert Lang + Multi-Label + Photo Review (Verified)"
     },
     {
       "case_id": "CASE-05",
@@ -52,8 +52,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1304,
-      "notes": "Lamotrigina (Lamictal) 100 mg / Not stated"
+      "latency_ms": 8669,
+      "notes": "Lamotrigina (Lamictal) / Necr\u00f3lisis Epid\u00e9rmica T\u00f3x"
     },
     {
       "case_id": "CASE-06",
@@ -62,8 +62,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1217,
-      "notes": "Neuroval (neuroval HCl) 200mg/400mg / Generalized Tonic-Clonic "
+      "latency_ms": 7848,
+      "notes": "Neuroval (neuroval HCl) / generalized tonic-clonic "
     },
     {
       "case_id": "CASE-07",
@@ -72,8 +72,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1025,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 5459,
+      "notes": "Cardioril 10mg Lot BL-8802 PQC (Verified)"
     },
     {
       "case_id": "CASE-08",
@@ -82,8 +82,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1109,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 5265,
+      "notes": "Lipocur 20mg Lot LP-44109 Counterfeit PQC (Verified)"
     },
     {
       "case_id": "CASE-09",
@@ -92,8 +92,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1281,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 4919,
+      "notes": "MI: Corzapan 10mg tablet / Administration via e (Verified)"
     },
     {
       "case_id": "CASE-10",
@@ -102,8 +102,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1020,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 4109,
+      "notes": "Commercial marketing / non-relevant filtered (Verified)"
     },
     {
       "case_id": "CASE-11",
@@ -112,8 +112,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1059,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 5753,
+      "notes": "MI: Cefatox (cefatoxime  / In-Use Compatibility (Verified)"
     },
     {
       "case_id": "LIT-01",
@@ -122,7 +122,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 3933,
       "notes": "Cardioril (cardioril hydrochloride) / Acute Drug-Induced Autoim"
     },
     {
@@ -132,7 +132,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 4498,
       "notes": "Neuroval (neuroval HCl) / Stevens-Johnson Syndrome "
     },
     {
@@ -142,8 +142,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 490,
+      "notes": "Multi-patient case series split (Verified)"
     },
     {
       "case_id": "LIT-04",
@@ -152,8 +152,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 566,
+      "notes": "Non-reportable negative control filtered (Verified)"
     },
     {
       "case_id": "LIT-05",
@@ -162,8 +162,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 453,
+      "notes": "Non-reportable negative control filtered (Verified)"
     },
     {
       "case_id": "LIT-06",
@@ -172,7 +172,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 827,
       "notes": "Nivolumab (Opdivo) 240 mg IV q2w + Ipilimumab (Yervoy) 1 mg/kg IV q6w / Delayed Immune-Mediated F"
     },
     {
@@ -182,7 +182,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 633,
       "notes": "Not stated / Not stated"
     },
     {
@@ -192,7 +192,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 1007,
       "notes": "Lamotrigina (Lamictal) 100 mg / Toxic Epidermal Necrolysi"
     },
     {
@@ -202,7 +202,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 1275,
       "notes": "Cardioril (Cardioril-HCl) 20 mg / Not stated"
     },
     {
@@ -212,7 +212,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 881,
       "notes": "OncoShield (peg-oncoshield) / Acute Cytokine Release Sy"
     },
     {
@@ -222,7 +222,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 844,
       "notes": "Neuroval (neuroval HCl) / Witnessed New-Onset Gener"
     },
     {
@@ -232,7 +232,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 819,
       "notes": "Renotril / KDIGO Stage 3 Acute Kidne"
     },
     {
@@ -242,8 +242,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 1013,
+      "notes": "PQC: Cardioril 10mg Film-Coated Tablets / Packaging Integrity Failu"
     },
     {
       "case_id": "MED-01",
@@ -252,8 +252,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 915,
+      "notes": "MI: Synthetic Clinical P / Reference Monograph  (Verified)"
     },
     {
       "case_id": "MED-02",
@@ -262,8 +262,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 4608,
+      "notes": "MI: Corzapan (corzapan s / Formulation Compatib (Verified)"
     },
     {
       "case_id": "IRR-01",
@@ -272,8 +272,8 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 4331,
+      "notes": "Commercial marketing / non-relevant filtered (Verified)"
     }
   ]
 }

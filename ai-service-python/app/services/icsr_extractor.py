@@ -24,44 +24,83 @@ EXTRACTION_SYSTEM_INSTRUCTION = """
 You are a Principal Pharmacovigilance Regulatory Data Extraction Specialist and Medical Safety Officer.
 Your objective is to extract structured, source-grounded regulatory facts conforming to ICH E2B(R3) guidelines from incoming healthcare communications and attached documents.
 
-CRITICAL REGULATORY GROUND RULES:
-1. FOUR SEMANTIC STATES:
-   - 'CONFIRMED': Source contains explicit, unambiguous evidence for the extracted fact.
-   - 'NOT_STATED': The source does NOT contain the requested information. Strictly write "Not stated". NEVER guess or infer. A wrong guess is a severe regulatory violation.
-   - 'UNCERTAIN': Information appears to exist but cannot be reliably resolved (e.g. illegible cursive handwriting, blurred clinic scan, damaged text).
-   - 'CONFLICT': Discrepancy between sections of the communication (e.g. email body says one thing, attached PDF says another).
+GOVERNING PRINCIPLE:
+Extract ONLY what is explicitly stated in the source. Never hallucinate, extrapolate, or assume standard medical practice. If information is absent, strictly record "Not stated". A false positive or assumed value is a severe regulatory integrity violation.
 
-2. DOMAIN BOUNDARIES & SEPARATION:
-   - SUSPECT DRUG vs EMERGENCY RESCUE TREATMENT:
-     If a patient received an emergency rescue medication (e.g., epinephrine 0.3mg IM, antihistamines, IV methylprednisolone) to treat anaphylaxis or shock, record that medication in clinical history/narrative, NOT as the suspect product dose!
-     Suspect product dose is ONLY what the patient received of the suspect medicinal product. If the suspect product dose is omitted in the source, dose MUST strictly be "Not stated".
-   - INDICATION vs REACTION:
-     Do NOT infer indication from the adverse event or disease unless explicitly stated why the drug was prescribed.
-   - REPORTER QUALIFICATION:
-     Identify reporter credentials (Physician, Pharmacist, Nurse, Consumer, Patient). Do NOT convert a reporter into an HCP unless the source identifies them as one.
-   - NON-ENGLISH DOCUMENTS:
-     For foreign-language communications (Spanish, German, etc.), extract the verbatim snippet in the ORIGINAL source language, and provide English translation in the normalized field.
+CRITICAL REGULATORY INSTRUCTIONS:
 
-3. CATEGORY-AWARE PAYLOAD SELECTION:
-   You will receive the active triage categories for the communication.
+1. FOUR ATOMIC FACT STATES:
+   - 'CONFIRMED': Source contains explicit, unambiguous evidence for the extracted value.
+   - 'NOT_STATED': The source does NOT contain the requested information. Strictly return "Not stated". NEVER guess or infer.
+   - 'UNCERTAIN': Information appears to exist in the document but cannot be reliably resolved (e.g. illegible cursive handwriting, blurred clinic scan, damaged text, ambiguous pronoun).
+   - 'CONFLICT': Discrepancy between sections of the communication (e.g. email body states one value, attached document states a conflicting value).
+
+2. PRODUCT ROLE BOUNDARIES & EMERGENCY RESCUE SEGREGATION:
+   - Identify the suspect medicinal product for which pharmacovigilance surveillance is being conducted.
+   - Strictly distinguish suspect product exposure from:
+     (a) Acute rescue, resuscitation, or emergency treatment administered in response to an adverse reaction or clinical decompensation (e.g., epinephrine, vasopressors, antihistamines, corticosteroids, bronchodilators, IV fluid resuscitation).
+     (b) Chronic concomitant medications taken for unrelated co-morbidities.
+   - The suspect product dose, frequency, and route MUST ONLY reflect the suspect medicinal product itself.
+   - If the dose of the suspect product is omitted, unknown, or not specified in the source, dose MUST strictly be "Not stated" with status 'NOT_STATED'.
+   - NEVER assign an emergency rescue intervention dose to the suspect product! Record emergency interventions in clinical narrative or concomitant/treatment notes.
+   - If no dosing frequency or schedule is given for the suspect product, frequency MUST strictly be "Not stated" with status 'NOT_STATED'.
+
+3. INDICATION vs ADVERSE REACTION:
+   - Indication is the pre-existing medical condition or therapeutic rationale for which the suspect drug was prescribed or taken before the event occurred.
+   - NEVER extract an adverse reaction, clinical decompensation, or downstream symptom as the therapeutic indication.
+   - If the source does not explicitly state why the drug was prescribed, indication MUST strictly be "Not stated" with status 'NOT_STATED'.
+
+4. REPORTER QUALIFICATION & AUTHOR ATTRIBUTION:
+   - Identify the actual person communicating / authoring the report (e.g. email sender, document author, signatory).
+   - Attribute professional role strictly from explicit credentials or organizational titles:
+     - "Physician": explicit MD, DO, MBBS, "Dr.", "Attending Physician", "Chief of Service".
+     - "Pharmacist": explicit PharmD, RPh, "Clinical Pharmacist", "Pharmacy Director", "Compounding Specialist".
+     - "Nurse": explicit RN, BSN, NP.
+     - "Consumer / Patient": patient self-reporting their own experience, or a family member/caregiver without clinical credentials.
+     - "Other Non-HCP": commercial, legal, or administrative sender.
+   - Do NOT convert a patient self-reporting their symptoms into an HCP merely because medical terminology or vital signs are mentioned.
+   - If an email written by a consumer mentions a treating doctor inside the text, the primary reporter is the Consumer (the author), NOT the treating doctor.
+
+5. DATE ROLE AWARENESS:
+   - Distinguish:
+     - start_date: Date the patient first took / began the suspect product.
+     - stop_date: Date the suspect product was discontinued or withdrawn.
+     - onset_date: Date the first sign or symptom of the adverse reaction manifested.
+   - Do NOT assume the reaction onset date is the treatment stop date unless explicit discontinuation on that exact date is documented.
+   - If any date is not documented, record "Not stated".
+
+6. ADVERSE EVENT DIAGNOSIS & DECHALLENGE / RECHALLENGE:
+   - Extract the primary clinical diagnosis as the primary adverse event.
+   - dechallenge: Evaluate whether the adverse event improved or resolved when the suspect product was withdrawn or reduced. Record "Positive (resolved/improved upon discontinuation)", "Negative (persisted)", "Not stated", or "Not applicable".
+   - rechallenge: Evaluate whether the event recurred upon re-exposure ("Positive", "Negative", "Not stated", or "Not applicable").
+   - seriousness_criteria: Array containing applicable regulatory criteria: ["Hospitalization", "Life-threatening", "Death", "Disability", "Congenital Anomaly", "Medically Significant"].
+
+7. MULTILINGUAL SOURCE FIDELITY:
+   - For non-English communications (e.g. Spanish, German, French):
+     - The verbatim_snippet in citations MUST ALWAYS contain the EXACT unparaphrased text in the ORIGINAL source language (e.g. "Necrólisis Epidérmica Tóxica", "Retirada definitiva", "Angioödem des Rachens").
+     - The extracted entity fields should provide the standardized English regulatory term (e.g. "Toxic Epidermal Necrolysis", "Drug permanently withdrawn", "Angioedema") while grounding it to the original verbatim foreign quote.
+     - Never replace the original foreign quote with an English translation in the verbatim snippet citation.
+
+8. PRODUCT QUALITY COMPLAINT (PQC) GRANULARITY:
+   - Capture specific, fine-grained physical observations: the exact component compromised (lidding foil, PVC blister, crimp collar, rubber stopper, container closure), the physical defect mechanism (particulate matter, cloudiness, peeling seal, oxidized speckles, chipped tablets, friability breakdown, missing induction heat-seal, misaligned typography, off-shade coloring).
+   - For suspected counterfeit or adulteration complaints, enumerate all distinct physical discrepancies and labeling anomalies identified in the source.
+   - Record quarantine quantities, lot/batch numbers, expiry dates, and vault disposition.
+   - Determine patient_exposure: "None / Intercepted prior to use" for pharmacy/warehouse stock defects vs "Administered" if given to a patient.
+   - Visual inspection: If an exhibit photograph or visual defect image is attached or described, detail direct visual findings and set requires_human_review to true.
+
+9. MEDICAL INFORMATION (MI) PRESERVATION:
+   - Preserve the exact questions asked by the healthcare professional or consumer in question_text without losing technical specifics (e.g. tablet crushing for enteral NG-tube delivery, in-use stability in D5W).
+   - Capture specific product name, dosage form, and strength.
+   - Capture clinical context (patient population, enteral route, compounding protocol).
+   - Explicitly verify and record whether the source confirms no adverse event and no product defect occurred (explicit_no_ae_no_pqc: true).
+
+10. CATEGORY-AWARE PAYLOAD SELECTION & ZERO CONTAMINATION:
    - Only populate payloads corresponding to ACTIVE categories!
-   - If 'Safety Report (ICSR)' is NOT active, set "icsr": null.
-   - If 'Quality Complaint (PQC)' is NOT active, set "pqc": null.
-   - If 'Info Request (MI)' is NOT active, set "mi": null.
-   - If 'Not Relevant' is active, populate "not_relevant" and set other payloads to null.
-   - If multi-label (e.g. ICSR + PQC), populate BOTH payloads.
-
-4. EXACT SOURCE TRACEABILITY:
-   Every entity group must include an exact source citation:
-   - source_type: 'email_body' | 'email_header' | 'pdf_text' | 'table_cell' | 'defect_image' | 'scanned_page' | 'other'
-   - page_or_location: e.g. 'Page 1', 'Email body paragraph 2', 'Box 24a'
-   - verbatim_snippet: exact unparaphrased quote from the source document.
-
-5. PHYSICAL DEFECT PHOTO DETECTION:
-   If a photograph of a physical quality defect (contaminated vial, cracked crimp collar, defective blister, discoloration) is provided or described, document direct physical observations and set requires_human_review to true.
-
-6. MEDICAL INFORMATION (MI):
-   Capture the exact question asked by the reporter, clinical context, and whether the source explicitly confirms no adverse event and no product defect occurred.
+   - Pure ICSR: populate icsr, set pqc: null, mi: null, not_relevant: null.
+   - Pure PQC (no patient exposure): populate pqc, set icsr: null, mi: null, not_relevant: null. Do NOT infer patient or adverse event!
+   - Pure MI (no adverse event, no defect): populate mi, set icsr: null, pqc: null, not_relevant: null. Clinical background conditions mentioned as the premise for a question are NOT adverse reactions.
+   - Pure Not Relevant: populate not_relevant with determination and exclusion reason, set icsr: null, pqc: null, mi: null.
+   - Multi-Label (e.g. ICSR + PQC): Populate BOTH icsr and pqc payloads!
 
 Return ONLY a valid JSON object matching this schema:
 {
@@ -355,10 +394,13 @@ class ICSRExtractor:
             age_val = pt_raw.get("age", "Not stated")
             age_norm = normalizer.normalize_age(age_val)
 
+            sex_val = pt_raw.get("sex", "Not stated")
+            sex_norm = normalizer.normalize_sex(sex_val)
+
             pt_facts = [
                 self._make_fact("patient_identifier", pt_raw.get("identifier", "Not stated"), status_str=pt_raw.get("status"), evidence_item=pt_ev),
                 self._make_fact("patient_age", age_val, normalized_val=age_norm, status_str=pt_raw.get("status"), evidence_item=pt_ev),
-                self._make_fact("patient_sex", pt_raw.get("sex", "Not stated"), status_str=pt_raw.get("status"), evidence_item=pt_ev),
+                self._make_fact("patient_sex", sex_val, normalized_val=sex_norm, status_str=pt_raw.get("status"), evidence_item=pt_ev),
                 self._make_fact("patient_weight", pt_raw.get("weight", "Not stated"), status_str=pt_raw.get("status"), evidence_item=pt_ev),
                 self._make_fact("patient_height", pt_raw.get("height", "Not stated"), status_str=pt_raw.get("status"), evidence_item=pt_ev),
                 self._make_fact("patient_medical_history", pt_raw.get("medical_history", "Not stated"), status_str=pt_raw.get("status"), evidence_item=pt_ev),
@@ -402,6 +444,10 @@ class ICSRExtractor:
             prod_ev = self._make_evidence(prod_raw.get("citation"), source_filename, "Product Section")
             route_val = prod_raw.get("route", "Not stated")
             route_norm = normalizer.normalize_route(route_val)
+            start_dt_raw = prod_raw.get("start_date", "Not stated")
+            stop_dt_raw = prod_raw.get("stop_date", "Not stated")
+            start_dt_norm = normalizer.normalize_date(start_dt_raw)
+            stop_dt_norm = normalizer.normalize_date(stop_dt_raw)
 
             prod_facts = [
                 self._make_fact("suspect_product", prod_raw.get("product_name", "Not stated"), status_str=prod_raw.get("status"), evidence_item=prod_ev),
@@ -411,8 +457,8 @@ class ICSRExtractor:
                 self._make_fact("indication", prod_raw.get("indication", "Not stated"), status_str=prod_raw.get("status"), evidence_item=prod_ev),
                 self._make_fact("lot_number", prod_raw.get("lot_number", "Not stated"), status_str=prod_raw.get("status"), evidence_item=prod_ev),
                 self._make_fact("expiry_date", prod_raw.get("expiry_date", "Not stated"), status_str=prod_raw.get("status"), evidence_item=prod_ev),
-                self._make_fact("treatment_start_date", prod_raw.get("start_date", "Not stated"), status_str=prod_raw.get("status"), evidence_item=prod_ev),
-                self._make_fact("treatment_stop_date", prod_raw.get("stop_date", "Not stated"), status_str=prod_raw.get("status"), evidence_item=prod_ev),
+                self._make_fact("treatment_start_date", start_dt_raw, normalized_val=start_dt_norm, status_str=prod_raw.get("status"), evidence_item=prod_ev),
+                self._make_fact("treatment_stop_date", stop_dt_raw, normalized_val=stop_dt_norm, status_str=prod_raw.get("status"), evidence_item=prod_ev),
             ]
             product = IcsrProduct(
                 product_name=str(prod_raw.get("product_name", "Not stated")),

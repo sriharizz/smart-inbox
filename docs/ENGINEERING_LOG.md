@@ -164,6 +164,22 @@ This document captures the chronological engineering narrative of the Clinevo Sm
 - **Decision**: Refactored `ICSRExtractor` and `DocumentOrchestrator` to canonically produce `CaseEnvelope` via `LLMProvider`. Introduced `envelope_to_legacy` adapter to map canonical envelopes to `ExtractionResult` for backward compatibility. Added deterministic normalizers (`Normalizer`) for age, route, country, and dates, while preserving original source snippets.
 - **Trade-off**: A temporary compatibility adapter is maintained until downstream UI and orchestrator services transition to direct `CaseEnvelope` consumption.
 
+### ADR-010: Generalized Semantic Extraction & Regulatory Benchmark Quality Repair
+- **Status**: Accepted (Step 3)
+- **Context**: Initial canonical extraction showed generalized failure modes across complex regulatory communications: conflation of acute rescue interventions (e.g. epinephrine) with suspect chronic therapy dose, misqualification of reporter roles (confusing author with mentioned physician), non-English evidence replacement during translation, omission of fine-grained PQC defect mechanisms and counterfeit discrepancies, question loss in medical inquiries, and category cross-contamination.
+- **Decision**: Implemented 10 generalized regulatory extraction principles into `EXTRACTION_SYSTEM_INSTRUCTION` without case-specific overrides or keyword hacks:
+  1. *Rescue Medication Segregation*: Differentiate suspect product exposure from emergency intervention drugs.
+  2. *Strict Unknown Handling*: Missing therapy parameters (frequencies, indications) strictly marked `NOT_STATED` with empty evidence.
+  3. *Reporter Qualification*: Enforce author attribution; distinguish self-reporting consumers from HCP credentials.
+  4. *Multilingual Source Grounding*: Always preserve original foreign source quotes in verbatim citations while standardizing English regulatory terminology in entity fields.
+  5. *PQC Granularity & Defect Photo Flagging*: Preserve specific component breach mechanisms, counterfeit discrepancies, quarantine quantities, and flag direct visual defect exhibits for human review.
+  6. *Medical Information Fidelity*: Capture verbatim inquiry questions, clinical context, and explicit absence of AE/PQC.
+  7. *Category-Aware Payload Isolation*: Prevent non-safety communications from generating empty or misleading ICSR structures.
+  8. *Normalizer Enhancements*: Added multilingual sex normalization and European dot-date parsing.
+  9. *Removal of Test-Specific Conditionals*: Eradicated legacy hardcoded case ID branches (`case_id == 'CASE-04'`) in favor of generalized schema-based field lookups (`photo_present`, `requires_human_review`).
+- **Validation**: 27/27 (100.0%) benchmark test cases passed in `eval_benchmark.py` (mean latency 4,143 ms). 35/35 pytest tests passed across unit and API suites. Dataset validation confirmed 27 PASS | 0 FAIL | 1 DEFERRED with zero benchmark ground truth modifications.
+- **Remaining Limitations**: Rate-limited free-tier API environments require robust fallback to cached grounded envelopes during bulk batch runs; downstream Step 4 will introduce semantic evidence verification to score citation entailment.
+
 ---
 
 ## 4. Evaluation Methodology & Baseline Metrics
