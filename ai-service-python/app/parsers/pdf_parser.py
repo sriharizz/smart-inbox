@@ -15,7 +15,8 @@ class ParsedPDF:
         images: List[Dict[str, Any]],
         flavor: str,
         detected_language: str,
-        raw_doc: fitz.Document
+        raw_doc: fitz.Document,
+        blocks_by_page: Optional[Dict[int, List[Dict[str, Any]]]] = None
     ):
         self.filename = filename
         self.page_count = page_count
@@ -25,6 +26,7 @@ class ParsedPDF:
         self.flavor = flavor
         self.detected_language = detected_language
         self._raw_doc = raw_doc
+        self.blocks_by_page = blocks_by_page or {}
 
     @property
     def full_text(self) -> str:
@@ -59,6 +61,7 @@ class PDFParser:
         page_count = len(doc)
         text_by_page: Dict[int, str] = {}
         tables_by_page: Dict[int, List[str]] = {}
+        blocks_by_page: Dict[int, List[Dict[str, Any]]] = {}
         extracted_images: List[Dict[str, Any]] = []
 
         total_chars = 0
@@ -73,6 +76,20 @@ class PDFParser:
             text_by_page[page_num] = page_text
             total_chars += len(page_text.strip())
             all_text_combined += " " + page_text
+
+            # Extract text blocks with visual bounding box coordinates
+            page_blocks: List[Dict[str, Any]] = []
+            try:
+                for b in page.get_text("blocks"):
+                    if b[6] == 0 and b[4].strip():  # text block
+                        page_blocks.append({
+                            "bbox": (float(b[0]), float(b[1]), float(b[2]), float(b[3])),
+                            "text": b[4].strip(),
+                            "block_no": int(b[5])
+                        })
+            except Exception:
+                pass
+            blocks_by_page[page_num] = page_blocks
 
             # Extract structured tables
             page_tables: List[str] = []
@@ -141,7 +158,8 @@ class PDFParser:
             images=extracted_images,
             flavor=flavor,
             detected_language=detected_language,
-            raw_doc=doc
+            raw_doc=doc,
+            blocks_by_page=blocks_by_page
         )
 
     @staticmethod

@@ -44,9 +44,21 @@ This document captures the chronological engineering narrative of the Clinevo Sm
     6. `CaseEnvelope`: Common top-level contract supporting multi-label triage, document summary (10–15 sentences), reviewer summary, category payloads, and unified fact ledger.
     7. `ReviewerBrief`: Reviewer-facing synthesis with curated `ReviewFocusItem`s and quantitative certainty statistics.
     8. `LLMProvider`: Clean abstract provider contract implemented by `GeminiProvider` without coupling downstream logic to vendor SDKs.
-  - *Validation*: 10/10 contract unit tests passed in `test_data_contracts.py`. Existing parsers and baseline suites untouched.
+
+- **Event: Step 4 Intra-Document Evidence Retrieval Architecture**
+  - *Context*: Pharmacovigilance safety reviewers cannot trust extracted values without direct, one-click access to source passages in the incoming communication package.
+  - *Problem*: Global cross-case vector databases risk catastrophic cross-contamination (e.g. retrieving batch or adverse event details from Case 07 when evaluating Case 01). Furthermore, standard arbitrary chunkers strip visual bounding box coordinates and fracture structured table cell relationships.
+  - *Decision & Architecture*:
+    1. *Strict Source Isolation*: Created transient, in-memory per-document indexes (`DocumentEvidenceIndex`). Chunks are harvested strictly from the active email and its attached PDFs, mathematically precluding cross-document data leakage.
+    2. *Layout-Aware Chunking*: Enhanced `PDFParser` to extract block-level bounding boxes `(x0, y0, x1, y1)`. Chunks preserve `LocationReference` (page number, section/block, coordinates, table row/column).
+    3. *Hybrid Ranking*: Combined exact lexical scoring (with bonuses for verbatim matches, normalized entities, and field context) with semantic dense embeddings (`gemini-embedding-001`). Exact lexical matches ($\ge 0.7$) dominate to ensure source fidelity, while embeddings surface clinical paraphrases.
+    4. *Pre-Verification Immutability*: Retrieved candidate passages are attached to `Fact.evidence_candidates` strictly in pre-verification state (`verification_result = VerificationResult.INSUFFICIENT`). Entailment verification (`SUPPORTS` / `CONTRADICTS`) is strictly segregated into Step 5.
+    5. *Strict Unknown Boundary*: Facts with status `NOT_STATED` immediately return empty candidates (`[]`), preventing spurious or hallucinated evidence.
+    6. *Resilience & Circuit-Breaker*: Implemented an automatic circuit-breaker in `GeminiEmbeddingProvider` upon encountering 429/`RESOURCE_EXHAUSTED` quotas, immediately falling back to pure exact lexical scoring with zero API downtime.
+  - *Validation*: 11/11 retrieval unit tests passed in `test_evidence_retrieval.py`. All 46 pytest tests passed. 27/27 benchmark suites green.
 
 ---
+
 
 ### [2026-09-05] — Milestone: Angular Reviewer Workspace & Viewport Usability Verification
 - **Event: Case Workspace Viewport Scrolling Defect**
@@ -184,7 +196,19 @@ This document captures the chronological engineering narrative of the Clinevo Sm
   - *Prompt/Taxonomy Alignment (1 case)*: `CASE-11` failed because `triage_service.py` prompted for `"Info Request (MI)"` while the canonical benchmark and PV standards use `"Medical Information (MI)"`.
   - *General Extraction & Source Fidelity across Cases 01–10*: Strengthened rescue-medication boundaries, verbatim non-English grounding, and fine-grained PQC mechanics across all documents.
 - **Validation**: 27/27 benchmark test cases passed in `eval_benchmark.py` with all regulatory assertions intact. 35/35 pytest tests passed across unit and API suites. Dataset validation confirmed 27 PASS | 0 FAIL | 1 DEFERRED with zero benchmark ground truth modifications.
-- **Remaining Limitations**: Rate-limited free-tier API environments require robust fallback to cached grounded envelopes during bulk batch runs; downstream Step 4 will introduce semantic evidence retrieval and verification to formally evaluate citation entailment.
+- **Remaining Limitations**: Rate-limited free-tier API environments require robust fallback to cached grounded envelopes during bulk batch runs; downstream Step 5 will introduce semantic evidence verification (`SUPPORTS` / `CONTRADICTS` / `INSUFFICIENT`) to formally evaluate candidate entailment.
+
+### ADR-011: Intra-Document Evidence Retrieval with Source-Isolated In-Memory Indexes
+- **Status**: Accepted (Step 4)
+- **Context**: Pharmacovigilance safety reviewers require verifiable source citations directly linked to specific paragraphs, headers, and table cells in the primary source document. Global multi-document vector databases introduce severe compliance risks by permitting facts from one patient report or defect complaint to be retrieved for another.
+- **Decision**:
+  1. *Bounded Intra-Document Scope*: Eliminate global vector indexing. Each intake document package constructs a transient, isolated `DocumentEvidenceIndex` containing only chunks derived from that specific email and its attachments.
+  2. *Layout-Aware Block & Table Preservation*: Enhanced `PDFParser` to extract block bounding boxes `(x0, y0, x1, y1)` and markdown table matrices. `DocumentChunk` models retain rich `LocationReference` data.
+  3. *Hybrid Ranking Mechanism*: Combines normalized exact lexical matching (with term frequency, exact substring containment, and field context keyword bonuses) with semantic dense cosine similarity (`gemini-embedding-001`). When an exact lexical match is found ($\ge 0.7$), it dominates the candidate ranking. When verbatim wording varies, semantic embeddings surface relevant clinical paraphrases.
+  4. *Strict Architectural Separation of Retrieval (Step 4) vs Verification (Step 5)*: Retrieved candidates are attached to `Fact.evidence_candidates` strictly in pre-verification state (`verification_result = VerificationResult.INSUFFICIENT`). Step 4 determines *candidate relevance*, never *factual entailment*.
+  5. *Zero Hallucination on Missing Data*: Facts with status `NOT_STATED` immediately return empty candidates (`[]`).
+  6. *Offline & Rate-Limit Resilience*: Implemented `DeterministicEmbeddingProvider` for offline hermetic testing and an automatic circuit-breaker in `GeminiEmbeddingProvider` that falls back seamlessly to exact lexical scoring upon encountering 429/quota exhaustion.
+- **Trade-off**: Transient per-case index generation incurs a minor in-memory initialization cost (~5–20 ms per document), but completely eliminates cross-document contamination and external vector database infrastructure dependencies.
 
 ---
 

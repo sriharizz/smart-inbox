@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     # Primary model is gemini-3.5-flash with alias fallback to gemini-3.5-flash-lite
     MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-3.5-flash")
     FALLBACK_MODEL_NAME: str = "gemini-3.5-flash-lite"
+    EMBEDDING_MODEL_NAME: str = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
+    ENABLE_SEMANTIC_RETRIEVAL: bool = True
     
     # Caching & Resilience (Disabled - 100% Live Gemini AI)
     USE_LOCAL_CACHE: bool = False

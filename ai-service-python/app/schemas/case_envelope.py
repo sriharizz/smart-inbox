@@ -111,3 +111,13 @@ class CaseEnvelope(BaseModel):
     # Performance & Diagnostics
     processing_time_ms: int = Field(default=0, description="Processing latency in milliseconds")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Extensible execution metadata")
+
+    def __init__(self, **data):
+        if "facts" in data and "fact_ledger" not in data:
+            data["fact_ledger"] = data.pop("facts")
+        super().__init__(**data)
+
+    @property
+    def facts(self) -> List[Fact]:
+        """Convenience accessor for the atomic fact ledger."""
+        return self.fact_ledger

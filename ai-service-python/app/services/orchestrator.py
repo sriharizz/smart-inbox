@@ -14,6 +14,7 @@ from app.schemas.literature_schema import LiteratureScreenResult
 from app.services.triage_service import triage_service
 from app.services.icsr_extractor import icsr_extractor
 from app.services.literature_service import literature_service
+from app.services.evidence_retriever import evidence_retriever
 
 logger = logging.getLogger("smartinbox.orchestrator")
 
@@ -74,6 +75,14 @@ class DocumentOrchestrator:
             message_id=parsed_email.message_id or filename
         )
         envelope.received_date = parsed_email.date
+
+        # 5. Intra-Document Evidence Retrieval (Step 4)
+        try:
+            evidence_index = evidence_retriever.build_index_for_email(parsed_email, filename=filename)
+            envelope = evidence_retriever.retrieve_for_envelope(envelope, evidence_index)
+        except Exception as e:
+            logger.warning(f"Intra-document evidence retrieval encountered an error: {e}. Preserving extraction evidence.")
+
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
 
         return envelope
@@ -118,6 +127,14 @@ class DocumentOrchestrator:
             source_filename=filename,
             message_id=filename
         )
+
+        # 4. Intra-Document Evidence Retrieval (Step 4)
+        try:
+            evidence_index = evidence_retriever.build_index_for_pdf(parsed_pdf, filename=filename)
+            envelope = evidence_retriever.retrieve_for_envelope(envelope, evidence_index)
+        except Exception as e:
+            logger.warning(f"Intra-document evidence retrieval encountered an error: {e}. Preserving extraction evidence.")
+
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
         return envelope
 
