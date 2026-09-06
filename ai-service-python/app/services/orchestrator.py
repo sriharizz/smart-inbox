@@ -17,6 +17,7 @@ from app.services.literature_service import literature_service
 from app.services.evidence_retriever import evidence_retriever
 from app.services.evidence_verifier import evidence_verifier
 from app.services.consistency_validator import consistency_validator
+from app.services.reviewer_brief_builder import reviewer_brief_builder
 
 logger = logging.getLogger("smartinbox.orchestrator")
 
@@ -100,6 +101,12 @@ class DocumentOrchestrator:
         except Exception as e:
             logger.warning(f"Consistency and integrity validation encountered an error: {e}.")
 
+        # 8. Reviewer Brief Synthesis (Step 7)
+        try:
+            envelope.reviewer_brief = reviewer_brief_builder.build_brief(envelope)
+        except Exception as e:
+            logger.warning(f"Reviewer brief synthesis encountered an error: {e}.")
+
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
 
         return envelope
@@ -167,6 +174,12 @@ class DocumentOrchestrator:
             envelope.metadata["validation_gating"] = val_report.gating_status.value
         except Exception as e:
             logger.warning(f"Consistency and integrity validation encountered an error: {e}.")
+
+        # 7. Reviewer Brief Synthesis (Step 7)
+        try:
+            envelope.reviewer_brief = reviewer_brief_builder.build_brief(envelope)
+        except Exception as e:
+            logger.warning(f"Reviewer brief synthesis encountered an error: {e}.")
 
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
         return envelope

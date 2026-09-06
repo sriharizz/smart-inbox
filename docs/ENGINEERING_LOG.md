@@ -285,6 +285,43 @@ This document captures the chronological engineering narrative of the Clinevo Sm
 
 ---
 
+### ADR-014: Reviewer-First Brief Presentation Architecture & Human Review Experience (Step 7)
+- **Status**: Accepted (Step 7)
+- **Context**: An enterprise healthcare and pharmacovigilance (PV) intake platform succeeds or fails on the reviewer workstation. Reviewers must never feel like they are filling blank forms from scratch; rather, the product promise is "AI prepares the case. The human reviews and confirms it."
+- **Reviewer-First Design Philosophy**:
+  - *Calm, Restrained, Clinical Aesthetic*: Designed as a serious diagnostic workstation with high information density, accessible contrast, clean typography hierarchy, and meaningful status semaphoring. Rejects consumer SaaS tropes (neon gradients, decorative cards, meaningless dashboard widgets).
+  - *Zero Cognitive Hunting*: Core case parameters, triage categories, classification rationale, and validation status are visible above the fold before scrolling.
+  - *Point-of-Need Actions*: Primary reviewer controls (`Confirm AI Case`, `Flag for Escalation`, `Override / Edit`) are docked in the compact top bar.
+- **Why a ReviewerBrief Presentation View-Model Layer Was Introduced**:
+  - Direct dependency on raw backend transmission models (`CaseEnvelope` or `IntakeMessageEntity`) tightly couples presentation to transport schemas.
+  - A clean mapping layer (`ReviewerBriefBuilder` in both Python and TypeScript) synthesizes raw payloads into a normalized `ReviewerBrief` view model.
+  - Computes `ReviewFocusItem` actionable alerts, quantitative certainty stats (`confirmed`, `not_stated`, `uncertain`, `conflict`), urgency rating (`CRITICAL`, `EXPEDITED`, `STANDARD`), and domain-specific projections.
+  - Isolates pure presentation logic from UI components, enabling fast isolated unit testing.
+- **Category-Aware Information Architecture**:
+  - *ICSR*: Groups and highlights Patient Characteristics, Primary Reporter, Suspect Medicinal Product, Adverse Event & Seriousness Criteria, and provides a full-width readable Clinical Narrative section.
+  - *PQC*: Focuses strictly on Defective Product, Lot/Batch, Defect Classification, Physical Description, Container Closure Integrity, and Defect Photo inspection. Suppresses irrelevant clinical patient tables.
+  - *MI*: Prominently surfaces the actual question(s) asked by the requester, inquiry classification, and response urgency. Suppresses clinical safety forms.
+  - *Not Relevant*: Renders a minimal, lightweight overview showing exclusion rationale and source excerpt; suppresses clinical forms and eliminates false missing-field warnings.
+  - *Multi-Label (ICSR + PQC)*: Preserves dual regulatory obligations with domain tabs (`All`, `Safety Report (ICSR)`, `Quality Complaint (PQC)`) without forcing a false single-category hierarchy.
+- **Evidence-First Interaction Architecture**:
+  - Every extracted fact carries an inline clickable evidence affordance (`🔍 Page 1, Box 1`, `🔍 Email body`).
+  - Clicking evidence opens a docked, high-contrast Evidence Inspector Drawer displaying the exact verbatim source quote, source document, page location, and Groq 2nd-LLM semantic verification determination (`SUPPORTS`, `CONTRADICTS`, `INSUFFICIENT`) with reasoning.
+  - Auto-navigates the adjacent document viewer to the matching attachment tab (PDF, Defect Photo, Email Body).
+- **Progressive Disclosure Strategy**:
+  - *Level 1 (Immediate Focus)*: Top bar status, Case header overview, Validation gating banner, "Needs Attention" focus items, fact summary chips, and fact ledger.
+  - *Level 2 (Inspection On-Demand)*: Docked Evidence Inspector Drawer (verbatim snippet, verification rationale), Collapsible 21 CFR Part 11 audit history table.
+  - *Level 3 (Developer / System Telemetry)*: Raw JSON and debug traces are suppressed from normal clinical reviewers.
+- **Validation Gating Semantics**:
+  - `READY_FOR_REVIEW`: All automated structural and data contract consistency checks passed.
+  - `REVIEW_WITH_WARNINGS`: Non-blocking integrity warnings or missing critical fields detected; human review recommended.
+  - `BLOCKED_BY_INTEGRITY_ERROR`: Referential or structural error detected.
+  - *Regulatory Disclaimer*: Interface clearly states that validation gating reflects automated structural integrity and traceability, not clinical infallibility.
+- **Trade-offs & Limitations**:
+  - Document viewing relies on native PDF iframe rendering and high-res image viewers; exact visual bounding box canvas overlays require future PDF vector coordinate rendering.
+  - Ingestion database persistence and reviewer decision audit logging use the existing Spring Boot `/accept` and `/override` endpoints; full multi-tenant electronic signatures and 21 CFR Part 11 biometric authentication are future enterprise milestones.
+
+---
+
 ## 4. Evaluation Methodology & Baseline Metrics
 
 The test corpus consists of 27 canonical cases evaluated across 11 physical `.eml` emails, 20 PDF documents, and 2 image files:

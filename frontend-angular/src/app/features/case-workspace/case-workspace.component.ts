@@ -7,6 +7,20 @@ import { MessageService } from '../../core/services/message.service';
 import { AuditService } from '../../core/services/audit.service';
 import { IntakeMessage, Attachment, SourceCitation } from '../../core/models/message.model';
 import { AuditEvent } from '../../core/models/audit.model';
+import {
+  ReviewerBrief,
+  ReviewerFact,
+  ReviewFocusItem,
+  FactStatus,
+  EvidenceRef
+} from '../../core/models/reviewer-brief.model';
+import { ReviewerBriefBuilder } from '../../core/services/reviewer-brief-builder';
+
+interface ActiveEvidenceContext extends EvidenceRef {
+  fieldKey: string;
+  fieldLabel: string;
+  factValue: string;
+}
 
 @Component({
   selector: 'app-case-workspace',
@@ -25,6 +39,7 @@ export class CaseWorkspaceComponent implements OnInit {
 
   messageId!: number;
   message?: IntakeMessage;
+  brief?: ReviewerBrief;
   auditEvents: AuditEvent[] = [];
   isLoading = true;
   errorMessage = '';
@@ -35,14 +50,12 @@ export class CaseWorkspaceComponent implements OnInit {
   safeAttachmentUrl?: SafeResourceUrl;
   zoomLevel = 100;
 
-  // Active Source Citation Inspection
-  activeCitation?: {
-    fieldKey: string;
-    fieldLabel: string;
-    sourceType?: string;
-    location?: string;
-    snippet?: string;
-  };
+  // Active Evidence Inspection Drawer
+  activeEvidence?: ActiveEvidenceContext;
+
+  // Fact Filtering & Category Tabs
+  selectedCategoryTab: 'ALL' | 'ICSR' | 'PQC' | 'MI' = 'ALL';
+  selectedFactStatusFilter: 'ALL' | 'ATTENTION' | 'CONFIRMED' | 'NOT_STATED' = 'ALL';
 
   // Human Review & Override State
   isEditing = false;
@@ -51,13 +64,11 @@ export class CaseWorkspaceComponent implements OnInit {
   overrideFieldEdits: Record<string, string> = {};
   isSubmittingAction = false;
   actionSuccessMessage = '';
+  isFlaggedForEscalation = false;
 
   // Collapsible Panels
-  showAuditTrail = true;
+  showAuditTrail = false;
   showExecutiveSummary = true;
-
-  // Parsed Citations
-  citations: Record<string, SourceCitation> = {};
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -76,13 +87,9 @@ export class CaseWorkspaceComponent implements OnInit {
       next: (data) => {
         this.message = data;
         this.overrideCategory = data.primaryCategory;
-        
-        // Parse citations if available
-        if (data.icsrReport?.sourceCitationsJson) {
-          this.citations = this.messageService.parseCitations(data.icsrReport.sourceCitationsJson);
-        } else if (data.pqcReport?.sourceCitationsJson) {
-          this.citations = this.messageService.parseCitations(data.pqcReport.sourceCitationsJson);
-        }
+
+        // Build synthesized ReviewerBrief
+        this.brief = ReviewerBriefBuilder.buildFromMessage(data);
 
         // Initialize override field edits
         this.initializeFieldEdits();
@@ -117,21 +124,14 @@ export class CaseWorkspaceComponent implements OnInit {
   }
 
   initializeFieldEdits() {
-    if (!this.message?.icsrReport) return;
-    const r = this.message.icsrReport;
-    this.overrideFieldEdits = {
-      patientIdentifier: r.patientIdentifier || 'A.P. (Arthur Pendelton)',
-      patientAge: r.patientAge || 'Not stated',
-      patientSex: r.patientSex || 'Not stated',
-      patientWeight: r.patientWeight || 'Not stated',
-      reporterName: r.reporterName || 'Not stated',
-      productName: r.productName || 'Not stated',
-      productDose: r.productDose || 'Not stated',
-      productLot: r.productLot || 'Not stated',
-      adverseEvent: r.adverseEvent || 'Not stated'
-    };
+    if (!this.brief) return;
+    this.overrideFieldEdits = {};
+    for (const f of this.brief.facts) {
+      this.overrideFieldEdits[f.field] = f.value;
+    }
   }
 
+  // Left Viewer Controls
   selectEmailTab() {
     this.activeTab = 'EMAIL';
     this.activeAttachment = undefined;
@@ -169,35 +169,95 @@ export class CaseWorkspaceComponent implements OnInit {
     this.zoomLevel = 100;
   }
 
-  // Citation Traceability UX
-  inspectCitation(fieldKey: string, fieldLabel: string) {
-    const cit = this.citations[fieldKey];
-    if (!cit) return;
-
-    this.activeCitation = {
-      fieldKey,
-      fieldLabel,
-      sourceType: cit.source_type,
-      location: cit.page_or_location,
-      snippet: cit.verbatim_snippet
+  // Evidence Inspection UX
+  openEvidenceForFact(fact: ReviewerFact) {
+    if (!fact.evidence) return;
+    this.activeEvidence = {
+      fieldKey: fact.field,
+      fieldLabel: fact.label,
+      factValue: fact.value,
+      ...fact.evidence
     };
 
-    // Auto-navigate left viewer to the matching attachment or email
-    if (cit.source_type === 'email_body' || (cit.source_type && cit.source_type.includes('email'))) {
-      this.selectEmailTab();
-    } else if (this.message?.attachments && this.message.attachments.length > 0) {
-      // Find PDF or photo attachment
-      const targetAtt = this.message.attachments.find(a => 
-        (cit.page_or_location && cit.page_or_location.toLowerCase().includes('pdf') && this.isPdfAttachment(a)) ||
-        (cit.source_type && cit.source_type.includes('photo') && this.isImageAttachment(a))
-      ) || this.message.attachments[0];
-      
-      this.selectAttachmentTab(targetAtt);
+    // Auto-navigate left viewer to relevant attachment or email
+    this.navigateViewerForEvidence(fact.evidence);
+  }
+
+  openEvidenceForFocusItem(item: ReviewFocusItem) {
+    if (item.category === 'PHOTO_DEFECT_INSPECTION') {
+      // Find photo attachment
+      const photoAtt = this.message?.attachments?.find(a => this.isImageAttachment(a));
+      if (photoAtt) {
+        this.selectAttachmentTab(photoAtt);
+      }
+    }
+
+    if (item.evidenceRef) {
+      this.activeEvidence = {
+        fieldKey: item.fieldAffected || 'focus_item',
+        fieldLabel: item.headline,
+        factValue: item.detail,
+        ...item.evidenceRef
+      };
+      this.navigateViewerForEvidence(item.evidenceRef);
     }
   }
 
-  clearCitation() {
-    this.activeCitation = undefined;
+  closeEvidence() {
+    this.activeEvidence = undefined;
+  }
+
+  private navigateViewerForEvidence(evidence: EvidenceRef) {
+    const loc = (evidence.location || '').toLowerCase();
+    const type = (evidence.sourceType || '').toLowerCase();
+
+    if (type.includes('email') || loc.includes('email')) {
+      this.selectEmailTab();
+    } else if (this.message?.attachments && this.message.attachments.length > 0) {
+      const pdfAtt = this.message.attachments.find(a => this.isPdfAttachment(a));
+      const imgAtt = this.message.attachments.find(a => this.isImageAttachment(a));
+
+      if (loc.includes('photo') || type.includes('photo') || type.includes('image')) {
+        if (imgAtt) this.selectAttachmentTab(imgAtt);
+      } else if (pdfAtt) {
+        this.selectAttachmentTab(pdfAtt);
+      }
+    }
+  }
+
+  // Category Filtering
+  setCategoryTab(tab: 'ALL' | 'ICSR' | 'PQC' | 'MI') {
+    this.selectedCategoryTab = tab;
+  }
+
+  // Fact Status Filtering
+  setStatusFilter(filter: 'ALL' | 'ATTENTION' | 'CONFIRMED' | 'NOT_STATED') {
+    this.selectedFactStatusFilter = filter;
+  }
+
+  get filteredFacts(): ReviewerFact[] {
+    if (!this.brief) return [];
+    return this.brief.facts.filter(f => {
+      // Category filter
+      if (this.selectedCategoryTab === 'ICSR') {
+        if (!['PATIENT', 'REPORTER', 'PRODUCT', 'EVENT'].includes(f.section)) return false;
+      } else if (this.selectedCategoryTab === 'PQC') {
+        if (f.section !== 'PQC') return false;
+      } else if (this.selectedCategoryTab === 'MI') {
+        if (f.section !== 'MI') return false;
+      }
+
+      // Status filter
+      if (this.selectedFactStatusFilter === 'ATTENTION') {
+        return f.status === 'UNCERTAIN' || f.status === 'CONFLICT';
+      } else if (this.selectedFactStatusFilter === 'CONFIRMED') {
+        return f.status === 'CONFIRMED';
+      } else if (this.selectedFactStatusFilter === 'NOT_STATED') {
+        return f.status === 'NOT_STATED';
+      }
+
+      return true;
+    });
   }
 
   // Human Review Actions
@@ -206,18 +266,21 @@ export class CaseWorkspaceComponent implements OnInit {
     this.isSubmittingAction = true;
     this.messageService.acceptMessage(this.message.id, {
       reviewerUsername: 'safety.reviewer@clinevo.com',
-      comments: 'Safety reviewer confirmed automated triage and extracted ICH E2B parameters.'
+      comments: 'Safety reviewer verified case brief, atomic fact ledger, and evidence grounding.'
     }).subscribe({
       next: (updated) => {
         this.message = updated;
+        if (this.brief) {
+          this.brief.validationGating = 'READY_FOR_REVIEW';
+        }
         this.isSubmittingAction = false;
-        this.actionSuccessMessage = 'Case successfully accepted and marked as REVIEWED.';
+        this.actionSuccessMessage = 'Case successfully confirmed by reviewer and marked as REVIEWED.';
         this.loadAuditTrail(this.message.id);
         this.cdr.markForCheck();
         setTimeout(() => {
           this.actionSuccessMessage = '';
           this.cdr.markForCheck();
-        }, 4000);
+        }, 5000);
       },
       error: (err) => {
         this.isSubmittingAction = false;
@@ -225,6 +288,17 @@ export class CaseWorkspaceComponent implements OnInit {
         alert(`Failed to accept case: ${err.message}`);
       }
     });
+  }
+
+  onFlagCase() {
+    this.isFlaggedForEscalation = !this.isFlaggedForEscalation;
+    if (this.isFlaggedForEscalation) {
+      this.actionSuccessMessage = 'Case flagged for senior medical officer escalation.';
+      setTimeout(() => {
+        this.actionSuccessMessage = '';
+        this.cdr.markForCheck();
+      }, 4000);
+    }
   }
 
   onStartOverride() {
@@ -256,15 +330,16 @@ export class CaseWorkspaceComponent implements OnInit {
     }).subscribe({
       next: (updated) => {
         this.message = updated;
+        this.brief = ReviewerBriefBuilder.buildFromMessage(updated);
         this.isEditing = false;
         this.isSubmittingAction = false;
-        this.actionSuccessMessage = 'Reviewer override committed and logged to immutable audit trail.';
+        this.actionSuccessMessage = 'Reviewer corrections committed and logged to immutable audit trail.';
         this.loadAuditTrail(this.message.id);
         this.cdr.markForCheck();
         setTimeout(() => {
           this.actionSuccessMessage = '';
           this.cdr.markForCheck();
-        }, 4000);
+        }, 5000);
       },
       error: (err) => {
         this.isSubmittingAction = false;
@@ -274,6 +349,7 @@ export class CaseWorkspaceComponent implements OnInit {
     });
   }
 
+  // Format Helpers
   formatCaseId(id: number): string {
     return `CASE-${id.toString().padStart(3, '0')}`;
   }

@@ -1,69 +1,88 @@
-<div class="workspace-layout" *ngIf="message">
-  <!-- Top Workspace Control Header -->
-  <header class="workspace-header">
-    <div class="header-left">
-      <a routerLink="/queue" class="btn-back">← Back to Queue</a>
-      <div class="case-meta">
-        <span class="case-badge">{{ formatCaseId(message.id) }}</span>
-        <h1 class="case-title">{{ message.subject }}</h1>
-        <span class="sender-info">From: {{ message.sender }} ({{ message.senderEmail }})</span>
+<div class="workspace-layout" *ngIf="message && brief">
+  <!-- ================================================================= -->
+  <!-- TOP BAR: Compact identity, status, and reviewer primary actions  -->
+  <!-- ================================================================= -->
+  <header class="top-bar">
+    <div class="bar-left">
+      <a routerLink="/queue" class="btn-back" title="Return to Review Queue">← Queue</a>
+      <div class="product-identity">
+        <span class="product-name">Clinevo Smart Inbox</span>
+        <span class="divider">/</span>
+        <span class="case-id-badge">{{ brief.caseId }}</span>
       </div>
     </div>
 
-    <!-- Review Status & Action Controls -->
-    <div class="header-right">
-      <div class="status-group">
-        <span class="badge" [ngClass]="{
-          'badge-confirm': message.status === 'REVIEWED',
-          'badge-brand': message.status === 'OVERRIDDEN',
-          'badge-attention': message.status === 'RECEIVED' || message.status === 'TRIAGED'
-        }">
-          Status: {{ message.status === 'RECEIVED' || message.status === 'TRIAGED' ? 'Needs Review' : message.status }}
-        </span>
-        <span class="badge badge-urgent" *ngIf="message.pqcReport?.requiresHumanReview || message.isMultiLabel">
-          🚨 High Risk
-        </span>
-      </div>
+    <div class="bar-center">
+      <span class="urgency-badge" [ngClass]="{
+        'urgency-critical': brief.urgency === 'CRITICAL',
+        'urgency-expedited': brief.urgency === 'EXPEDITED',
+        'urgency-standard': brief.urgency === 'STANDARD'
+      }">
+        <span class="pulse-dot"></span>
+        {{ brief.urgency === 'CRITICAL' ? 'CRITICAL: Priority Action' : (brief.urgency === 'EXPEDITED' ? 'EXPEDITED: 15-Day Clock' : 'STANDARD') }}
+      </span>
 
-      <!-- Action Buttons -->
-      <div class="action-buttons">
-        <button 
-          type="button" 
-          class="btn-action btn-override" 
-          (click)="onStartOverride()" 
-          *ngIf="!isEditing"
-          title="Modify classification or extracted parameters with justification">
-          ✎ Override / Edit
-        </button>
+      <span class="status-badge" [ngClass]="{
+        'status-reviewed': message.status === 'REVIEWED',
+        'status-overridden': message.status === 'OVERRIDDEN',
+        'status-needs-review': message.status === 'RECEIVED' || message.status === 'TRIAGED'
+      }">
+        {{ message.status === 'RECEIVED' || message.status === 'TRIAGED' ? 'Needs Human Review' : message.status }}
+      </span>
 
-        <button 
-          type="button" 
-          class="btn-action btn-accept" 
-          (click)="onAcceptAiResult()" 
-          *ngIf="!isEditing" 
-          [disabled]="isSubmittingAction"
-          title="Confirm AI classification and facts">
-          ✓ Accept AI Result
-        </button>
-      </div>
+      <span class="flagged-badge" *ngIf="isFlaggedForEscalation">
+        🚩 Flagged for Escalation
+      </span>
+    </div>
+
+    <div class="bar-right">
+      <button 
+        type="button" 
+        class="btn-bar btn-flag" 
+        (click)="onFlagCase()"
+        [class.active]="isFlaggedForEscalation"
+        title="Flag case for senior medical officer escalation">
+        🚩 Flag
+      </button>
+
+      <button 
+        type="button" 
+        class="btn-bar btn-edit" 
+        (click)="onStartOverride()" 
+        *ngIf="!isEditing"
+        title="Modify classification or extracted parameters with justification">
+        ✎ Override / Edit
+      </button>
+
+      <button 
+        type="button" 
+        class="btn-bar btn-confirm" 
+        (click)="onAcceptAiResult()" 
+        *ngIf="!isEditing" 
+        [disabled]="isSubmittingAction"
+        title="Confirm AI case brief and facts">
+        ✓ Confirm AI Case
+      </button>
     </div>
   </header>
 
   <!-- Notification Banner -->
-  <div class="action-notification" *ngIf="actionSuccessMessage">
-    ✓ {{ actionSuccessMessage }}
+  <div class="notification-banner" *ngIf="actionSuccessMessage">
+    <span class="notif-icon">✓</span>
+    <span>{{ actionSuccessMessage }}</span>
   </div>
 
   <!-- Main 2-Column Split Workspace -->
   <div class="workspace-grid">
     <!-- ================================================================= -->
-    <!-- LEFT PANEL: Original Source Evidence                             -->
+    <!-- LEFT PANE: Source Evidence Documents                              -->
     <!-- ================================================================= -->
     <section class="pane source-pane">
-      <!-- Source Tabs & Viewer Toolbar -->
-      <div class="pane-header">
+      <!-- Source Tabs & Toolbar -->
+      <div class="source-toolbar">
         <div class="source-tabs">
           <button 
+            type="button"
             class="tab-btn" 
             [class.active]="activeTab === 'EMAIL'" 
             (click)="selectEmailTab()">
@@ -71,6 +90,7 @@
           </button>
 
           <button 
+            type="button"
             *ngFor="let att of message.attachments" 
             class="tab-btn" 
             [class.active]="activeTab === att.id" 
@@ -81,38 +101,38 @@
           </button>
         </div>
 
-        <!-- Viewer Zoom Controls -->
-        <div class="viewer-tools">
-          <button class="tool-btn" (click)="zoomOut()" title="Zoom out">-</button>
-          <span class="zoom-val">{{ zoomLevel }}%</span>
-          <button class="tool-btn" (click)="zoomIn()" title="Zoom in">+</button>
-          <button class="tool-btn" (click)="resetZoom()" title="Reset zoom">Reset</button>
+        <!-- Zoom Controls -->
+        <div class="zoom-toolbar">
+          <button type="button" class="btn-zoom" (click)="zoomOut()" title="Zoom out">−</button>
+          <span class="zoom-level">{{ zoomLevel }}%</span>
+          <button type="button" class="btn-zoom" (click)="zoomIn()" title="Zoom in">+</button>
+          <button type="button" class="btn-zoom reset" (click)="resetZoom()" title="Reset zoom">Reset</button>
           <a 
             *ngIf="activeAttachment" 
             [href]="'/api/messages/attachments/' + activeAttachment.id + '/download'" 
             target="_blank" 
-            class="tool-btn link-tool" 
-            title="Download original file">
+            class="btn-zoom link" 
+            title="Download original document">
             ⬇
           </a>
         </div>
       </div>
 
-      <!-- Left Document Display View -->
-      <div class="source-display" [style.zoom.%]="zoomLevel">
-        <!-- 1. Email Body View -->
-        <div class="email-view" *ngIf="activeTab === 'EMAIL'">
-          <div class="email-headers-box">
-            <div class="hdr-row"><span class="hdr-k">From:</span><span class="hdr-v">{{ message.sender }} &lt;{{ message.senderEmail }}&gt;</span></div>
-            <div class="hdr-row"><span class="hdr-k">Date:</span><span class="hdr-v">{{ message.receivedDate }}</span></div>
-            <div class="hdr-row"><span class="hdr-k">Subject:</span><span class="hdr-v">{{ message.subject }}</span></div>
-            <div class="hdr-row"><span class="hdr-k">Message-ID:</span><span class="hdr-v mono">{{ message.messageId }}</span></div>
+      <!-- Document Display Canvas -->
+      <div class="document-canvas" [style.zoom.%]="zoomLevel">
+        <!-- 1. Email Body -->
+        <div class="email-display" *ngIf="activeTab === 'EMAIL'">
+          <div class="email-meta-card">
+            <div class="meta-row"><span class="meta-k">From:</span><span class="meta-v">{{ message.sender }} &lt;{{ message.senderEmail }}&gt;</span></div>
+            <div class="meta-row"><span class="meta-k">Date:</span><span class="meta-v">{{ message.receivedDate }}</span></div>
+            <div class="meta-row"><span class="meta-k">Subject:</span><span class="meta-v strong">{{ message.subject }}</span></div>
+            <div class="meta-row"><span class="meta-k">Message-ID:</span><span class="meta-v mono">{{ message.messageId }}</span></div>
           </div>
-          <div class="email-body-text">{{ message.rawBody }}</div>
+          <div class="email-body-content">{{ message.rawBody }}</div>
         </div>
 
-        <!-- 2. Embedded PDF View -->
-        <div class="pdf-view" *ngIf="activeAttachment && isPdfAttachment(activeAttachment)">
+        <!-- 2. Embedded PDF -->
+        <div class="pdf-display" *ngIf="activeAttachment && isPdfAttachment(activeAttachment)">
           <iframe 
             [src]="safeAttachmentUrl" 
             class="pdf-frame" 
@@ -120,379 +140,434 @@
           </iframe>
         </div>
 
-        <!-- 3. Embedded Defect Photo View -->
-        <div class="photo-view" *ngIf="activeAttachment && isImageAttachment(activeAttachment)">
-          <div class="photo-banner">
-            <span class="banner-icon">📷</span>
-            <span><strong>Physical Defect Image</strong> — Evaluated by AI multimodal vision</span>
+        <!-- 3. Embedded Defect Photo -->
+        <div class="photo-display" *ngIf="activeAttachment && isImageAttachment(activeAttachment)">
+          <div class="photo-inspection-banner">
+            <span class="photo-icon">📷</span>
+            <div>
+              <strong>Physical Container Defect Photo</strong>
+              <div class="photo-sub">Evaluated by AI vision model — requires human visual verification</div>
+            </div>
           </div>
-          <div class="photo-container">
-            <img [src]="'/api/messages/attachments/' + activeAttachment.id + '/download'" alt="Defect Asset" class="defect-img" />
+          <div class="photo-wrapper">
+            <img [src]="'/api/messages/attachments/' + activeAttachment.id + '/download'" alt="Defect Photo" class="defect-img" />
           </div>
         </div>
       </div>
 
-      <!-- Docked Verbatim Source Evidence Inspector -->
-      <div class="citation-inspector" *ngIf="activeCitation">
+      <!-- Docked Source Evidence Inspector -->
+      <div class="evidence-inspector-dock" *ngIf="activeEvidence">
         <div class="inspector-header">
           <div class="inspector-title">
             <span class="insp-icon">🔍</span>
             <strong>Source Evidence Inspector</strong>
-            <span class="insp-badge">{{ activeCitation.fieldLabel }}</span>
+            <span class="insp-field-tag">{{ activeEvidence.fieldLabel }}</span>
           </div>
-          <button class="btn-close-insp" (click)="clearCitation()">✕</button>
+          <button type="button" class="btn-close-insp" (click)="closeEvidence()" title="Close evidence drawer">✕</button>
         </div>
-        <div class="inspector-body">
-          <div class="insp-location">
-            <strong>Location:</strong> {{ activeCitation.location || activeCitation.sourceType }}
+
+        <div class="inspector-content">
+          <div class="insp-fact-preview">
+            <span class="insp-k">Extracted Value:</span>
+            <span class="insp-v">{{ activeEvidence.factValue }}</span>
           </div>
-          <div class="insp-snippet">
-            <span class="quote-mark">“</span>
-            <span class="snippet-text">{{ activeCitation.snippet }}</span>
-            <span class="quote-mark">”</span>
+
+          <div class="insp-quote-card">
+            <div class="quote-header">
+              <span class="quote-src">📄 {{ activeEvidence.sourceType }} · {{ activeEvidence.location }}</span>
+              <span class="verif-tag" [ngClass]="{
+                'verif-supports': activeEvidence.verificationResult === 'SUPPORTS',
+                'verif-contradicts': activeEvidence.verificationResult === 'CONTRADICTS',
+                'verif-insufficient': activeEvidence.verificationResult === 'INSUFFICIENT'
+              }">
+                {{ activeEvidence.verificationResult || 'SUPPORTS' }}
+              </span>
+            </div>
+            <blockquote class="verbatim-quote">
+              “{{ activeEvidence.snippet }}”
+            </blockquote>
+            <div class="verif-rationale" *ngIf="activeEvidence.verificationRationale">
+              <span class="rat-k">Verification Rationale:</span> {{ activeEvidence.verificationRationale }}
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="citation-hint" *ngIf="!activeCitation">
+      <div class="evidence-hint-bar" *ngIf="!activeEvidence">
         <span class="hint-icon">💡</span>
-        <span>Click any <span class="badge badge-brand">[Citation]</span> badge on the right to inspect exact verbatim source text and page location.</span>
+        <span>Click any <strong>[View Evidence]</strong> button on the right to inspect exact verbatim quotes and verification rationale.</span>
       </div>
     </section>
 
     <!-- ================================================================= -->
-    <!-- RIGHT PANEL: AI Interpretation & Clinical Review                 -->
+    <!-- RIGHT PANE: Reviewer Decision Brief & Clinical Fact Review        -->
     <!-- ================================================================= -->
-    <section class="pane ai-pane">
-      <!-- Edit Mode Warning Banner -->
-      <div class="edit-banner" *ngIf="isEditing">
-        <div class="edit-banner-text">
-          <strong>Reviewer Override Mode Active</strong> — Modifications will be committed to the Part 11-oriented audit trail.
+    <section class="pane review-pane">
+      <!-- Edit Mode Toolbar (When Active) -->
+      <div class="edit-toolbar" *ngIf="isEditing">
+        <div class="edit-toolbar-info">
+          <strong>Reviewer Correction Mode</strong> — Changes will be committed with timestamp and username to Part 11 audit trail.
         </div>
-        <div class="edit-banner-actions">
-          <button class="btn-cancel" (click)="onCancelOverride()" [disabled]="isSubmittingAction">Cancel</button>
-          <button class="btn-save" (click)="onSubmitOverride()" [disabled]="isSubmittingAction">Save Override</button>
+        <div class="edit-toolbar-actions">
+          <button type="button" class="btn-edit-cancel" (click)="onCancelOverride()" [disabled]="isSubmittingAction">Cancel</button>
+          <button type="button" class="btn-edit-save" (click)="onSubmitOverride()" [disabled]="isSubmittingAction">Save Corrections</button>
         </div>
       </div>
 
-      <!-- Mandatory Justification Box (When in Edit Mode) -->
-      <div class="justification-box" *ngIf="isEditing">
-        <label class="field-label required">Clinical Justification (Mandatory for Audit Trail):</label>
+      <!-- Mandatory Justification Box (When Editing) -->
+      <div class="justification-card" *ngIf="isEditing">
+        <label class="just-label required">Clinical / Regulatory Justification (Mandatory for Audit Trail):</label>
         <textarea 
-          class="justification-input" 
+          class="just-input" 
           rows="2" 
           [(ngModel)]="overrideJustification" 
-          placeholder="State the clinical or regulatory rationale for overriding the AI classification or modifying fields...">
+          placeholder="State the regulatory or clinical rationale for correcting AI extraction or modifying classification...">
         </textarea>
 
-        <div class="override-category-row">
-          <label class="field-label">Regulatory Category Override:</label>
-          <select [(ngModel)]="overrideCategory" class="category-select">
+        <div class="category-override-row">
+          <label class="just-label">Regulatory Classification Override:</label>
+          <select [(ngModel)]="overrideCategory" class="cat-select">
             <option value="Safety Report (ICSR)">Safety Report (ICSR)</option>
-            <option value="Product Quality Complaint (PQC)">Product Quality Complaint (PQC)</option>
-            <option value="Safety Report (ICSR) + Product Quality Complaint (PQC)">Safety Report (ICSR) + Product Quality Complaint (PQC)</option>
+            <option value="Quality Complaint (PQC)">Quality Complaint (PQC)</option>
+            <option value="Safety Report (ICSR) + Quality Complaint (PQC)">Safety Report (ICSR) + Quality Complaint (PQC)</option>
             <option value="Medical Information Request (MI)">Medical Information Request (MI)</option>
             <option value="Not Relevant">Not Relevant</option>
           </select>
         </div>
       </div>
 
-      <div class="ai-content-scroll">
-        <!-- 1. Regulatory Classification Card -->
-        <div class="card triage-card">
-          <div class="card-header">
-            <span class="card-title">Regulatory Triage & Classification</span>
-            <span class="conf-badge">
-              Confidence: {{ (message.confidence * 100) | number:'1.0-0' }}%
-            </span>
-          </div>
-
-          <div class="triage-main">
-            <div class="triage-primary">
-              <span class="triage-label">Primary Category:</span>
-              <span class="triage-cat">{{ message.primaryCategory }}</span>
-              <span class="badge badge-brand" *ngIf="message.isMultiLabel">Multi-Label</span>
+      <div class="review-scrollable">
+        <!-- 1. CASE HEADER / OVERVIEW CARD -->
+        <div class="card overview-card">
+          <div class="overview-top">
+            <div class="overview-categories">
+              <span class="cat-pill" *ngFor="let cat of brief.allCategories">{{ cat }}</span>
+              <span class="multi-pill" *ngIf="brief.isMultiLabel">Multi-Label Submission</span>
             </div>
-
-            <div class="triage-reason" *ngIf="message.executiveSummary">
-              <strong>Rationale:</strong> {{ message.executiveSummary }}
-            </div>
-
-            <!-- Restrained Confidence Breakdown Meters -->
-            <div class="confidence-grid">
-              <div class="meter-item">
-                <div class="meter-head">
-                  <span class="meter-label">ICSR</span>
-                  <span class="meter-val">{{ message.primaryCategory.includes('ICSR') ? ((message.confidence * 100) | number:'1.0-0') : '2' }}%</span>
-                </div>
-                <div class="meter-bar"><div class="meter-fill" [style.width.%]="message.primaryCategory.includes('ICSR') ? (message.confidence * 100) : 2"></div></div>
-              </div>
-
-              <div class="meter-item">
-                <div class="meter-head">
-                  <span class="meter-label">PQC</span>
-                  <span class="meter-val">{{ message.primaryCategory.includes('PQC') || message.pqcReport ? '95' : '1' }}%</span>
-                </div>
-                <div class="meter-bar"><div class="meter-fill pqc" [style.width.%]="message.primaryCategory.includes('PQC') || message.pqcReport ? 95 : 1"></div></div>
-              </div>
-
-              <div class="meter-item">
-                <div class="meter-head">
-                  <span class="meter-label">MI</span>
-                  <span class="meter-val">{{ message.primaryCategory.includes('MI') ? '92' : '2' }}%</span>
-                </div>
-                <div class="meter-bar"><div class="meter-fill mi" [style.width.%]="message.primaryCategory.includes('MI') ? 92 : 2"></div></div>
-              </div>
-
-              <div class="meter-item">
-                <div class="meter-head">
-                  <span class="meter-label">Not Relevant</span>
-                  <span class="meter-val">{{ message.primaryCategory.includes('Not Relevant') ? '99' : '1' }}%</span>
-                </div>
-                <div class="meter-bar"><div class="meter-fill" [style.width.%]="message.primaryCategory.includes('Not Relevant') ? 99 : 1"></div></div>
-              </div>
+            <div class="overview-confidence">
+              <span class="conf-lbl">AI Confidence:</span>
+              <span class="conf-val">{{ (brief.confidence * 100) | number:'1.0-0' }}%</span>
             </div>
           </div>
-        </div>
 
-        <!-- 2. Defect Photo Inspection Alert Card -->
-        <div class="card defect-alert-card" *ngIf="message.pqcReport && message.pqcReport.photoDetected">
-          <div class="alert-head">
-            <span class="alert-icon">📷</span>
-            <span class="alert-title">Physical Defect Photo Inspection Flag</span>
-            <span class="badge badge-urgent">Mandatory Review</span>
+          <h2 class="overview-subject">{{ brief.subject }}</h2>
+
+          <div class="overview-meta-bar">
+            <span class="meta-item"><strong>Sender:</strong> {{ brief.sender }}</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-item"><strong>Date:</strong> {{ brief.receivedDate }}</span>
+            <span class="meta-sep">·</span>
+            <span class="meta-item"><strong>Attachments:</strong> {{ brief.attachmentCount }}</span>
           </div>
-          <div class="alert-body">
-            <p><strong>AI Vision Observation:</strong> {{ message.pqcReport.photoDescription || 'Product packaging / physical container defect detected.' }}</p>
-            <div class="alert-footer">
-              <span class="citation-pill" (click)="inspectCitation('defect', 'Defect Photo')">
-                [Defect Photo · Inspection Evidence]
+
+          <div class="overview-rationale" *ngIf="brief.executiveSummary">
+            <span class="rat-lead">Executive Synthesis:</span> {{ brief.executiveSummary }}
+          </div>
+
+          <!-- Validation Gating Status -->
+          <div class="validation-gating-bar" [ngClass]="{
+            'gate-ready': brief.validationGating === 'READY_FOR_REVIEW',
+            'gate-warning': brief.validationGating === 'REVIEW_WITH_WARNINGS',
+            'gate-blocked': brief.validationGating === 'BLOCKED_BY_INTEGRITY_ERROR'
+          }">
+            <div class="gate-status">
+              <span class="gate-icon">
+                {{ brief.validationGating === 'READY_FOR_REVIEW' ? '✓' : (brief.validationGating === 'REVIEW_WITH_WARNINGS' ? '⚠️' : '⛔') }}
+              </span>
+              <span class="gate-title">
+                Validation Status: {{ brief.validationGating === 'READY_FOR_REVIEW' ? 'READY FOR REVIEW' : (brief.validationGating === 'REVIEW_WITH_WARNINGS' ? 'REVIEW WITH WARNINGS' : 'BLOCKED BY INTEGRITY ERROR') }}
               </span>
             </div>
-          </div>
-        </div>
-
-        <!-- 3. Structured Extracted Facts (ICH E2B) -->
-        <div class="card facts-card" *ngIf="message.icsrReport">
-          <div class="card-header">
-            <span class="card-title">Structured ICH E2B Clinical Facts</span>
-            <span class="field-hint">Zero-hallucination grounded extraction</span>
-          </div>
-
-          <!-- Section: PATIENT -->
-          <div class="fact-section">
-            <div class="section-title">
-              <span>Patient Information</span>
-              <span class="citation-pill" (click)="inspectCitation('patient', 'Patient Demographics')">[Citation]</span>
-            </div>
-            <table class="fact-table">
-              <tbody>
-                <tr>
-                  <td class="f-lbl">Identifier</td>
-                  <td class="f-val" colspan="3">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.patientIdentifier || 'A.P. (Arthur Pendelton)' }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['patientIdentifier']" class="edit-input" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Age</td>
-                  <td class="f-val">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.patientAge }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['patientAge']" class="edit-input" />
-                  </td>
-                  <td class="f-lbl">Sex</td>
-                  <td class="f-val">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.patientSex }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['patientSex']" class="edit-input" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Weight</td>
-                  <td class="f-val" colspan="3">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.patientWeight }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['patientWeight']" class="edit-input" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Medical History</td>
-                  <td class="f-val" colspan="3">
-                    <span *ngIf="!isEditing" [class.not-stated]="isNotStated(message.icsrReport.patientHistory)">
-                      {{ message.icsrReport.patientHistory }}
-                    </span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['patientHistory']" class="edit-input" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Section: REPORTER -->
-          <div class="fact-section">
-            <div class="section-title">
-              <span>Reporter Information</span>
-              <span class="citation-pill" (click)="inspectCitation('reporter', 'Reporter Details')">[Citation]</span>
-            </div>
-            <table class="fact-table">
-              <tbody>
-                <tr>
-                  <td class="f-lbl">Name</td>
-                  <td class="f-val">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.reporterName }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['reporterName']" class="edit-input" />
-                  </td>
-                  <td class="f-lbl">Role</td>
-                  <td class="f-val">{{ message.icsrReport.reporterRole }}</td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Institution</td>
-                  <td class="f-val">{{ message.icsrReport.reporterInstitution }}</td>
-                  <td class="f-lbl">Country</td>
-                  <td class="f-val">{{ message.icsrReport.reporterCountry }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Section: SUSPECT PRODUCT -->
-          <div class="fact-section">
-            <div class="section-title">
-              <span>Suspect Product</span>
-              <span class="citation-pill" (click)="inspectCitation('product', 'Suspect Product')">[Citation]</span>
-            </div>
-            <table class="fact-table">
-              <tbody>
-                <tr>
-                  <td class="f-lbl">Product Name</td>
-                  <td class="f-val" colspan="3">
-                    <strong *ngIf="!isEditing">{{ message.icsrReport.productName }}</strong>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['productName']" class="edit-input" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Dose</td>
-                  <td class="f-val">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.productDose }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['productDose']" class="edit-input" />
-                  </td>
-                  <td class="f-lbl">Frequency</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.productFrequency)">
-                      {{ message.icsrReport.productFrequency }}
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Route</td>
-                  <td class="f-val">{{ message.icsrReport.productRoute }}</td>
-                  <td class="f-lbl">Lot Number</td>
-                  <td class="f-val">
-                    <span *ngIf="!isEditing">{{ message.icsrReport.productLot }}</span>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['productLot']" class="edit-input" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Expiration Date</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.productExpiry)">
-                      {{ message.icsrReport.productExpiry }}
-                    </span>
-                  </td>
-                  <td class="f-lbl">Indication</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.productIndication)">
-                      {{ message.icsrReport.productIndication }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Section: ADVERSE EVENT & SERIOUSNESS -->
-          <div class="fact-section">
-            <div class="section-title">
-              <span>Adverse Reaction & Seriousness</span>
-              <span class="citation-pill" (click)="inspectCitation('reaction', 'Adverse Event')">[Citation]</span>
-            </div>
-            <table class="fact-table">
-              <tbody>
-                <tr>
-                  <td class="f-lbl">Adverse Event</td>
-                  <td class="f-val" colspan="3">
-                    <strong class="text-urgent" *ngIf="!isEditing">{{ message.icsrReport.adverseEvent }}</strong>
-                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['adverseEvent']" class="edit-input" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Onset Time</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.eventOnset)">
-                      {{ message.icsrReport.eventOnset }}
-                    </span>
-                  </td>
-                  <td class="f-lbl">Outcome</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.eventOutcome)">
-                      {{ message.icsrReport.eventOutcome }}
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Seriousness Criteria</td>
-                  <td class="f-val" colspan="3">
-                    <span class="badge badge-urgent">{{ message.icsrReport.seriousnessCriteria || 'Hospitalization / Life-Threatening' }}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="f-lbl">Dechallenge</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.dechallenge)">{{ message.icsrReport.dechallenge }}</span>
-                  </td>
-                  <td class="f-lbl">Rechallenge</td>
-                  <td class="f-val">
-                    <span [class.not-stated]="isNotStated(message.icsrReport.rechallenge)">{{ message.icsrReport.rechallenge }}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Section: CLINICAL NARRATIVE -->
-          <div class="fact-section" *ngIf="message.icsrReport.clinicalNarrative">
-            <div class="section-title">Clinical Narrative</div>
-            <div class="narrative-box">
-              {{ message.icsrReport.clinicalNarrative }}
+            <div class="gate-disclaimer">
+              Automated data-contract & consistency checks passed. Gating denotes structural integrity, not clinical infallibility.
             </div>
           </div>
         </div>
 
-        <!-- 4. PQC-Specific Card (If PQC entity exists) -->
-        <div class="card pqc-card" *ngIf="message.pqcReport">
-          <div class="card-header">
-            <span class="card-title">Product Quality Complaint (PQC) Details</span>
-            <span class="citation-pill" (click)="inspectCitation('pqc', 'Quality Complaint')">[Citation]</span>
+        <!-- 2. "NEEDS ATTENTION" / REVIEW SUMMARY CARD -->
+        <div class="card attention-card" *ngIf="brief.reviewFocus.length > 0">
+          <div class="attention-header">
+            <div class="att-title-group">
+              <span class="att-icon">⚡</span>
+              <span class="att-title">Actionable Items Needing Review ({{ brief.reviewFocus.length }})</span>
+            </div>
+            <span class="att-subtitle">Targeted review focus — verify these items first</span>
           </div>
-          <table class="fact-table">
+
+          <div class="focus-items-grid">
+            <div 
+              class="focus-item-row" 
+              *ngFor="let item of brief.reviewFocus"
+              [ngClass]="{
+                'focus-conflict': item.category === 'EVIDENCE_CONFLICT',
+                'focus-photo': item.category === 'PHOTO_DEFECT_INSPECTION',
+                'focus-uncertain': item.category === 'UNCERTAIN_HANDWRITING',
+                'focus-missing': item.category === 'MISSING_CRITICAL_FIELD',
+                'focus-lang': item.category === 'MULTILINGUAL_TRANSLATION',
+                'focus-ambiguity': item.category === 'CATEGORY_AMBIGUITY'
+              }">
+              <div class="focus-left">
+                <span class="focus-badge">{{ item.headline }}</span>
+                <p class="focus-detail">{{ item.detail }}</p>
+              </div>
+
+              <div class="focus-right">
+                <button 
+                  type="button" 
+                  class="btn-focus-action" 
+                  (click)="openEvidenceForFocusItem(item)">
+                  {{ item.actionSuggested }} →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card clean-state-card" *ngIf="brief.reviewFocus.length === 0">
+          <span class="clean-icon">✓</span>
+          <div>
+            <strong>AI Preparation Complete — No Integrity Issues Detected</strong>
+            <p class="clean-sub">All critical regulatory parameters verified against source documentation.</p>
+          </div>
+        </div>
+
+        <!-- 3. DOMAIN NAVIGATION TABS (When Multi-Label or Large Case) -->
+        <div class="domain-tabs-toolbar" *ngIf="brief.isMultiLabel || brief.primaryCategory.includes('+')">
+          <div class="domain-tabs">
+            <button 
+              type="button" 
+              class="domain-tab" 
+              [class.active]="selectedCategoryTab === 'ALL'"
+              (click)="setCategoryTab('ALL')">
+              All Sections
+            </button>
+            <button 
+              type="button" 
+              class="domain-tab" 
+              [class.active]="selectedCategoryTab === 'ICSR'"
+              (click)="setCategoryTab('ICSR')">
+              Safety Report (ICSR)
+            </button>
+            <button 
+              type="button" 
+              class="domain-tab" 
+              [class.active]="selectedCategoryTab === 'PQC'"
+              (click)="setCategoryTab('PQC')">
+              Quality Complaint (PQC)
+            </button>
+            <button 
+              type="button" 
+              class="domain-tab" 
+              *ngIf="brief.primaryCategory.includes('MI') || brief.miDetails"
+              [class.active]="selectedCategoryTab === 'MI'"
+              (click)="setCategoryTab('MI')">
+              Medical Info (MI)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. CATEGORY-AWARE SPECIALIZED SECTIONS -->
+
+        <!-- A. NOT RELEVANT CASE VIEW -->
+        <div class="card not-relevant-card" *ngIf="brief.notRelevantDetails">
+          <div class="card-header">
+            <span class="card-title">Non-Pharmacovigilance Classification</span>
+            <span class="badge badge-muted">Not Reportable</span>
+          </div>
+          <div class="not-rel-body">
+            <p><strong>Exclusion Rationale:</strong> {{ brief.notRelevantDetails.reason }}</p>
+            <div class="not-rel-excerpt">
+              <strong>Source Text Excerpt:</strong>
+              <div class="excerpt-box">{{ brief.notRelevantDetails.sourceContext }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- B. MEDICAL INFORMATION (MI) INQUIRY VIEW -->
+        <div class="card mi-card" *ngIf="brief.miDetails && (selectedCategoryTab === 'ALL' || selectedCategoryTab === 'MI')">
+          <div class="card-header">
+            <span class="card-title">Medical Information Request Details</span>
+            <span class="badge badge-brand">Inquiry: {{ brief.miDetails.inquiryType }}</span>
+          </div>
+          <div class="mi-body">
+            <div class="inquiry-box">
+              <span class="inq-label">Inquired Question(s):</span>
+              <ul class="inq-list">
+                <li *ngFor="let q of brief.miDetails.questions">{{ q }}</li>
+              </ul>
+            </div>
+            <div class="mi-meta-grid">
+              <div><strong>Product / Topic:</strong> {{ brief.miDetails.productName }}</div>
+              <div><strong>Response Urgency:</strong> {{ brief.miDetails.responseUrgency }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- C. PRODUCT QUALITY COMPLAINT (PQC) DEFECT VIEW -->
+        <div class="card pqc-card" *ngIf="brief.pqcDetails && (selectedCategoryTab === 'ALL' || selectedCategoryTab === 'PQC')">
+          <div class="card-header">
+            <span class="card-title">Product Quality Complaint (PQC) Parameters</span>
+            <span class="badge badge-urgent" *ngIf="brief.pqcDetails.requiresHumanReview">Physical Defect</span>
+          </div>
+          <table class="clinical-table">
             <tbody>
               <tr>
-                <td class="f-lbl">Defect Type</td>
-                <td class="f-val"><strong>{{ message.pqcReport.defectType }}</strong></td>
-                <td class="f-lbl">Lot Number</td>
-                <td class="f-val">{{ message.pqcReport.lotNumber }}</td>
+                <td class="c-lbl">Product Name</td>
+                <td class="c-val"><strong>{{ brief.pqcDetails.productName }}</strong></td>
+                <td class="c-lbl">Lot / Batch Number</td>
+                <td class="c-val mono">{{ brief.pqcDetails.lotNumber }}</td>
               </tr>
               <tr>
-                <td class="f-lbl">Defect Description</td>
-                <td class="f-val" colspan="3">{{ message.pqcReport.defectDescription }}</td>
+                <td class="c-lbl">Defect Type</td>
+                <td class="c-val"><span class="badge badge-warning">{{ brief.pqcDetails.defectType }}</span></td>
+                <td class="c-lbl">Container Closure</td>
+                <td class="c-val">{{ brief.pqcDetails.packagingBreached ? 'Breached (Integrity Compromised)' : 'Intact' }}</td>
+              </tr>
+              <tr>
+                <td class="c-lbl">Defect Description</td>
+                <td class="c-val" colspan="3">{{ brief.pqcDetails.defectDescription }}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- 5. Part 11-Oriented Immutable Audit Trail (Collapsible) -->
+        <!-- D. ICSR CLINICAL NARRATIVE -->
+        <div class="card narrative-card" *ngIf="brief.clinicalNarrative && (selectedCategoryTab === 'ALL' || selectedCategoryTab === 'ICSR')">
+          <div class="card-header">
+            <div class="narr-hdr-group">
+              <span class="card-title">Clinical Narrative</span>
+              <span class="narr-sub">AI-prepared chronological synthesis</span>
+            </div>
+          </div>
+          <div class="narrative-body">
+            {{ brief.clinicalNarrative }}
+          </div>
+        </div>
+
+        <!-- 5. ATOMIC FACT LEDGER (Central Unit of Review) -->
+        <div class="card facts-card" *ngIf="!brief.notRelevantDetails">
+          <div class="facts-header">
+            <div class="facts-title-group">
+              <span class="card-title">Clinical Fact Ledger</span>
+              <span class="facts-count">({{ filteredFacts.length }} facts)</span>
+            </div>
+
+            <!-- Status Filter Chips -->
+            <div class="status-filter-group">
+              <button 
+                type="button" 
+                class="filter-chip" 
+                [class.active]="selectedFactStatusFilter === 'ALL'"
+                (click)="setStatusFilter('ALL')">
+                All ({{ brief.factStats.totalFacts }})
+              </button>
+
+              <button 
+                type="button" 
+                class="filter-chip chip-attention" 
+                [class.active]="selectedFactStatusFilter === 'ATTENTION'"
+                (click)="setStatusFilter('ATTENTION')">
+                Needs Review ({{ brief.factStats.uncertainCount + brief.factStats.conflictCount }})
+              </button>
+
+              <button 
+                type="button" 
+                class="filter-chip chip-confirmed" 
+                [class.active]="selectedFactStatusFilter === 'CONFIRMED'"
+                (click)="setStatusFilter('CONFIRMED')">
+                Confirmed ({{ brief.factStats.confirmedCount }})
+              </button>
+
+              <button 
+                type="button" 
+                class="filter-chip chip-not-stated" 
+                [class.active]="selectedFactStatusFilter === 'NOT_STATED'"
+                (click)="setStatusFilter('NOT_STATED')">
+                Not Stated ({{ brief.factStats.notStatedCount }})
+              </button>
+            </div>
+          </div>
+
+          <!-- Fact Table -->
+          <table class="fact-ledger-table">
+            <thead>
+              <tr>
+                <th class="th-field">Parameter</th>
+                <th class="th-val">Extracted Value</th>
+                <th class="th-status">Certainty Status</th>
+                <th class="th-conf">Confidence</th>
+                <th class="th-evidence">Traceable Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fact of filteredFacts" [ngClass]="{
+                'row-conflict': fact.status === 'CONFLICT',
+                'row-uncertain': fact.status === 'UNCERTAIN',
+                'row-not-stated': fact.status === 'NOT_STATED'
+              }">
+                <!-- Parameter -->
+                <td class="td-field">
+                  <span class="fact-label">{{ fact.label }}</span>
+                  <span class="fact-section-tag">{{ fact.section }}</span>
+                </td>
+
+                <!-- Extracted Value -->
+                <td class="td-val">
+                  <span *ngIf="!isEditing" [class.val-not-stated]="fact.status === 'NOT_STATED'">
+                    {{ fact.value }}
+                  </span>
+                  <input 
+                    *ngIf="isEditing" 
+                    [(ngModel)]="overrideFieldEdits[fact.field]" 
+                    class="field-edit-input" />
+                </td>
+
+                <!-- Certainty Status Chip -->
+                <td class="td-status">
+                  <span class="status-chip" [ngClass]="{
+                    'status-confirmed': fact.status === 'CONFIRMED',
+                    'status-uncertain': fact.status === 'UNCERTAIN',
+                    'status-conflict': fact.status === 'CONFLICT',
+                    'status-not-stated': fact.status === 'NOT_STATED'
+                  }">
+                    <span class="chip-dot"></span>
+                    {{ fact.status === 'CONFIRMED' ? 'Confirmed' : (fact.status === 'UNCERTAIN' ? 'Uncertain' : (fact.status === 'CONFLICT' ? 'Conflict' : 'Not Stated')) }}
+                  </span>
+                </td>
+
+                <!-- Confidence -->
+                <td class="td-conf">
+                  <span class="conf-pill" [ngClass]="{
+                    'conf-high': fact.confidence === 'HIGH',
+                    'conf-med': fact.confidence === 'MEDIUM',
+                    'conf-low': fact.confidence === 'LOW'
+                  }">
+                    {{ fact.confidence }}
+                  </span>
+                </td>
+
+                <!-- Traceable Evidence Button -->
+                <td class="td-evidence">
+                  <button 
+                    type="button" 
+                    class="btn-evidence" 
+                    *ngIf="fact.evidence" 
+                    (click)="openEvidenceForFact(fact)"
+                    title="Inspect verbatim quote and verification rationale">
+                    🔍 {{ fact.evidence.location || 'View Evidence' }}
+                  </button>
+                  <span class="no-evidence" *ngIf="!fact.evidence">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 6. PART 11 IMMUTABLE AUDIT TRAIL (Collapsible) -->
         <div class="card audit-card">
           <div class="card-header clickable" (click)="showAuditTrail = !showAuditTrail">
             <span class="card-title">Part 11-Oriented Immutable Audit Trail</span>
-            <span class="toggle-icon">{{ showAuditTrail ? '▲' : '▼' }}</span>
+            <span class="toggle-icon">{{ showAuditTrail ? '▲ Hide' : '▼ View History' }}</span>
           </div>
 
           <div class="audit-body" *ngIf="showAuditTrail">
@@ -505,7 +580,7 @@
                   <th>Field</th>
                   <th>Original</th>
                   <th>New Value</th>
-                  <th>Justification</th>
+                  <th>Clinical Justification</th>
                 </tr>
               </thead>
               <tbody>
@@ -522,7 +597,7 @@
             </table>
 
             <div class="empty-audit" *ngIf="auditEvents.length === 0">
-              No manual overrides or review actions recorded yet for this case.
+              No manual overrides or review modifications recorded yet for this case.
             </div>
           </div>
         </div>
@@ -531,13 +606,16 @@
   </div>
 </div>
 
+<!-- Loading State -->
 <div class="loading-full" *ngIf="isLoading">
   <div class="spinner"></div>
-  <span>Loading case workspace...</span>
+  <span>Synthesizing Reviewer Brief...</span>
 </div>
 
+<!-- Error State -->
 <div class="error-full" *ngIf="!isLoading && errorMessage">
   <span class="error-icon">⚠️</span>
-  <span>{{ errorMessage }}</span>
-  <a routerLink="/queue" class="btn-back">Return to Review Queue</a>
+  <div class="error-title">Unable to Load Case Workspace</div>
+  <p class="error-desc">{{ errorMessage }}</p>
+  <a routerLink="/queue" class="btn-return">Return to Review Queue</a>
 </div>
