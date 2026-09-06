@@ -8,6 +8,7 @@ class SourceCitation(BaseModel):
     verbatim_snippet: str = Field(default="Not stated", description="Exact verbatim snippet quoted from the original source")
 
 class PatientData(BaseModel):
+    identifier: str = Field(default="Not stated", description="Patient name or initials (e.g. 'A.P. (Arthur Pendelton)')")
     age: str = Field(default="Not stated", description="Patient age or 'Not stated'")
     sex: str = Field(default="Not stated", description="Patient sex (Male, Female) or 'Not stated'")
     weight: str = Field(default="Not stated", description="Patient weight or 'Not stated'")

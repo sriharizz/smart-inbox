@@ -1,6 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 .queue-layout {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   height: 100%;
   padding: 16px 20px;
   gap: 12px;
@@ -177,6 +188,7 @@
 
 .table-wrapper {
   flex: 1;
+  min-height: 0;
   background-color: var(--surface-panel);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);

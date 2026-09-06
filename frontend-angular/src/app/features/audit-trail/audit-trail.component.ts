@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -14,6 +14,7 @@ import { AuditEvent } from '../../core/models/audit.model';
 })
 export class AuditTrailComponent implements OnInit {
   private auditService = inject(AuditService);
+  private cdr = inject(ChangeDetectorRef);
 
   events: AuditEvent[] = [];
   filteredEvents: AuditEvent[] = [];
@@ -31,15 +32,18 @@ export class AuditTrailComponent implements OnInit {
   loadAuditEvents() {
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
     this.auditService.getAuditEvents().subscribe({
       next: (data) => {
         this.events = data;
         this.applyFilters();
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.errorMessage = `Failed to load audit events: ${err.message || 'Server error'}`;
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

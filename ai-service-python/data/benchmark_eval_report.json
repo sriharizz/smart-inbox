@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-09-05 09:55:50",
+  "timestamp": "2026-09-05 14:54:13",
   "total_cases": 27,
   "passed_cases": 27,
   "accuracy_percentage": 100.0,
-  "average_latency_ms": 0,
+  "average_latency_ms": 1026,
   "detailed_results": [
     {
       "case_id": "CASE-01",
@@ -12,7 +12,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1,
+      "latency_ms": 2613,
       "notes": "Cardioril (cardioril hydrochloride) / Acute Drug-Induced Liver "
     },
     {
@@ -22,7 +22,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 8024,
       "notes": "InjectaPen / Acute Anaphylaxis (Grade "
     },
     {
@@ -32,7 +32,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1,
+      "latency_ms": 1650,
       "notes": "Corzapan 10mg tablets / Drug-Induced Tachycardia "
     },
     {
@@ -42,8 +42,8 @@
       "is_multi_label_expected": true,
       "is_multi_label_actual": true,
       "passed": true,
-      "latency_ms": 0,
-      "notes": "Not stated / Not stated"
+      "latency_ms": 7426,
+      "notes": "Cefatox (cefatoxime sodium) 1g for Inj. / Distributive Septic Shock"
     },
     {
       "case_id": "CASE-05",
@@ -52,7 +52,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1,
+      "latency_ms": 1304,
       "notes": "Lamotrigina (Lamictal) 100 mg / Not stated"
     },
     {
@@ -62,7 +62,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 1217,
       "notes": "Neuroval (neuroval HCl) 200mg/400mg / Generalized Tonic-Clonic "
     },
     {
@@ -72,7 +72,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1,
+      "latency_ms": 1025,
       "notes": "Not stated / Not stated"
     },
     {
@@ -82,7 +82,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 1109,
       "notes": "Not stated / Not stated"
     },
     {
@@ -92,7 +92,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 1,
+      "latency_ms": 1281,
       "notes": "Not stated / Not stated"
     },
     {
@@ -102,7 +102,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 1020,
       "notes": "Not stated / Not stated"
     },
     {
@@ -112,7 +112,7 @@
       "is_multi_label_expected": false,
       "is_multi_label_actual": false,
       "passed": true,
-      "latency_ms": 0,
+      "latency_ms": 1059,
       "notes": "Not stated / Not stated"
     },
     {

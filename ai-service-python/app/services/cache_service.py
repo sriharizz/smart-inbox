@@ -116,16 +116,17 @@ class CacheService:
         citations = case.get("source_citations") or {}
         
         # Patient
-        pt_raw = case.get("patient") or {}
+        pt_raw = case.get("patient") or case.get("safety_report", {}).get("patient") or {}
         patient = PatientData(
+            identifier=str(pt_raw.get("identifier", "Not stated")),
             age=str(pt_raw.get("age", "Not stated")),
             sex=str(pt_raw.get("sex", "Not stated")),
             weight=str(pt_raw.get("weight", "Not stated")),
-            medical_history=str(pt_raw.get("medical_history", "Not stated")),
+            medical_history=str(pt_raw.get("medical_history", pt_raw.get("indication", "Not stated"))),
             citation=SourceCitation(
                 source_type="pdf" if case.get("attachment_file") else "email",
                 page_or_location="Page 1" if case.get("attachment_file") else "Email body",
-                verbatim_snippet=str(citations.get("patient", "Patient demographics from source"))
+                verbatim_snippet=str(citations.get("patient", citations.get("safety", "Patient demographics from source")))
             )
         )
 
@@ -144,22 +145,12 @@ class CacheService:
             )
         )
 
-        # Product
-        prod_raw = case.get("product") or {}
-        # Special handling for Case 02 dose (strictly "Not stated")
-        prod_dose = str(prod_raw.get("dose", "Not stated"))
-        if case_id == "CASE-02":
-            prod_dose = "Not stated"
-
-        # Special handling for Case 03 frequency (strictly "Not stated")
-        prod_freq = str(prod_raw.get("frequency", "Not stated"))
-        if case_id == "CASE-03":
-            prod_freq = "Not stated"
-
+        # Suspect Product
+        prod_raw = case.get("product") or case.get("suspect_product") or case.get("safety_report", {}).get("product") or {}
         product = ProductData(
-            product_name=str(prod_raw.get("name", "Not stated")),
-            dose=prod_dose,
-            frequency=prod_freq,
+            product_name=str(prod_raw.get("name", prod_raw.get("product_name", "Not stated"))),
+            dose=str(prod_raw.get("dose", "Not stated")),
+            frequency=str(prod_raw.get("frequency", "Not stated")),
             route=str(prod_raw.get("route", "Not stated")),
             lot_number=str(prod_raw.get("lot", prod_raw.get("lot_number", "Not stated"))),
             expiry_date=str(prod_raw.get("expiry", prod_raw.get("expiry_date", "Not stated"))),
@@ -167,14 +158,19 @@ class CacheService:
             citation=SourceCitation(
                 source_type="pdf" if case.get("attachment_file") else "email",
                 page_or_location="Product block",
-                verbatim_snippet=str(citations.get("product", "Suspect product details from source"))
+                verbatim_snippet=str(citations.get("product", citations.get("safety", "Suspect product details from source")))
             )
         )
 
-        # Reaction
-        rx_raw = case.get("reaction") or {}
-        terms = rx_raw.get("terms", [])
-        adverse_term = terms[0] if terms else str(rx_raw.get("adverse_event", "Not stated"))
+        # Adverse Event / Reaction
+        rx_raw = case.get("reaction") or case.get("safety_report", {}).get("reaction") or {}
+        adverse_term = "Not stated"
+        if rx_raw.get("canonical"):
+            adverse_term = rx_raw["canonical"]
+        elif rx_raw.get("terms") and len(rx_raw["terms"]) > 0:
+            adverse_term = rx_raw["terms"][0]
+        elif rx_raw.get("adverse_event"):
+            adverse_term = rx_raw["adverse_event"]
         
         serious_list = []
         if rx_raw.get("hospitalization"):
@@ -196,7 +192,7 @@ class CacheService:
             citation=SourceCitation(
                 source_type="pdf" if case.get("attachment_file") else "email",
                 page_or_location="Adverse Event block",
-                verbatim_snippet=str(citations.get("reaction", "Adverse event details from source"))
+                verbatim_snippet=str(citations.get("reaction", citations.get("safety", "Adverse event details from source")))
             )
         )
 
@@ -205,10 +201,10 @@ class CacheService:
         qc_raw = case.get("quality_complaint") or {}
         if qc_raw or "Quality Complaint (PQC)" in categories:
             qc_data = QualityComplaintData(
-                product_name=str(qc_raw.get("product_name", prod_raw.get("name", "Not stated"))),
-                lot_number=str(qc_raw.get("lot_number", prod_raw.get("lot", "Not stated"))),
-                defect_type=str(qc_raw.get("defect_type", "Packaging breach / Defect")),
-                defect_description=str(qc_raw.get("defect_description", citations.get("quality_complaint", "Physical defect documented."))),
+                product_name=str(qc_raw.get("product", qc_raw.get("product_name", prod_raw.get("name", "Not stated")))),
+                lot_number=str(qc_raw.get("lot", qc_raw.get("lot_number", prod_raw.get("lot", "Not stated")))),
+                defect_type=str(qc_raw.get("defect", qc_raw.get("defect_type", "Packaging breach / Defect"))),
+                defect_description=str(qc_raw.get("defect_description", qc_raw.get("defect", citations.get("quality_complaint", "Physical defect documented.")))),
                 packaging_breached=bool(qc_raw.get("packaging_breached", True)),
                 photo_detected=bool(qc_raw.get("photo_evidence_in_pdf", False) or case_id == "CASE-04"),
                 photo_description=str(qc_raw.get("photo_description", "Exhibit photo of contaminated vial with cracked crimp collar")) if case_id == "CASE-04" else "Defect documented",

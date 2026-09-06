@@ -20,10 +20,10 @@ public class PqcReportEntity {
     @Column(name = "PRODUCT_NAME", length = 255)
     private String productName = "Not stated";
 
-    @Column(name = "LOT_NUMBER", length = 100)
+    @Column(name = "LOT_NUMBER", length = 255)
     private String lotNumber = "Not stated";
 
-    @Column(name = "DEFECT_TYPE", length = 100)
+    @Column(name = "DEFECT_TYPE", length = 1000)
     private String defectType = "Not stated";
 
     @Lob

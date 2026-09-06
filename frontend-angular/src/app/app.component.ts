@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MessageService } from './core/services/message.service';
@@ -12,6 +12,7 @@ import { MessageService } from './core/services/message.service';
 })
 export class AppComponent implements OnInit {
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
 
   pendingCount = 0;
   isIngesting = false;
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
     this.messageService.getMessages().subscribe({
       next: (messages) => {
         this.pendingCount = messages.filter(m => m.status === 'RECEIVED' || m.status === 'TRIAGED').length;
+        this.cdr.markForCheck();
       },
       error: () => {}
     });
@@ -33,17 +35,26 @@ export class AppComponent implements OnInit {
   onTriggerIngest() {
     this.isIngesting = true;
     this.ingestNotification = 'Ingesting synthetic email fixtures...';
+    this.cdr.markForCheck();
     this.messageService.triggerIngest().subscribe({
       next: (res) => {
         this.isIngesting = false;
         this.ingestNotification = `Ingested ${res.newMessagesIngested} messages successfully.`;
         this.refreshCounts();
-        setTimeout(() => this.ingestNotification = '', 4000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.ingestNotification = '';
+          this.cdr.markForCheck();
+        }, 4000);
       },
       error: (err) => {
         this.isIngesting = false;
         this.ingestNotification = `Ingestion error: ${err.message || 'Check backend'}`;
-        setTimeout(() => this.ingestNotification = '', 4000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.ingestNotification = '';
+          this.cdr.markForCheck();
+        }, 4000);
       }
     });
   }

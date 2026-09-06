@@ -77,10 +77,12 @@ public class AsyncDocumentProcessor {
             }
 
             // 2. Persist ICSR Report Entity
-            IcsrReportEntity icsr = new IcsrReportEntity();
+            IcsrReportEntity icsr = message.getIcsrReport() != null ? message.getIcsrReport() : new IcsrReportEntity();
+            icsr.setMessage(message);
             icsr.setCaseIdentifier(result.getCase_id() != null ? result.getCase_id() : "CASE-" + messageId);
 
             if (result.getPatient() != null) {
+                icsr.setPatientIdentifier(result.getPatient().getIdentifier());
                 icsr.setPatientAge(result.getPatient().getAge());
                 icsr.setPatientSex(result.getPatient().getSex());
                 icsr.setPatientWeight(result.getPatient().getWeight());
@@ -134,10 +136,12 @@ public class AsyncDocumentProcessor {
             // 3. Persist Quality Complaint (PQC) if detected
             if (result.getQuality_complaint() != null) {
                 ExtractionResultDto.QualityComplaintDto qc = result.getQuality_complaint();
-                PqcReportEntity pqc = new PqcReportEntity();
+                PqcReportEntity pqc = message.getPqcReport() != null ? message.getPqcReport() : new PqcReportEntity();
+                pqc.setMessage(message);
                 pqc.setProductName(qc.getProduct_name());
                 pqc.setLotNumber(qc.getLot_number());
-                pqc.setDefectType(qc.getDefect_type());
+                String defect = qc.getDefect_type();
+                pqc.setDefectType(defect != null && defect.length() > 950 ? defect.substring(0, 950) : defect);
                 pqc.setDefectDescription(qc.getDefect_description());
                 pqc.setPackagingBreached(qc.isPackaging_breached());
                 pqc.setPhotoDetected(qc.isPhoto_detected());
@@ -152,7 +156,8 @@ public class AsyncDocumentProcessor {
             // 4. Persist Medical Information (MI) if detected
             if (result.getMedical_info() != null) {
                 ExtractionResultDto.MedicalInfoDto mi = result.getMedical_info();
-                MedicalInfoEntity medInfo = new MedicalInfoEntity();
+                MedicalInfoEntity medInfo = message.getMedicalInfo() != null ? message.getMedicalInfo() : new MedicalInfoEntity();
+                medInfo.setMessage(message);
                 medInfo.setProductOrTopic(mi.getProduct_or_topic());
                 medInfo.setInquiryType(mi.getInquiry_type());
                 medInfo.setQuestionText(mi.getQuestion_text());

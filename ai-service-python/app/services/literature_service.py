@@ -159,8 +159,7 @@ class LiteratureService:
                                         dose=pr_data.get("dose", "Not stated")
                                     ),
                                     reaction=ReactionData(
-                                        reaction_pt=r_data.get("terms", ["Not stated"])[0] if r_data.get("terms") else "Not stated",
-                                        is_serious=bool(r_data.get("serious", False)),
+                                        adverse_event=r_data.get("terms", ["Not stated"])[0] if r_data.get("terms") else "Not stated",
                                         seriousness_criteria=["Hospitalization"] if r_data.get("hospitalization") else []
                                     ),
                                     narrative=f"Patient {p_data.get('initials', '')} ({p_data.get('age', '')} {p_data.get('sex', '')}) developed {', '.join(r_data.get('terms', []))} while on {pr_data.get('name', '')}.",
@@ -193,8 +192,7 @@ class LiteratureService:
                                     dose=pr_data.get("dose", "Not stated")
                                 ),
                                 reaction=ReactionData(
-                                    reaction_pt=r_data.get("canonical", "Not stated"),
-                                    is_serious=bool(r_data.get("serious", False)),
+                                    adverse_event=r_data.get("canonical", "Not stated"),
                                     seriousness_criteria=["Hospitalization"] if r_data.get("hospitalization") else []
                                 ),
                                 narrative=f"Case report from {c.get('journal', 'literature')}: {r_data.get('canonical', '')} associated with {pr_data.get('name', '')}.",

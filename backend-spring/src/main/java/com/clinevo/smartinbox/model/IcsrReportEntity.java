@@ -21,6 +21,9 @@ public class IcsrReportEntity {
     private String caseIdentifier;
 
     // Patient Information
+    @Column(name = "PATIENT_IDENTIFIER", length = 255)
+    private String patientIdentifier = "Not stated";
+
     @Column(name = "PATIENT_AGE", length = 100)
     private String patientAge = "Not stated";
 
@@ -117,6 +120,9 @@ public class IcsrReportEntity {
 
     public String getCaseIdentifier() { return caseIdentifier; }
     public void setCaseIdentifier(String caseIdentifier) { this.caseIdentifier = caseIdentifier; }
+
+    public String getPatientIdentifier() { return patientIdentifier; }
+    public void setPatientIdentifier(String patientIdentifier) { this.patientIdentifier = patientIdentifier; }
 
     public String getPatientAge() { return patientAge; }
     public void setPatientAge(String patientAge) { this.patientAge = patientAge; }

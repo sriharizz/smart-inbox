@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +15,7 @@ import { MessageSummary } from '../../core/models/message.model';
 export class ReviewQueueComponent implements OnInit {
   private messageService = inject(MessageService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   messages: MessageSummary[] = [];
   filteredMessages: MessageSummary[] = [];
@@ -39,15 +40,18 @@ export class ReviewQueueComponent implements OnInit {
   loadQueue() {
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
     this.messageService.getMessages().subscribe({
       next: (data) => {
         this.messages = data;
         this.applyFilters();
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
-        this.errorMessage = 'Unable to connect to Spring Boot backend. Please verify backend is running on port 8080.';
+        this.errorMessage = 'Unable to connect to Spring Boot backend. Please verify backend service.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

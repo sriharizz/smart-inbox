@@ -1,7 +1,18 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 .workspace-layout {
   display: flex;
   flex-direction: column;
+  flex: 1;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
   background-color: var(--surface-canvas);
 }
@@ -132,6 +143,7 @@
   display: grid;
   grid-template-columns: 1fr 1.15fr;
   overflow: hidden;
+  min-height: 0;
   height: calc(100% - 49px);
 }
 
@@ -139,6 +151,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
+  min-height: 0;
   background-color: var(--surface-panel);
 
   &.source-pane {
@@ -147,6 +161,9 @@
 
   &.ai-pane {
     background-color: var(--surface-canvas);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
   }
 }
 
@@ -410,6 +427,8 @@
 .ai-content-scroll {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
+  height: 100%;
   padding: 16px;
   display: flex;
   flex-direction: column;

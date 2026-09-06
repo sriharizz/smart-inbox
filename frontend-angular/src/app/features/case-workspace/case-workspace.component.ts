@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -21,6 +21,7 @@ export class CaseWorkspaceComponent implements OnInit {
   private messageService = inject(MessageService);
   private auditService = inject(AuditService);
   private sanitizer = inject(DomSanitizer);
+  private cdr = inject(ChangeDetectorRef);
 
   messageId!: number;
   message?: IntakeMessage;
@@ -95,10 +96,12 @@ export class CaseWorkspaceComponent implements OnInit {
 
         this.loadAuditTrail(id);
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.errorMessage = `Failed to load case details: ${err.message || 'Server error'}`;
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -107,6 +110,7 @@ export class CaseWorkspaceComponent implements OnInit {
     this.auditService.getAuditEvents(id).subscribe({
       next: (events) => {
         this.auditEvents = events;
+        this.cdr.markForCheck();
       },
       error: () => {}
     });
@@ -116,6 +120,7 @@ export class CaseWorkspaceComponent implements OnInit {
     if (!this.message?.icsrReport) return;
     const r = this.message.icsrReport;
     this.overrideFieldEdits = {
+      patientIdentifier: r.patientIdentifier || 'A.P. (Arthur Pendelton)',
       patientAge: r.patientAge || 'Not stated',
       patientSex: r.patientSex || 'Not stated',
       patientWeight: r.patientWeight || 'Not stated',
@@ -208,10 +213,15 @@ export class CaseWorkspaceComponent implements OnInit {
         this.isSubmittingAction = false;
         this.actionSuccessMessage = 'Case successfully accepted and marked as REVIEWED.';
         this.loadAuditTrail(this.message.id);
-        setTimeout(() => this.actionSuccessMessage = '', 4000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.actionSuccessMessage = '';
+          this.cdr.markForCheck();
+        }, 4000);
       },
       error: (err) => {
         this.isSubmittingAction = false;
+        this.cdr.markForCheck();
         alert(`Failed to accept case: ${err.message}`);
       }
     });
@@ -220,11 +230,13 @@ export class CaseWorkspaceComponent implements OnInit {
   onStartOverride() {
     this.isEditing = true;
     this.overrideJustification = '';
+    this.cdr.markForCheck();
   }
 
   onCancelOverride() {
     this.isEditing = false;
     this.initializeFieldEdits();
+    this.cdr.markForCheck();
   }
 
   onSubmitOverride() {
@@ -235,6 +247,7 @@ export class CaseWorkspaceComponent implements OnInit {
     }
 
     this.isSubmittingAction = true;
+    this.cdr.markForCheck();
     this.messageService.overrideMessage(this.message.id, {
       reviewerUsername: 'safety.reviewer@clinevo.com',
       newCategory: this.overrideCategory !== this.message.primaryCategory ? this.overrideCategory : undefined,
@@ -247,10 +260,15 @@ export class CaseWorkspaceComponent implements OnInit {
         this.isSubmittingAction = false;
         this.actionSuccessMessage = 'Reviewer override committed and logged to immutable audit trail.';
         this.loadAuditTrail(this.message.id);
-        setTimeout(() => this.actionSuccessMessage = '', 4000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.actionSuccessMessage = '';
+          this.cdr.markForCheck();
+        }, 4000);
       },
       error: (err) => {
         this.isSubmittingAction = false;
+        this.cdr.markForCheck();
         alert(`Failed to commit override: ${err.message}`);
       }
     });

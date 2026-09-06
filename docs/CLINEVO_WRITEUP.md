@@ -217,15 +217,10 @@ To transition this prototype into a commercial, enterprise-scale pharmacovigilan
 
 ---
 
-## 11. Supporting Engineering Documentation Directory
+## 11. Canonical Documentation Directory
 
-For comprehensive technical specifications, implementation code, and architectural decisions, refer to the supporting engineering records:
+For complete technical specifications, environment setup, and the chronological engineering narrative, refer to the canonical repository records:
 
-- [README.md](file:///c:/projects/SmartInbox/README.md) — Primary local execution and environment setup guide.
-- [ARCHITECTURE.md](file:///c:/projects/SmartInbox/docs/ARCHITECTURE.md) — Deep-dive system architecture, class diagrams, and REST contracts.
-- [AI_PIPELINE.md](file:///c:/projects/SmartInbox/docs/AI_PIPELINE.md) — 16-stage AI ingestion, parsing, table extraction, and reasoning pipeline.
-- [PROMPT_DESIGN.md](file:///c:/projects/SmartInbox/docs/PROMPT_DESIGN.md) — Full prompt templates, negative constraints, and Pydantic schemas.
-- [DATA_AND_GROUND_TRUTH.md](file:///c:/projects/SmartInbox/docs/DATA_AND_GROUND_TRUTH.md) — Test dataset inventory, physical artifact catalog, and benchmark ground truth.
-- [DECISIONS.md](file:///c:/projects/SmartInbox/docs/DECISIONS.md) — Architecture Decision Records (ADR-001 through ADR-008).
-- [EVALUATION.md](file:///c:/projects/SmartInbox/docs/EVALUATION.md) — Evaluation methodology, scoring algorithms, and full synthetic results.
-- [LIMITATIONS_AND_PRODUCTION.md](file:///c:/projects/SmartInbox/docs/LIMITATIONS_AND_PRODUCTION.md) — Production architecture, security hardening, and GAMP 5 compliance.
+- [README.md](file:///c:/projects/SmartInbox/README.md) — Primary setup, configuration, and verification execution guide.
+- [docs/CLINEVO_WRITEUP.md](file:///c:/projects/SmartInbox/docs/CLINEVO_WRITEUP.md) — Canonical evaluator write-up (this document).
+- [docs/ENGINEERING_LOG.md](file:///c:/projects/SmartInbox/docs/ENGINEERING_LOG.md) — Unified chronological engineering log, ADRs, trade-offs, failure analyses, and technical milestones.

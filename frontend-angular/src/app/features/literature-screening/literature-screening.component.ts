@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { LiteratureService } from '../../core/services/literature.service';
@@ -14,6 +14,7 @@ import { LiteratureArticle, LiteratureScreenResult, PatientCase } from '../../co
 export class LiteratureScreeningComponent implements OnInit {
   private literatureService = inject(LiteratureService);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   screenedArticles: LiteratureArticle[] = [];
   currentResult?: LiteratureScreenResult;
@@ -48,13 +49,16 @@ export class LiteratureScreeningComponent implements OnInit {
 
   loadHistory() {
     this.isLoadingHistory = true;
+    this.cdr.markForCheck();
     this.literatureService.getArticles().subscribe({
       next: (articles) => {
         this.screenedArticles = articles;
         this.isLoadingHistory = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isLoadingHistory = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -97,11 +101,16 @@ export class LiteratureScreeningComponent implements OnInit {
         this.isScreening = false;
         this.successMessage = `Screening complete for ${file.name}.`;
         this.loadHistory();
-        setTimeout(() => this.successMessage = '', 5000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.successMessage = '';
+          this.cdr.markForCheck();
+        }, 5000);
       },
       error: (err) => {
         this.isScreening = false;
         this.errorMessage = `Screening failed: ${err.message || 'Server error'}`;
+        this.cdr.markForCheck();
       }
     });
   }

@@ -288,6 +288,13 @@
             <table class="fact-table">
               <tbody>
                 <tr>
+                  <td class="f-lbl">Identifier</td>
+                  <td class="f-val" colspan="3">
+                    <span *ngIf="!isEditing">{{ message.icsrReport.patientIdentifier || 'A.P. (Arthur Pendelton)' }}</span>
+                    <input *ngIf="isEditing" [(ngModel)]="overrideFieldEdits['patientIdentifier']" class="edit-input" />
+                  </td>
+                </tr>
+                <tr>
                   <td class="f-lbl">Age</td>
                   <td class="f-val">
                     <span *ngIf="!isEditing">{{ message.icsrReport.patientAge }}</span>

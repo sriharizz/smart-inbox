@@ -71,12 +71,15 @@ public class ExtractionResultDto {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PatientDto {
+        private String identifier = "Not stated";
         private String age = "Not stated";
         private String sex = "Not stated";
         private String weight = "Not stated";
         private String medical_history = "Not stated";
         private SourceCitationDto citation;
 
+        public String getIdentifier() { return identifier; }
+        public void setIdentifier(String identifier) { this.identifier = identifier; }
         public String getAge() { return age; }
         public void setAge(String age) { this.age = age; }
         public String getSex() { return sex; }

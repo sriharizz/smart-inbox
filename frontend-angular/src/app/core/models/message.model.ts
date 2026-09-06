@@ -16,6 +16,7 @@ export interface Attachment {
 export interface IcsrReport {
   id?: number;
   caseIdentifier?: string;
+  patientIdentifier?: string;
   patientAge: string;
   patientSex: string;
   patientWeight: string;
