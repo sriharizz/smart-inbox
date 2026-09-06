@@ -80,3 +80,5 @@ class ExtractionResult(BaseModel):
     medical_info: Optional[MedicalInfoData] = None
     narrative: str = Field(default="Not stated", description="Clinical plain-language case narrative")
     processing_time_ms: int = 0
+    envelope: Optional[Any] = Field(default=None, description="Canonical CaseEnvelope representation")
+

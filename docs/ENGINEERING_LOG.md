@@ -158,6 +158,12 @@ This document captures the chronological engineering narrative of the Clinevo Sm
 - **Decision**: Implement a dedicated literature screening pipeline (`literature_service.py`) applying GVP Module VI criteria to exclude animal studies (`LIT-04`) and meta-analyses (`LIT-05`), while dynamically disaggregating multi-patient case series (`LIT-03`, `LIT-07`) into distinct child ICSR records.
 - **Trade-off**: Specialized parsing rules distinct from spontaneous email intake.
 
+### ADR-009: Canonical Category-Aware Fact Extraction Engine with Thin Legacy Adapter
+- **Status**: Accepted (Step 2)
+- **Context**: Legacy extraction produced a monolithic JSON structure forcing non-safety cases (PQC, MI) into rigid ICSR patient/reaction fields. The target architecture requires category-specific payloads (`IcsrPayload`, `PqcPayload`, `MiPayload`, `NotRelevantPayload`), atomic `Fact` ledgers, and first-class `Evidence` objects, while keeping the application fully operational without breaking Spring Boot or Angular.
+- **Decision**: Refactored `ICSRExtractor` and `DocumentOrchestrator` to canonically produce `CaseEnvelope` via `LLMProvider`. Introduced `envelope_to_legacy` adapter to map canonical envelopes to `ExtractionResult` for backward compatibility. Added deterministic normalizers (`Normalizer`) for age, route, country, and dates, while preserving original source snippets.
+- **Trade-off**: A temporary compatibility adapter is maintained until downstream UI and orchestrator services transition to direct `CaseEnvelope` consumption.
+
 ---
 
 ## 4. Evaluation Methodology & Baseline Metrics

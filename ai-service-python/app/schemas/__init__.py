@@ -41,6 +41,10 @@ from app.schemas.literature_schema import (
     LiteratureScreenResult,
 )
 
+from app.schemas.legacy_adapter import (
+    envelope_to_legacy,
+)
+
 # Backward-compatibility layer: allow existing code to import ExtractionResult
 from app.schemas.extraction_schema import (
     ExtractionResult,
@@ -53,6 +57,7 @@ from app.schemas.extraction_schema import (
     QualityComplaintData,
     MedicalInfoData,
 )
+
 
 __all__ = [
     # Foundational contracts

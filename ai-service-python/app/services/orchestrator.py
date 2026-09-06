@@ -7,7 +7,9 @@ from PIL import Image
 from app.core.config import settings
 from app.parsers.email_parser import EmailParser, ParsedEmail
 from app.parsers.pdf_parser import PDFParser, ParsedPDF
+from app.schemas.case_envelope import CaseEnvelope
 from app.schemas.extraction_schema import ExtractionResult
+from app.schemas.legacy_adapter import envelope_to_legacy
 from app.schemas.literature_schema import LiteratureScreenResult
 from app.services.triage_service import triage_service
 from app.services.icsr_extractor import icsr_extractor
@@ -17,13 +19,17 @@ logger = logging.getLogger("smartinbox.orchestrator")
 
 class DocumentOrchestrator:
     @staticmethod
-    def process_eml(eml_bytes: bytes, filename: str = "email.eml") -> ExtractionResult:
+    def process_eml_envelope(eml_bytes: bytes, filename: str = "email.eml") -> CaseEnvelope:
+        """
+        Canonical ingestion path for RFC 5322 EML communications.
+        Produces a category-aware CaseEnvelope with atomic Fact ledger and Evidence objects.
+        """
         start_time = time.time()
         
         # 1. Parse RFC 5322 EML
         parsed_email = EmailParser.parse_eml_bytes(eml_bytes)
         
-        # 3. Process any attached PDFs
+        # 2. Process any attached PDFs / images
         combined_text_parts = [
             f"[EMAIL METADATA]\nFrom: {parsed_email.sender} <{parsed_email.sender_email}>\nDate: {parsed_email.date}\nSubject: {parsed_email.subject}\nMessage-ID: {parsed_email.message_id}",
             f"\n[EMAIL BODY]\n{parsed_email.body_text}"
@@ -56,23 +62,34 @@ class DocumentOrchestrator:
 
         full_context_text = "\n\n".join(combined_text_parts)
 
-        # 4. Triage Classification
+        # 3. Triage Classification
         triage_result = triage_service.classify_text(full_context_text, context_label=f"Email: {parsed_email.subject}")
 
-        # 5. Entity Extraction
-        extraction = icsr_extractor.extract_facts(
+        # 4. Canonical CaseEnvelope Extraction
+        envelope = icsr_extractor.extract_envelope(
             document_text=full_context_text,
             triage_result=triage_result,
             images=candidate_images,
-            source_filename=filename
+            source_filename=filename,
+            message_id=parsed_email.message_id or filename
         )
+        envelope.received_date = parsed_email.date
+        envelope.processing_time_ms = int((time.time() - start_time) * 1000)
 
-        extraction.processing_time_ms = int((time.time() - start_time) * 1000)
-
-        return extraction
+        return envelope
 
     @staticmethod
-    def process_pdf(pdf_bytes: bytes, filename: str = "document.pdf") -> ExtractionResult:
+    def process_eml(eml_bytes: bytes, filename: str = "email.eml") -> ExtractionResult:
+        """Legacy compatibility wrapper for process_eml returning ExtractionResult."""
+        envelope = DocumentOrchestrator.process_eml_envelope(eml_bytes, filename=filename)
+        return envelope_to_legacy(envelope)
+
+    @staticmethod
+    def process_pdf_envelope(pdf_bytes: bytes, filename: str = "document.pdf") -> CaseEnvelope:
+        """
+        Canonical ingestion path for standalone PDF documents.
+        Produces a category-aware CaseEnvelope with atomic Fact ledger and Evidence objects.
+        """
         start_time = time.time()
 
         # 1. Parse PDF layout
@@ -90,19 +107,25 @@ class DocumentOrchestrator:
 
         full_content = parsed_pdf.full_content_with_tables
 
-        # 3. Triage
+        # 2. Triage Classification
         triage_result = triage_service.classify_text(full_content, context_label=f"PDF: {filename} ({parsed_pdf.flavor})")
 
-        # 4. Extraction
-        extraction = icsr_extractor.extract_facts(
+        # 3. Canonical CaseEnvelope Extraction
+        envelope = icsr_extractor.extract_envelope(
             document_text=full_content,
             triage_result=triage_result,
             images=candidate_images,
-            source_filename=filename
+            source_filename=filename,
+            message_id=filename
         )
+        envelope.processing_time_ms = int((time.time() - start_time) * 1000)
+        return envelope
 
-        extraction.processing_time_ms = int((time.time() - start_time) * 1000)
-        return extraction
+    @staticmethod
+    def process_pdf(pdf_bytes: bytes, filename: str = "document.pdf") -> ExtractionResult:
+        """Legacy compatibility wrapper for process_pdf returning ExtractionResult."""
+        envelope = DocumentOrchestrator.process_pdf_envelope(pdf_bytes, filename=filename)
+        return envelope_to_legacy(envelope)
 
     @staticmethod
     def screen_literature_pdf(pdf_bytes: bytes, filename: str = "article.pdf") -> LiteratureScreenResult:
