@@ -57,6 +57,17 @@ This document captures the chronological engineering narrative of the Clinevo Sm
     6. *Resilience & Circuit-Breaker*: Implemented an automatic circuit-breaker in `GeminiEmbeddingProvider` upon encountering 429/`RESOURCE_EXHAUSTED` quotas, immediately falling back to pure exact lexical scoring with zero API downtime.
   - *Validation*: 11/11 retrieval unit tests passed in `test_evidence_retrieval.py`. All 46 pytest tests passed. 27/27 benchmark suites green.
 
+- **Event: Step 5 Semantic Evidence Verification Architecture**
+  - *Context*: Implemented the Step 5 Semantic Evidence Verification layer of the Clinevo Smart Inbox pipeline. Its sole purpose is to judge whether retrieved candidate evidence logically, clinically, and semantically establishes the asserted fact.
+  - *Problem*: Retrieval relevance is NOT truth. Lexical overlap or high embedding similarity frequently surfaces passages containing explicit negations ("no signs of anaphylaxis"), emergency rescue medications ("epinephrine 0.3 mg IM" for suspect drug dose), narrative physician mentions rather than report submitters, or contradictory clinical values (age 63 vs age 71).
+  - *Decision & Architecture*:
+    1. *Individual Candidate NLI Categorization*: Every retrieved candidate evidence item is evaluated individually and classified into one of three strict NLI outcomes: `SUPPORTS` (explicitly entails fact value and clinical role), `CONTRADICTS` (explicitly conflicts with or negates the fact), or `INSUFFICIENT` (topically related but fails to establish the fact).
+    2. *Strict Separation of Retrieval Score vs Verification Confidence*: `candidate.retrieval_metadata["relevance_score"]` and `candidate.verification_confidence` are stored separately and never conflated. A candidate with 0.95 retrieval similarity can be verified as `INSUFFICIENT` or `CONTRADICTS`.
+    3. *Deterministic Clinical Rule Engine + LLM Provider*: Implemented `DeterministicClinicalVerifier` handling 8 core PV/clinical invariants (negation detection, rescue vs suspect drug segregation, numeric age discrepancies, reporter attribution, date/temporal role discrimination, multilingual foreign verbatim preservation, and unstated fact guards) operating in 0.001 ms, combined with `EvidenceVerifier` structured LLM NLI evaluation for complex ambiguous narratives.
+    4. *Safe Failure & Resilience*: API outages, rate limits (429), or timeouts fail safely to deterministic rules or default to `INSUFFICIENT` with confidence <= 0.50, never fabricating `SUPPORTS` or defaulting to retrieval scores.
+    5. *Source Boundary & Immutability*: Verification operates strictly within the current intake package; original source snippets are preserved verbatim without translation overwrite.
+  - *Validation*: 17/17 verification unit tests passed in `test_evidence_verification.py`. All pytest unit and API tests pass across the entire suite. Benchmark dataset validated with 27 PASS | 0 FAIL | 1 DEFERRED and zero benchmark modifications.
+
 ---
 
 
@@ -209,6 +220,19 @@ This document captures the chronological engineering narrative of the Clinevo Sm
   5. *Zero Hallucination on Missing Data*: Facts with status `NOT_STATED` immediately return empty candidates (`[]`).
   6. *Offline & Rate-Limit Resilience*: Implemented `DeterministicEmbeddingProvider` for offline hermetic testing and an automatic circuit-breaker in `GeminiEmbeddingProvider` that falls back seamlessly to exact lexical scoring upon encountering 429/quota exhaustion.
 - **Trade-off**: Transient per-case index generation incurs a minor in-memory initialization cost (~5–20 ms per document), but completely eliminates cross-document contamination and external vector database infrastructure dependencies.
+
+### ADR-012: Semantic Evidence Verification with Clinical NLI Rule Engine and Safe Fallback
+- **Status**: Accepted (Step 5)
+- **Context**: While Step 4 surfaces likely intra-document candidates via hybrid retrieval, retrieval similarity cannot determine truth. A clinical safety verification layer is essential to evaluate semantic entailment, polarity, negation, clinical roles, and dosage associations before facts reach downstream validation.
+- **Decision**:
+  1. *Dual-Layer Verification Architecture*:
+     - *Layer 1 (Deterministic Clinical Verifier)*: Executes high-speed (0.001 ms) rule-based NLI evaluating explicit negation patterns (`no signs of`, `no product defect`, `denies`), rescue medication segregation (epinephrine/vasopressin excluded from suspect dosage), numeric discrepancies (age 63 vs 71), narrative reporter mentions, and verbatim foreign non-English quotes.
+     - *Layer 2 (LLM Semantic NLI via LLMProvider)*: When deterministic rules indicate ambiguity (`confidence < 0.90`) or when configured, executes structured LLM prompting returning `{verification_result, confidence, rationale}`.
+  2. *Deterministic Fast-Path*: For unambiguous passages where deterministic rules establish high confidence ($\ge 0.90$), the system returns the verified determination immediately, eliminating redundant LLM latency and API rate-limit exhaustion.
+  3. *Fact Status Invariant*: Facts marked `NOT_STATED` immediately resolve to `INSUFFICIENT` with empty or non-supporting determinations; verified evidence can never be invented for unstated fields.
+  4. *Preservation of Individual Candidates*: Facts with multiple retrieved candidates preserve individual `verification_result` and `verification_confidence` for each candidate; overall `fact.verification_state` reflects the synthesized status (`CONTRADICTS` if any contradict, `SUPPORTS` if supported without contradiction, else `INSUFFICIENT`).
+  5. *Fail-Safe Guarantees*: On LLM API timeout or error, the engine logs the warning and falls back safely to deterministic rules or marks `INSUFFICIENT` with confidence $\le 0.50$, strictly preventing fabricated support.
+- **Trade-off**: The verifier avoids external multi-agent complexity or vector databases, keeping verification bounded strictly to the local intake document package.
 
 ---
 

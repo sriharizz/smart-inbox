@@ -15,6 +15,7 @@ from app.services.triage_service import triage_service
 from app.services.icsr_extractor import icsr_extractor
 from app.services.literature_service import literature_service
 from app.services.evidence_retriever import evidence_retriever
+from app.services.evidence_verifier import evidence_verifier
 
 logger = logging.getLogger("smartinbox.orchestrator")
 
@@ -83,6 +84,12 @@ class DocumentOrchestrator:
         except Exception as e:
             logger.warning(f"Intra-document evidence retrieval encountered an error: {e}. Preserving extraction evidence.")
 
+        # 6. Semantic Evidence Verification (Step 5)
+        try:
+            envelope = evidence_verifier.verify_envelope(envelope, document_context=full_context_text)
+        except Exception as e:
+            logger.warning(f"Semantic evidence verification encountered an error: {e}. Preserving unverified evidence.")
+
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
 
         return envelope
@@ -134,6 +141,12 @@ class DocumentOrchestrator:
             envelope = evidence_retriever.retrieve_for_envelope(envelope, evidence_index)
         except Exception as e:
             logger.warning(f"Intra-document evidence retrieval encountered an error: {e}. Preserving extraction evidence.")
+
+        # 5. Semantic Evidence Verification (Step 5)
+        try:
+            envelope = evidence_verifier.verify_envelope(envelope, document_context=full_content)
+        except Exception as e:
+            logger.warning(f"Semantic evidence verification encountered an error: {e}. Preserving unverified evidence.")
 
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
         return envelope
