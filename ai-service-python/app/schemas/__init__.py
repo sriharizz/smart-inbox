@@ -41,6 +41,13 @@ from app.schemas.literature_schema import (
     LiteratureScreenResult,
 )
 
+from app.schemas.validation_schema import (
+    ValidationSeverity,
+    ValidationGatingStatus,
+    ValidationIssue,
+    ValidationReport,
+)
+
 from app.schemas.legacy_adapter import (
     envelope_to_legacy,
 )
@@ -90,6 +97,11 @@ __all__ = [
     "TriageLabel",
     "TriageResult",
     "LiteratureScreenResult",
+    # Step 6 Consistency & Integrity Validation
+    "ValidationSeverity",
+    "ValidationGatingStatus",
+    "ValidationIssue",
+    "ValidationReport",
     # Backward compatibility
     "ExtractionResult",
     "SourceCitation",

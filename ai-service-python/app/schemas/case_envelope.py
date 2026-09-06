@@ -8,6 +8,7 @@ from app.schemas.fact_contract import Fact, Evidence, FactStatus
 from app.schemas.category_payloads import (
     IcsrPayload, PqcPayload, MiPayload, NotRelevantPayload
 )
+from app.schemas.validation_schema import ValidationReport
 
 # -------------------------------------------------------------
 # 1. Reviewer Focus & Synthesis Contracts
@@ -108,6 +109,9 @@ class CaseEnvelope(BaseModel):
     # Synthesized Reviewer Brief
     reviewer_brief: Optional[ReviewerBrief] = Field(default=None, description="Pre-computed reviewer decision brief")
     
+    # Step 6 Consistency & Integrity Validation Report
+    validation_report: Optional["ValidationReport"] = Field(default=None, description="Deterministic consistency and integrity validation report (Step 6)")
+
     # Performance & Diagnostics
     processing_time_ms: int = Field(default=0, description="Processing latency in milliseconds")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Extensible execution metadata")

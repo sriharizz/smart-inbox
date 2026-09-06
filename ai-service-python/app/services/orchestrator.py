@@ -16,6 +16,7 @@ from app.services.icsr_extractor import icsr_extractor
 from app.services.literature_service import literature_service
 from app.services.evidence_retriever import evidence_retriever
 from app.services.evidence_verifier import evidence_verifier
+from app.services.consistency_validator import consistency_validator
 
 logger = logging.getLogger("smartinbox.orchestrator")
 
@@ -76,6 +77,7 @@ class DocumentOrchestrator:
             message_id=parsed_email.message_id or filename
         )
         envelope.received_date = parsed_email.date
+        envelope.metadata["attachment_filenames"] = [att["filename"] for att in parsed_email.attachments]
 
         # 5. Intra-Document Evidence Retrieval (Step 4)
         try:
@@ -89,6 +91,14 @@ class DocumentOrchestrator:
             envelope = evidence_verifier.verify_envelope(envelope, document_context=full_context_text)
         except Exception as e:
             logger.warning(f"Semantic evidence verification encountered an error: {e}. Preserving unverified evidence.")
+
+        # 7. Consistency & Integrity Validation (Step 6)
+        try:
+            val_report = consistency_validator.validate_envelope(envelope)
+            envelope.validation_report = val_report
+            envelope.metadata["validation_gating"] = val_report.gating_status.value
+        except Exception as e:
+            logger.warning(f"Consistency and integrity validation encountered an error: {e}.")
 
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
 
@@ -147,6 +157,16 @@ class DocumentOrchestrator:
             envelope = evidence_verifier.verify_envelope(envelope, document_context=full_content)
         except Exception as e:
             logger.warning(f"Semantic evidence verification encountered an error: {e}. Preserving unverified evidence.")
+
+        envelope.metadata["page_count"] = parsed_pdf.page_count
+
+        # 6. Consistency & Integrity Validation (Step 6)
+        try:
+            val_report = consistency_validator.validate_envelope(envelope)
+            envelope.validation_report = val_report
+            envelope.metadata["validation_gating"] = val_report.gating_status.value
+        except Exception as e:
+            logger.warning(f"Consistency and integrity validation encountered an error: {e}.")
 
         envelope.processing_time_ms = int((time.time() - start_time) * 1000)
         return envelope
