@@ -63,7 +63,7 @@ class Evidence(BaseModel):
     location: Optional[LocationReference] = Field(default=None, description="Structured location coordinates for UI jumping and highlighting")
     retrieval_metadata: Dict[str, Any] = Field(default_factory=dict, description="Metadata on how candidate evidence was retrieved (method, candidate rank)")
     verification_result: VerificationResult = Field(default=VerificationResult.INSUFFICIENT, description="Verification determination: SUPPORTS, CONTRADICTS, or INSUFFICIENT")
-    verification_confidence: float = Field(default=0.0, description="Calibrated confidence score for the verification determination (0.0 to 1.0)")
+    verification_confidence: float = Field(default=0.0, description="Model-assessed verification confidence score (0.0 to 1.0)")
     verification_rationale: Optional[str] = Field(default=None, description="Concise clinical rationale explaining the verification determination")
     verification_metadata: Dict[str, Any] = Field(default_factory=dict, description="Detailed execution metadata from the verifier (model, method, timestamps)")
 

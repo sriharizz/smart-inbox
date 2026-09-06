@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL_NAME: str = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
     ENABLE_SEMANTIC_RETRIEVAL: bool = True
     ENABLE_SEMANTIC_VERIFICATION: bool = True
+
+    # Groq Settings (Step 5 Semantic Evidence Verification - LLM #2)
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    GROQ_VERIFIER_MODEL: str = os.getenv("GROQ_VERIFIER_MODEL", "openai/gpt-oss-20b")
+    GROQ_API_URL: str = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1")
     
     # Caching & Resilience (Disabled - 100% Live Gemini AI)
     USE_LOCAL_CACHE: bool = False
@@ -28,5 +33,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
+        env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

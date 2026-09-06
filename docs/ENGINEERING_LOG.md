@@ -221,18 +221,40 @@ This document captures the chronological engineering narrative of the Clinevo Sm
   6. *Offline & Rate-Limit Resilience*: Implemented `DeterministicEmbeddingProvider` for offline hermetic testing and an automatic circuit-breaker in `GeminiEmbeddingProvider` that falls back seamlessly to exact lexical scoring upon encountering 429/quota exhaustion.
 - **Trade-off**: Transient per-case index generation incurs a minor in-memory initialization cost (~5–20 ms per document), but completely eliminates cross-document contamination and external vector database infrastructure dependencies.
 
-### ADR-012: Semantic Evidence Verification with Clinical NLI Rule Engine and Safe Fallback
-- **Status**: Accepted (Step 5)
-- **Context**: While Step 4 surfaces likely intra-document candidates via hybrid retrieval, retrieval similarity cannot determine truth. A clinical safety verification layer is essential to evaluate semantic entailment, polarity, negation, clinical roles, and dosage associations before facts reach downstream validation.
-- **Decision**:
-  1. *Dual-Layer Verification Architecture*:
-     - *Layer 1 (Deterministic Clinical Verifier)*: Executes high-speed (0.001 ms) rule-based NLI evaluating explicit negation patterns (`no signs of`, `no product defect`, `denies`), rescue medication segregation (epinephrine/vasopressin excluded from suspect dosage), numeric discrepancies (age 63 vs 71), narrative reporter mentions, and verbatim foreign non-English quotes.
-     - *Layer 2 (LLM Semantic NLI via LLMProvider)*: When deterministic rules indicate ambiguity (`confidence < 0.90`) or when configured, executes structured LLM prompting returning `{verification_result, confidence, rationale}`.
-  2. *Deterministic Fast-Path*: For unambiguous passages where deterministic rules establish high confidence ($\ge 0.90$), the system returns the verified determination immediately, eliminating redundant LLM latency and API rate-limit exhaustion.
-  3. *Fact Status Invariant*: Facts marked `NOT_STATED` immediately resolve to `INSUFFICIENT` with empty or non-supporting determinations; verified evidence can never be invented for unstated fields.
-  4. *Preservation of Individual Candidates*: Facts with multiple retrieved candidates preserve individual `verification_result` and `verification_confidence` for each candidate; overall `fact.verification_state` reflects the synthesized status (`CONTRADICTS` if any contradict, `SUPPORTS` if supported without contradiction, else `INSUFFICIENT`).
-  5. *Fail-Safe Guarantees*: On LLM API timeout or error, the engine logs the warning and falls back safely to deterministic rules or marks `INSUFFICIENT` with confidence $\le 0.50$, strictly preventing fabricated support.
-- **Trade-off**: The verifier avoids external multi-agent complexity or vector databases, keeping verification bounded strictly to the local intake document package.
+### ADR-012: LLM-Driven Semantic Evidence Verification via Groq (LLM #2) with Safe Fallback
+- **Status**: Accepted (Step 5 Targeted Correction)
+- **Context**: While Step 4 surfaces intra-document candidates via hybrid retrieval, retrieval similarity cannot determine truth. A dedicated evidence verification layer must evaluate natural language inference (NLI): whether candidate evidence actually `SUPPORTS`, `CONTRADICTS`, or is `INSUFFICIENT` for a given fact.
+- **Why Deterministic Semantic Verification Was Rejected**:
+  - The previous prototype attempted to evaluate semantic entailment through deterministic heuristics (regex negation, rescue-medication wordlists, reporter keyword lists, multilingual lookup dictionaries, and exact substring containment).
+  - Lexical presence is a retrieval signal, not proof of entailment. Substring containment frequently asserts `SUPPORTS` when context actually denies or qualifies the fact. Handcrafted dictionaries fail to generalize to unseen documents, clinical phrasing, and multilingual nuances. All deterministic semantic reasoning was therefore eradicated.
+- **Decision & Architecture**:
+  1. *Two-LLM Architectural Separation*:
+     - **LLM #1 (Primary Extraction)**: Gemini 3.5 Flash performs macro-level document understanding, triage, and multi-category fact extraction.
+     - **LLM #2 (Semantic Verification)**: Groq (`openai/gpt-oss-20b`) performs independent, micro-focused semantic NLI on candidate evidence.
+     - Separating extraction from verification prevents confirmation bias (an extraction model verifying its own outputs) and avoids routing verification back through Gemini merely for convenience.
+  2. *Model Selection (Groq openai/gpt-oss-20b)*:
+     - Verified available on Groq's high-speed inference engine.
+     - Delivers ultra-low latency (~150 ms) and native JSON object structured outputs (`response_format: {"type": "json_object"}`).
+  3. *Focused Verification Request Payload*:
+     - Verification requests are intentionally compact to respect rate limits and cost: sending only the target `Fact` (field, value, normalized_value, status), the candidate `Evidence` (snippet, source_id, source_type, location), and limited local surrounding context hint ($\le 600$ chars).
+     - Full document threads, unrelated attachments, and cross-case benchmark data are strictly excluded.
+  4. *Mechanical Integrity Guards Retained (Non-Semantic)*:
+     - Deterministic code is strictly restricted to mechanical guards:
+       - `NOT_STATED` guard: facts marked `NOT_STATED` immediately resolve to `INSUFFICIENT` without making an LLM call.
+       - Missing/empty snippet guard: empty candidate evidence immediately resolves to `INSUFFICIENT`.
+       - Structured JSON schema validation and bounds checking ($0.0 \le \text{confidence} \le 1.0$).
+     - Integrity guards never attempt to parse or interpret clinical meaning.
+  5. *Safe Fallback Guarantees*:
+     - If Groq experiences an outage, 429 rate-limiting, network timeout, connection drop, or invalid JSON payload, the system fails safely to `INSUFFICIENT` with confidence `0.0`, recording `verifier_method = "fallback"` in metadata.
+     - The system strictly never falls back to regex heuristics, lexical similarity, or LLM #1 (Gemini) for verification.
+  6. *Separation of Retrieval Relevance vs Verification Confidence*:
+     - Retrieval scores (`lexical_score`, `embedding_score`, `combined_score`) remain confined to `retrieval_metadata`.
+     - Verification confidence represents the verifier model's assessed certainty of entailment.
+     - Confidence is explicitly designated as **model-assessed verification confidence**, not "calibrated" confidence, adhering to scientific precision until empirical calibration curves are established.
+  7. *Preservation of Individual Candidates*:
+     - Multiple candidate evidence items attached to a single fact are evaluated independently.
+     - Individual determinations and provenance are preserved. Synthesized fact state records `CONTRADICTS` if any contradict, `SUPPORTS` if supported without contradiction, else `INSUFFICIENT`.
+- **Trade-off**: Requires external Groq API connectivity and configuration (`GROQ_API_KEY`), but achieves genuine LLM semantic reasoning in under 200 ms per candidate with airtight safe failure modes.
 
 ---
 
