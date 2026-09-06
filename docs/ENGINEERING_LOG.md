@@ -177,8 +177,14 @@ This document captures the chronological engineering narrative of the Clinevo Sm
   7. *Category-Aware Payload Isolation*: Prevent non-safety communications from generating empty or misleading ICSR structures.
   8. *Normalizer Enhancements*: Added multilingual sex normalization and European dot-date parsing.
   9. *Removal of Test-Specific Conditionals*: Eradicated legacy hardcoded case ID branches (`case_id == 'CASE-04'`) in favor of generalized schema-based field lookups (`photo_present`, `requires_human_review`).
-- **Validation**: 27/27 (100.0%) benchmark test cases passed in `eval_benchmark.py` (mean latency 4,143 ms). 35/35 pytest tests passed across unit and API suites. Dataset validation confirmed 27 PASS | 0 FAIL | 1 DEFERRED with zero benchmark ground truth modifications.
-- **Remaining Limitations**: Rate-limited free-tier API environments require robust fallback to cached grounded envelopes during bulk batch runs; downstream Step 4 will introduce semantic evidence verification to score citation entailment.
+  10. *Model Configuration Update*: Transitioned default model from `gemini-2.5-flash` (severely rate-capped at 20 RPD on free-tier) to `gemini-3.5-flash` with fallback to `gemini-3.5-flash-lite`. Before/after comparisons reflect this model transition in addition to prompt and schema refinements.
+- **Attribution of Benchmark Improvement (23 → 27)**:
+  - *Evaluator Harness Correction (1 case)*: `LIT-07` failed previously due to an ad-hoc filename filter (`03/04/05`) in `eval_benchmark.py` that bypassed literature screening; routing all literature cases through `screen_literature_pdf` corrected this.
+  - *Extraction Schema & Cache Indexing (2 cases)*: `MED-01` and `MED-02` failed because `CacheService` omitted `pdf_file` indexing for standalone monographs and the payload builder assumed interactive question lists rather than reference monograph summaries (`content_summary`).
+  - *Prompt/Taxonomy Alignment (1 case)*: `CASE-11` failed because `triage_service.py` prompted for `"Info Request (MI)"` while the canonical benchmark and PV standards use `"Medical Information (MI)"`.
+  - *General Extraction & Source Fidelity across Cases 01–10*: Strengthened rescue-medication boundaries, verbatim non-English grounding, and fine-grained PQC mechanics across all documents.
+- **Validation**: 27/27 benchmark test cases passed in `eval_benchmark.py` with all regulatory assertions intact. 35/35 pytest tests passed across unit and API suites. Dataset validation confirmed 27 PASS | 0 FAIL | 1 DEFERRED with zero benchmark ground truth modifications.
+- **Remaining Limitations**: Rate-limited free-tier API environments require robust fallback to cached grounded envelopes during bulk batch runs; downstream Step 4 will introduce semantic evidence retrieval and verification to formally evaluate citation entailment.
 
 ---
 
@@ -188,11 +194,11 @@ The test corpus consists of 27 canonical cases evaluated across 11 physical `.em
 - **Primary Triage Classification Accuracy**: **100.0%** (27/27 correct).
 - **Multi-Label Detection Rate (ICSR + PQC)**: **100.0%** (Case 04 correctly multi-labeled).
 - **Core ICH E2B Entity Extraction Accuracy**: **94.8%** (Patient, Reporter, Product, Reaction).
-- **"Not stated" Hallucination Rate**: **0.0%** (Zero hallucinated unstated fields).
+- **Audit of Critical Unstated Fields**: Tested fields with absent source data (e.g. Case 02 dose, Case 03 frequency) were strictly preserved as 'Not stated' without hallucination across evaluated test cases.
 - **Physical Defect Photo Inspection Flag**: **100.0%** (`requires_human_review = True` on all defect photos).
 - **Literature Negative Control Rejection**: **100.0%** (Preclinical and meta-analyses correctly rejected).
 - **Literature Multi-Patient Splitting**: **100.0%** (3/3 patients split into distinct records on `LIT-03`).
-- **Mean End-to-End Processing Latency**: **~1,850 ms** per complete document.
+- **Mean End-to-End Processing Latency**: **~4,143 ms** per complete document (using `gemini-3.5-flash`).
 
 ---
 
@@ -202,6 +208,6 @@ The test corpus consists of 27 canonical cases evaluated across 11 physical `.em
 | :--- | :--- | :--- |
 | **Data Privacy** | Operates on synthetic patient cases without PHI. | Integrate on-premise NER (e.g. Microsoft Presidio) to redact patient identifiers prior to cloud API dispatch. |
 | **Dictionary Coding** | Verbatim text strings extracted for drugs and reactions. | Implement automated auto-encoders against MedDRA (LLT/PT) and WHO Drug (MPID) dictionaries with reviewer validation. |
-| **Model Redundancy** | Google GenAI (`gemini-2.5-flash`). | Deploy abstract multi-vendor model gateway with dynamic failover across Vertex AI, AWS Bedrock, and Azure OpenAI. |
+| **Model Redundancy** | Google GenAI (`gemini-3.5-flash` with `gemini-3.5-flash-lite` fallback). | Deploy abstract multi-vendor model gateway with dynamic failover across Vertex AI, AWS Bedrock, and Azure OpenAI. |
 | **Message Broker** | In-memory `ThreadPoolTaskExecutor`. | Deploy distributed event bus (Apache Kafka or AWS SQS) with dead-letter queues and guaranteed delivery. |
 | **Regulatory Validation**| Verified against synthetic benchmark test suites. | Execute formal GAMP 5 Category 4/5 Computer System Validation (IQ/OQ/PQ) and 21 CFR Part 11 electronic signature workflows. |
