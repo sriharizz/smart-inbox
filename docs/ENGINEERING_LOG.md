@@ -31,7 +31,7 @@ This document captures the chronological engineering narrative of the Clinevo Sm
     1. `README.md` — Local setup, environment configuration, quickstart, and verification.
     2. `docs/CLINEVO_WRITEUP.md` — Concise 2–5 page evaluator write-up required by the assignment.
     3. `docs/ENGINEERING_LOG.md` — Unified chronological engineering history, ADRs, trade-offs, failure analyses, and technical details.
-  - *Action*: Archive one-off generation scripts to `scripts/archive/`, remove ephemeral scratch files, and verify all unit and integration tests.
+  - *Action*: Removed obsolete historical generation and inspection scripts from `scripts/`, eliminated ephemeral scratch files, and verified all unit and integration tests.
 
 ---
 
