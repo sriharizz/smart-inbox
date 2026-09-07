@@ -39,7 +39,11 @@ public class AiGatewayClient {
     }
 
     public ExtractionResultDto processEml(String filename, byte[] emlBytes) {
-        String url = aiServiceUrl + "/api/v1/process-eml";
+        return processEml(filename, emlBytes, true);
+    }
+
+    public ExtractionResultDto processEml(String filename, byte[] emlBytes, boolean freshProcessing) {
+        String url = aiServiceUrl + "/api/v1/process-eml?fresh=" + freshProcessing;
         return uploadFile(url, filename, emlBytes, ExtractionResultDto.class);
     }
 

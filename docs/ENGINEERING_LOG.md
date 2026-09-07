@@ -374,10 +374,129 @@ CaseWorkspaceComponent (Two-Pane Reviewer Workstation)
   ├── Left: Native Document & Source Evidence Viewer
   └── Right: Category-Appropriate Reviewer Brief (MI, PQC, ICSR, or Minimal Exclusion)
 ```
-
-### 6.3 Robustness & Defensive Strategy
-1. **Null-Safety & Optional Field Handling**: All projections use defensive optional chaining and fallback defaults (`[]`, `null`, neutral strings). No UI crash occurs when optional fields or category payloads are omitted.
-2. **Groq Provider Circuit Breaker**: Added HTTP 429 rate-limit backoff circuit breaker (`_rate_limited_until`) in `llm_provider.py`. When API limits are reached, the system fails fast to `INSUFFICIENT` without blocking pipeline workers or throwing uncaught exceptions.
-3. **Evidence Location Flexibility**: Generalized `reviewer_brief_builder.py` location handling to accept both string locations and structured `LocationReference` objects seamlessly (`str(ev.location or '').lower()`).
 4. **Authoritative Fact Preservation**: Enhanced fact ledger consolidation to update existing field statuses, confidence, and evidence citations with authoritative values rather than skipping pre-populated keys.
+
+---
+
+## 7. Step 8 — Real Mailbox Ingestion + Fresh End-to-End Processing
+
+### 7.1 Objective & Product Mandate
+The goal of Step 8 is to establish the real, live runtime mailbox processing pipeline:
+$$\text{Real Gmail Test Mailbox} \longrightarrow \text{IMAP Ingestion} \longrightarrow \text{Spring Boot Poller} \longrightarrow \text{Python AI Microservice} \longrightarrow \text{Gemini/Groq} \longrightarrow \text{Angular UI}$$
+Every newly received email in the designated Gmail test mailbox (`clinevo.test.inbox12@gmail.com`) is fetched over TLS, assigned an immutable persistent Message ID, processed freshly through the live AI triage, extraction, and verification pipeline, and surfaced in the reviewer UI.
+
+### 7.2 Architectural Implementation
+1. **Dual Ingestion Source Architecture**:
+   - `IngestionSource` interface preserved with two first-class implementations:
+     - `FixtureIngestionSource`: Loads frozen `.eml` benchmark cases from `test-data/emails` for offline evaluation and CI regression (`smartinbox.ingestion.mode=FIXTURE`).
+     - `ImapIngestionSource`: Connects over SSL/TLS (`imap.gmail.com:993`) to the live mailbox (`smartinbox.ingestion.mode=IMAP`).
+   - Supports dual configuration keys (`MAILBOX_EMAIL`, `MAILBOX_PASSWORD`, `MAILBOX_IMAP_HOST`, `MAILBOX_IMAP_PORT`, `MAILBOX_IMAP_SSL`, `MAILBOX_IMAP_FOLDER`).
+2. **Authentication Security Policy**:
+   - Google rejects basic passwords with `[ALERT] Application-specific password required`.
+   - Implemented secure 16-character Google App Password configuration via `.env` (strictly untracked and protected by `.gitignore`).
+   - Zero credential exposure in application logs, audit trails, or Git history.
+3. **Persistent Deduplication vs. Fresh AI Processing**:
+   - *Deduplication*: `ImapIngestionSource` extracts permanent IMAP UIDs (`IMAP-UID-{uid}-{messageId}`) via Jakarta Mail's `UIDFolder`. Spring Boot's `messageRepository.existsByMessageId()` checks whether the message has already been recorded in H2 DB, preventing redundant DB inserts and worker churn across 30-second poll cycles.
+   - *Fresh AI Processing Policy*: Configured via `smartinbox.ingestion.fresh-processing=true` (env: `MAILBOX_FRESH_PROCESSING=true`). Passed via query parameter `POST /api/v1/process-eml?fresh=true`. The Python microservice strictly bypasses benchmark envelope caches (`cache_service.get_envelope_by_identifier`), guaranteeing that live test emails invoke the live models (`gemini-3.5-flash` / `gemini-3.5-flash-lite` fallback, lexical/embedding retrieval, and Groq NLI entailment verification).
+4. **Automated Scheduled Polling**:
+   - Added `@Scheduled(fixedDelayString = "${smartinbox.ingestion.imap.poll-interval-ms:30000}", initialDelayString = "${smartinbox.ingestion.imap.initial-delay-ms:5000}")` in `MailboxIngestionService`.
+   - Protected with `synchronized` intake locks to prevent overlapping poll cycles.
+   - Retained on-demand trigger endpoint `POST /api/messages/ingest`.
+5. **Defensive Verifier Resilience**:
+   - Added rate-limit circuit-breaker in `llm_provider.py` and `evidence_verifier.py` to gracefully handle burst rate limits on free-tier LLM providers without blocking asynchronous workers.
+
+### 7.3 Live Mailbox Validation Results
+1. **Live ICSR Spontaneous Report (Case 6)**:
+   - *Subject*: `[LIVE-TEST] Urgent ICSR: Cardioril - Acute Anaphylaxis Report - 2026-09-07 11:08:01`
+   - *Sender*: `clinevo.test.inbox12@gmail.com` (on behalf of Dr. Marcus Vance, MD)
+   - *Attachment*: `clinical_summary_HT.txt` (elevated tryptase 28.4 ng/mL, IgE 180 IU/mL)
+   - *AI Pipeline Execution*: Gemini classified as `Safety Report (ICSR)` (100% confidence), extracted patient `H.T. (#SJM-88219)`, 58yo Male, drug `Cardioril 50mg twice daily`, serious adverse event `Severe acute anaphylactoid reaction with widespread angioedema, facial swelling, dyspnea, and hypotension`, positive dechallenge, non-rechallenge, and full clinical narrative.
+   - *Reviewer UI*: Surfaced in Review Queue with `EXPEDITED 15-DAY CLOCK` priority badge. All 23 clinical fact ledger entries rendered with clickable source citations. Review completed and logged to audit trail.
+2. **Live Product Quality Complaint (Case 7)**:
+   - *Subject*: `[LIVE-TEST] Urgent Quality Defect: Cefatox IV 1g - Glass Particulate & Bent Needle - 2026-09-07 11:17:30`
+   - *Sender*: `clinevo.test.inbox12@gmail.com` (on behalf of Sarah Lin, PharmD)
+   - *Attachment*: `pharmacy_qc_inspection.txt`
+   - *AI Pipeline Execution*: Gemini classified as `Quality Complaint (PQC)` (100% confidence), flagged `CRITICAL` priority, extracted product `Cefatox 1g/vial`, lot `CFX-8092B`, defect `Foreign particulate matter & severely bent pre-attached safety reconstitution needle with blister package micro-tears`, container closure breach `True`, and zero patient exposure.
+   - *Reviewer UI*: Surfaced in Review Queue with red `CRITICAL` priority badge. Actionable review item displayed: *"Mandatory Defect Photo Inspection"*.
+3. **Non-Pharmacovigilance Intake (Cases 1–5)**:
+   - Pre-existing Google account security notices and 2-step verification notifications automatically triaged as `Not Relevant` (100% confidence) with clinical tables cleanly suppressed.
+
+### 7.4 Verification & Non-Regression Metrics
+- **Spring Boot Unit & Integration Tests**: **7/7 Passed** (`ImapIngestionSourceTest`, `FixtureIngestionTest`, `AuditServiceTest`, `SmartInboxApplicationTests`).
+- **Python AI Microservice Tests**: **32/32 Passed** (`test_fresh_processing.py`, `test_reviewer_brief.py`, `test_consistency_validation.py`, `test_parsers.py`).
+- **Angular Frontend Tests**: **31/31 Passed** (`reviewer-brief-builder.spec.ts`, `case-workspace.component.spec.ts`, `app.component.spec.ts`).
+- **Benchmark Frozen Data Integrity**: `test-data/emails` untouched and 100% intact.
+
+---
+
+## 8. Step 5 Optimization — Batched Semantic Evidence Verification
+
+### 8.1 Objective & Background
+The legacy Step 5 semantic evidence verification layer operated at the individual candidate evidence level:
+$$\text{Candidate}_1 \longrightarrow \text{Groq}, \quad \text{Candidate}_2 \longrightarrow \text{Groq}, \quad \dots \quad \text{Candidate}_{120+} \longrightarrow \text{Groq}$$
+In dense clinical cases with rich multi-page PDF attachments (e.g. Case 008 CIOMS Form with 27 extracted facts and 3–5 retrieval chunks per fact), this candidate-by-candidate loop triggered over 120 sequential HTTP roundtrips to the Groq API. This resulted in:
+1. **Severe Latency Explosion**: Verification alone consumed 203,390 ms (~3.4 minutes).
+2. **Provider Lifecycle Fragmentation**: Each candidate evaluation instantiated a fresh `GroqProvider` object, destroying rate-limit and circuit-breaker state across calls and causing repeated 429 HTTP loops.
+3. **Severe Quota Consumption**: Redundant identical chunk citations across multiple clinical fields (e.g. same patient header chunk attached to patient initials, age, sex, weight) were repeatedly submitted in isolation.
+
+### 8.2 Architectural Redesign: Bounded Batched NLI Verification
+We completely overhauled the verification architecture to perform structural deduplication, candidate pruning, and bounded batch evaluation:
+
+$$\begin{aligned}
+\text{Extracted Facts} &\longrightarrow \text{Evidence Fingerprint Deduplication} \longrightarrow \text{In-Prompt Evidence Catalog} \\
+&\longrightarrow \text{Deterministic Structural Pruning} \longrightarrow \text{Bounded Batches (Max 15 items / 12k chars)} \\
+&\longrightarrow \text{Single-Provider Groq Structured JSON} \longrightarrow \text{Strict Per-Fact Verification Mapping}
+\end{aligned}$$
+
+1. **In-Prompt Evidence Deduplication**:
+   - Unique evidence passages are identified using deterministic fingerprinting:
+     $$\text{Fingerprint} = \text{source\_id} \mathbin{\Vert} \text{page\_or\_location} \mathbin{\Vert} \text{normalize\_whitespace}(\text{verbatim\_snippet})$$
+   - Deduplicated chunks are compiled into an `evidence_catalog` section within the batch prompt.
+   - The batch submitted to the LLM references each unique chunk by an abbreviated `ev_index` (e.g. `[EV-1]`, `[EV-2]`), drastically compressing prompt token volume and eliminating redundant evaluations.
+
+2. **Structural Candidate Pruning**:
+   - Empty or trivial whitespace snippets are filtered deterministically.
+   - Exact duplicate candidate passages within a single fact are unified.
+   - Retrieval candidates are bounded by `VERIFIER_TOP_K_CANDIDATES_PER_FACT = 2`, selecting the highest-relevance evidence.
+   - Redundant excess candidates are marked `INSUFFICIENT` with `"verifier_method": "pruned"`, preserving fact-to-evidence linkage without sending unnecessary tokens to the verifier.
+   - Facts with `status == NOT_STATED` are short-circuited immediately without calling the LLM.
+
+3. **Bounded Batch Construction**:
+   - Verification pairs `(fact_id, evidence_id)` are packed into batches constrained by:
+     - `VERIFIER_BATCH_MAX_ITEMS` (default 15 items per batch)
+     - `VERIFIER_BATCH_MAX_CHARS` (default 12,000 characters per batch)
+   - Dense cases of 25–30 facts require only 3–5 network requests, achieving a ~95% reduction in API calls.
+
+4. **Structured JSON Output & Strict Schema Validation**:
+   - Groq is instructed with a strict Pydantic JSON schema returning a list of `BatchVerificationItemResult` items containing `fact_id`, `evidence_id`, `result` (`SUPPORTS` | `CONTRADICTS` | `INSUFFICIENT`), `confidence` ($\in [0.0, 1.0]$), and concise `rationale`.
+   - The response parser validates that:
+     - Every returned `(fact_id, evidence_id)` strictly matches an item submitted in that specific batch.
+     - Unknown or duplicate keys are rejected.
+     - Omitted or malformed items safely fall back to `INSUFFICIENT` with confidence `0.0` and audit metadata.
+
+5. **Single-Provider Lifecycle & Fast-Path Circuit Breaker**:
+   - `get_llm_provider("groq")` caches provider instances in `_provider_cache`.
+   - The `EvidenceVerifier` maintains a single provider reference across the entire lifecycle of the verification run.
+   - When Groq returns HTTP 429 (`Too Many Requests`), the provider records `_rate_limited_until = time.time() + 60.0`.
+   - Before dispatching any subsequent batch, the verifier checks `provider.is_healthy()`. If the breaker is open, subsequent batches are short-circuited instantly (<1 ms) to `INSUFFICIENT` with fallback audit metadata.
+
+### 8.3 Live Dense Case 008 Validation & Benchmark Comparison
+Controlled live validation was executed against the real Gmail synthetic message with the 5.5KB CIOMS PDF attachment (`cioms_form_MK_Cardioril.pdf`):
+
+| Metric | Pre-Optimization Baseline | Post-Optimization (Batched) | Delta / Improvement |
+| :--- | :--- | :--- | :--- |
+| **Verification Strategy** | Candidate-level sequential | Bounded Batched NLI | **Architectural overhaul** |
+| **Extracted Clinical Facts** | 27 facts | 27 facts | 100% parity |
+| **Groq Network Calls** | 120+ sequential requests | **4 bounded batches** | **96.7% call reduction** |
+| **Redundant Calls Avoided** | 0 | **75 avoided** | Eliminated redundant token burn |
+| **Verification Latency** | 203,390 ms (~3.4 min) | **1,110 ms (~1.1 s)** | **99.45% latency reduction** |
+| **429 Rate-Limit Handling** | Repeated 429 loops (every 1s) | **Circuit breaker fast-path** | Zero hanging or repeated loops |
+| **Step 6 Consistency Validation** | `BLOCKED_BY_INTEGRITY_ERROR` | **`REVIEW_WITH_WARNINGS`** | **Unblocked for human review** |
+| **Referential & Unique ID Integrity** | 21 `DUPLICATE_EVIDENCE_ID` errors | **0 errors** | **100% clean data integrity** |
+
+### 8.4 Test Suite & Non-Regression Results
+- **Evidence Verification Tests**: **40/40 Passed** (`tests/test_evidence_verification.py`, covering all 22 mandatory unit test scenarios).
+- **Consistency Validation Tests**: **22/22 Passed** (`tests/test_consistency_validation.py`, zero regressions in Step 6).
+- **Full AI Microservice Test Suite**: **114/114 Passed**, 1 skipped live integration test (`tests/`).
+- **Benchmark Ground Truth**: `test-data/ground_truth/benchmark.json` and all evaluation fixtures left completely untouched and intact.
 

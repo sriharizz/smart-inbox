@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     GROQ_VERIFIER_MODEL: str = os.getenv("GROQ_VERIFIER_MODEL", "openai/gpt-oss-20b")
     GROQ_API_URL: str = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1")
+    VERIFIER_BATCH_MAX_ITEMS: int = int(os.getenv("VERIFIER_BATCH_MAX_ITEMS", "15"))
+    VERIFIER_BATCH_MAX_CHARS: int = int(os.getenv("VERIFIER_BATCH_MAX_CHARS", "12000"))
+    VERIFIER_TOP_K_CANDIDATES_PER_FACT: int = int(os.getenv("VERIFIER_TOP_K_CANDIDATES_PER_FACT", "2"))
     
     # Caching & Resilience (Disabled - 100% Live Gemini AI)
     USE_LOCAL_CACHE: bool = False

@@ -23,7 +23,7 @@ logger = logging.getLogger("smartinbox.orchestrator")
 
 class DocumentOrchestrator:
     @staticmethod
-    def process_eml_envelope(eml_bytes: bytes, filename: str = "email.eml") -> CaseEnvelope:
+    def process_eml_envelope(eml_bytes: bytes, filename: str = "email.eml", fresh_processing: bool = True) -> CaseEnvelope:
         """
         Canonical ingestion path for RFC 5322 EML communications.
         Produces a category-aware CaseEnvelope with atomic Fact ledger and Evidence objects.
@@ -75,7 +75,8 @@ class DocumentOrchestrator:
             triage_result=triage_result,
             images=candidate_images,
             source_filename=filename,
-            message_id=parsed_email.message_id or filename
+            message_id=parsed_email.message_id or filename,
+            fresh_processing=fresh_processing
         )
         envelope.received_date = parsed_email.date
         envelope.metadata["attachment_filenames"] = [att["filename"] for att in parsed_email.attachments]
@@ -112,9 +113,9 @@ class DocumentOrchestrator:
         return envelope
 
     @staticmethod
-    def process_eml(eml_bytes: bytes, filename: str = "email.eml") -> ExtractionResult:
+    def process_eml(eml_bytes: bytes, filename: str = "email.eml", fresh_processing: bool = True) -> ExtractionResult:
         """Legacy compatibility wrapper for process_eml returning ExtractionResult."""
-        envelope = DocumentOrchestrator.process_eml_envelope(eml_bytes, filename=filename)
+        envelope = DocumentOrchestrator.process_eml_envelope(eml_bytes, filename=filename, fresh_processing=fresh_processing)
         return envelope_to_legacy(envelope)
 
     @staticmethod

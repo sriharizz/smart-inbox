@@ -45,7 +45,13 @@ public class AsyncDocumentProcessor {
     @Async("taskExecutor")
     @Transactional
     public void processMessageAsync(Long messageId, byte[] rawEmlBytes, String filename) {
-        log.info("[ASYNC-WORKER] Starting AI triage & extraction for Message ID: {} ({})", messageId, filename);
+        processMessageAsync(messageId, rawEmlBytes, filename, true);
+    }
+
+    @Async("taskExecutor")
+    @Transactional
+    public void processMessageAsync(Long messageId, byte[] rawEmlBytes, String filename, boolean freshProcessing) {
+        log.info("[ASYNC-WORKER] Starting AI triage & extraction for Message ID: {} ({}) [fresh={}]", messageId, filename, freshProcessing);
 
         IntakeMessageEntity message = messageRepository.findById(messageId).orElse(null);
         if (message == null) {
@@ -58,7 +64,7 @@ public class AsyncDocumentProcessor {
 
         try {
             Thread.sleep(1500); // Respect Google Gemini RPM quota
-            ExtractionResultDto result = aiGatewayClient.processEml(filename, rawEmlBytes);
+            ExtractionResultDto result = aiGatewayClient.processEml(filename, rawEmlBytes, freshProcessing);
             if (result == null || result.getTriage() == null) {
                 throw new IllegalStateException("Empty extraction result from AI service.");
             }

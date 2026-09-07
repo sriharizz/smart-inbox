@@ -2,7 +2,7 @@ import json
 import time
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar, Dict
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -221,11 +221,21 @@ class GroqProvider(LLMProvider):
     def is_healthy(self) -> bool:
         return bool(self._api_key)
 
+_provider_cache: Dict[str, LLMProvider] = {}
+
 def get_llm_provider(provider_type: Optional[str] = None) -> LLMProvider:
-    """Factory function returning the active LLM provider."""
+    """Factory function returning the active LLM provider (cached singleton)."""
     ptype = (provider_type or "gemini").lower()
-    if ptype == "gemini":
-        return GeminiProvider()
-    elif ptype == "groq":
-        return GroqProvider()
-    raise ValueError(f"Unsupported LLM provider: {provider_type}. Expected 'gemini' or 'groq'.")
+    if ptype not in _provider_cache:
+        if ptype == "gemini":
+            _provider_cache[ptype] = GeminiProvider()
+        elif ptype == "groq":
+            _provider_cache[ptype] = GroqProvider()
+        else:
+            raise ValueError(f"Unsupported LLM provider: {provider_type}. Expected 'gemini' or 'groq'.")
+    return _provider_cache[ptype]
+
+def clear_provider_cache() -> None:
+    """Clears the cached provider instances (primarily for testing)."""
+    global _provider_cache
+    _provider_cache.clear()

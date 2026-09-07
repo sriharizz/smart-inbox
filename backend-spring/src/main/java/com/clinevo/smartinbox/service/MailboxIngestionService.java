@@ -31,6 +31,9 @@ public class MailboxIngestionService {
     @Value("${smartinbox.ingestion.auto-ingest-on-startup:true}")
     private boolean autoIngestOnStartup;
 
+    @Value("${smartinbox.ingestion.fresh-processing:true}")
+    private boolean freshProcessing;
+
     public MailboxIngestionService(FixtureIngestionSource fixtureIngestionSource,
                                    ImapIngestionSource imapIngestionSource,
                                    IntakeMessageRepository messageRepository,
@@ -51,6 +54,22 @@ public class MailboxIngestionService {
                 triggerIngestion();
             } catch (Exception e) {
                 log.error("Error during startup ingestion: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    @org.springframework.scheduling.annotation.Scheduled(
+            fixedDelayString = "${smartinbox.ingestion.imap.poll-interval-ms:30000}",
+            initialDelayString = "${smartinbox.ingestion.imap.initial-delay-ms:5000}")
+    public void pollMailboxScheduled() {
+        if ("IMAP".equalsIgnoreCase(ingestionMode)) {
+            try {
+                int count = triggerIngestion();
+                if (count > 0) {
+                    log.info("[SCHEDULED-POLLER] Ingested {} new messages from IMAP", count);
+                }
+            } catch (Exception e) {
+                log.warn("[SCHEDULED-POLLER] Polling error: {}", e.getMessage());
             }
         }
     }
@@ -117,7 +136,7 @@ public class MailboxIngestionService {
             );
 
             // Dispatch asynchronous processing
-            asyncDocumentProcessor.processMessageAsync(saved.getId(), email.rawBytes(), email.filename());
+            asyncDocumentProcessor.processMessageAsync(saved.getId(), email.rawBytes(), email.filename(), freshProcessing);
         }
 
         log.info("Ingestion run complete. Ingested {} new messages.", newMessagesCount);

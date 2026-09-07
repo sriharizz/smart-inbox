@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+import uuid
 from typing import Optional, List, Dict, Any
 from PIL import Image
 
@@ -259,10 +260,10 @@ class ICSRExtractor:
             ev_list = []
         elif status_str and status_str.upper() in FactStatus.__members__:
             status = FactStatus[status_str.upper()]
-            ev_list = [evidence_item] if evidence_item and status != FactStatus.NOT_STATED else []
+            ev_list = [evidence_item.model_copy(update={"evidence_id": str(uuid.uuid4())[:8]})] if evidence_item and status != FactStatus.NOT_STATED else []
         elif evidence_item is not None:
             status = FactStatus.CONFIRMED
-            ev_list = [evidence_item]
+            ev_list = [evidence_item.model_copy(update={"evidence_id": str(uuid.uuid4())[:8]})]
         else:
             status = FactStatus.CONFIRMED
             ev_list = []
@@ -284,7 +285,8 @@ class ICSRExtractor:
         triage_result: TriageResult,
         images: Optional[List[Image.Image]] = None,
         source_filename: str = "document",
-        message_id: str = "Unknown"
+        message_id: str = "Unknown",
+        fresh_processing: bool = True
     ) -> CaseEnvelope:
         start_time = time.time()
         
@@ -338,13 +340,16 @@ class ICSRExtractor:
                 is_not_relevant=is_not_relevant
             )
         except Exception as e:
-            logger.error(f"Live LLM extraction failed: {e}. Attempting benchmark fallback for {source_filename}.")
-            from app.services.cache_service import cache_service
-            fallback = cache_service.get_envelope_by_identifier(source_filename)
-            if fallback:
-                logger.info(f"Successfully recovered grounded CaseEnvelope from benchmark fallback for {source_filename}.")
-                fallback.processing_time_ms = int((time.time() - start_time) * 1000)
-                return fallback
+            if not fresh_processing:
+                logger.error(f"Live LLM extraction failed: {e}. Attempting benchmark fallback for {source_filename}.")
+                from app.services.cache_service import cache_service
+                fallback = cache_service.get_envelope_by_identifier(source_filename)
+                if fallback:
+                    logger.info(f"Successfully recovered grounded CaseEnvelope from benchmark fallback for {source_filename}.")
+                    fallback.processing_time_ms = int((time.time() - start_time) * 1000)
+                    return fallback
+            else:
+                logger.warning(f"Live LLM extraction failed in fresh-processing mode: {e}. Bypassing benchmark cache.")
 
             # Construct safe default envelope
             logger.warning("Constructing safe unstated CaseEnvelope fallback.")

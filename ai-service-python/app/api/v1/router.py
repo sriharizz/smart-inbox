@@ -1,6 +1,6 @@
 import time
 from typing import Optional
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -57,11 +57,11 @@ def extract_envelope(payload: TextExtractionRequest):
     )
 
 @api_router.post("/process-eml-envelope", response_model=CaseEnvelope)
-async def process_eml_envelope_file(file: UploadFile = File(...)):
+async def process_eml_envelope_file(file: UploadFile = File(...), fresh: bool = Query(default=True)):
     if not file.filename.lower().endswith((".eml", ".msg")):
         raise HTTPException(status_code=400, detail="Only .eml files are accepted for this endpoint.")
     eml_bytes = await file.read()
-    return orchestrator.process_eml_envelope(eml_bytes, filename=file.filename)
+    return orchestrator.process_eml_envelope(eml_bytes, filename=file.filename, fresh_processing=fresh)
 
 @api_router.post("/process-pdf-envelope", response_model=CaseEnvelope)
 async def process_pdf_envelope_file(file: UploadFile = File(...)):
@@ -85,11 +85,11 @@ def extract_facts(payload: TextExtractionRequest):
     )
 
 @api_router.post("/process-eml", response_model=ExtractionResult)
-async def process_eml_file(file: UploadFile = File(...)):
+async def process_eml_file(file: UploadFile = File(...), fresh: bool = Query(default=True)):
     if not file.filename.lower().endswith((".eml", ".msg")):
         raise HTTPException(status_code=400, detail="Only .eml files are accepted for this endpoint.")
     eml_bytes = await file.read()
-    return orchestrator.process_eml(eml_bytes, filename=file.filename)
+    return orchestrator.process_eml(eml_bytes, filename=file.filename, fresh_processing=fresh)
 
 @api_router.post("/process-pdf", response_model=ExtractionResult)
 async def process_pdf_file(file: UploadFile = File(...)):

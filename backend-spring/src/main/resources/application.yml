@@ -35,14 +35,16 @@ smartinbox:
     mode: ${INGESTION_MODE:FIXTURE}
     fixture-dir: ${FIXTURE_DIR:../test-data/emails}
     auto-ingest-on-startup: false
+    fresh-processing: ${MAILBOX_FRESH_PROCESSING:true}
     imap:
-      host: ${MAIL_IMAP_HOST:imap.gmail.com}
-      port: ${MAIL_IMAP_PORT:993}
-      username: ${MAIL_IMAP_USERNAME:safety.intake.test@example.com}
-      password: ${MAIL_IMAP_PASSWORD:secret}
-      ssl: ${MAIL_IMAP_SSL:true}
-      folder: ${MAIL_IMAP_FOLDER:INBOX}
-      poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:60000}
+      host: ${MAILBOX_IMAP_HOST:${MAIL_IMAP_HOST:imap.gmail.com}}
+      port: ${MAILBOX_IMAP_PORT:${MAIL_IMAP_PORT:993}}
+      username: ${MAILBOX_EMAIL:${MAIL_IMAP_USERNAME:safety.intake.test@example.com}}
+      password: ${MAILBOX_PASSWORD:${MAIL_IMAP_PASSWORD:secret}}
+      ssl: ${MAILBOX_IMAP_SSL:${MAIL_IMAP_SSL:true}}
+      folder: ${MAILBOX_FOLDER:${MAIL_IMAP_FOLDER:INBOX}}
+      poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:30000}
+      initial-delay-ms: ${MAIL_POLL_INITIAL_DELAY_MS:5000}
   async:
     core-pool-size: 1
     max-pool-size: 1

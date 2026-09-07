@@ -72,14 +72,29 @@ public class ImapIngestionSource implements IngestionSource {
                     mimeMsg.writeTo(baos);
                     byte[] rawBytes = baos.toByteArray();
 
+                    long uid = msg.getMessageNumber();
+                    if (folder instanceof UIDFolder uidFolder) {
+                        try {
+                            uid = uidFolder.getUID(msg);
+                        } catch (Exception ignored) {}
+                    }
+
                     String messageId = mimeMsg.getMessageID();
                     if (messageId == null || messageId.isBlank()) {
-                        messageId = "IMAP-MSG-" + msg.getMessageNumber();
+                        messageId = "IMAP-UID-" + uid;
                     } else {
                         messageId = messageId.replaceAll("[<>]", "").trim();
                     }
 
-                    String subject = mimeMsg.getSubject() != null ? mimeMsg.getSubject() : "No Subject";
+                    String subject = "No Subject";
+                    try {
+                        if (mimeMsg.getSubject() != null) {
+                            subject = jakarta.mail.internet.MimeUtility.decodeText(mimeMsg.getSubject());
+                        }
+                    } catch (Exception ignored) {
+                        subject = mimeMsg.getSubject() != null ? mimeMsg.getSubject() : "No Subject";
+                    }
+
                     String date = mimeMsg.getSentDate() != null ? mimeMsg.getSentDate().toString() : "";
 
                     String senderName = "";
@@ -100,7 +115,7 @@ public class ImapIngestionSource implements IngestionSource {
                     extractParts(mimeMsg, bodyText, attachments);
 
                     results.add(new RawEmailPayload(
-                            "imap_" + msg.getMessageNumber() + ".eml",
+                            "imap_" + uid + ".eml",
                             messageId,
                             date,
                             senderName,
@@ -144,6 +159,9 @@ public class ImapIngestionSource implements IngestionSource {
         } else {
             String fileName = part.getFileName();
             if (fileName != null && !fileName.isBlank()) {
+                try {
+                    fileName = jakarta.mail.internet.MimeUtility.decodeText(fileName);
+                } catch (Exception ignored) {}
                 InputStream is = part.getInputStream();
                 byte[] bytes = is.readAllBytes();
                 attachments.add(new RawAttachmentPayload(

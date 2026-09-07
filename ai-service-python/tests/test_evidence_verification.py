@@ -605,3 +605,531 @@ def test_live_groq_verification_integration():
     assert verified.verification_metadata["provider"] == "groq"
     assert verified.verification_metadata["model"] == "openai/gpt-oss-20b"
     assert "latency_ms" in verified.verification_metadata
+
+
+# ============================================================================
+# STEP 5 OPTIMIZATION: BATCHED VERIFICATION TESTS (22 MANDATORY REQUIREMENTS)
+# ============================================================================
+
+class MockBatchLLMProvider(LLMProvider):
+    """Deterministic mock provider returning structured responses for batched verification."""
+    def __init__(self, default_result: str = "SUPPORTS", default_confidence: float = 0.95):
+        self.default_result = default_result
+        self.default_confidence = default_confidence
+        self.call_count = 0
+        self.submitted_prompts = []
+
+    @property
+    def provider_name(self) -> str:
+        return "mock-batch-groq"
+
+    def is_healthy(self) -> bool:
+        return True
+
+    def generate_content(self, contents, system_instruction=None, model=None, temperature=0.0) -> str:
+        self.call_count += 1
+        self.submitted_prompts.append(str(contents))
+        
+        # Parse items from submitted payload
+        content_str = str(contents)
+        try:
+            start_idx = content_str.find("{")
+            end_idx = content_str.rfind("}") + 1
+            payload = json.loads(content_str[start_idx:end_idx])
+            items = payload.get("items", [])
+            results = [
+                {
+                    "fact_id": item["fact_id"],
+                    "evidence_id": item["evidence_id"],
+                    "result": self.default_result,
+                    "confidence": self.default_confidence,
+                    "rationale": f"Mock batch verification for {item['fact_id']}"
+                }
+                for item in items
+            ]
+            return json.dumps({"results": results})
+        except Exception:
+            return json.dumps({"results": []})
+
+    def generate_structured(self, contents, response_schema, system_instruction=None, model=None, temperature=0.0):
+        raw = self.generate_content(contents, system_instruction, model, temperature)
+        return response_schema.model_validate(json.loads(raw))
+
+
+class FailingAfterFirstBatchProvider(LLMProvider):
+    """Simulates Groq succeeding on Batch 1, then failing with 429 on Batch 2."""
+    def __init__(self):
+        self.call_count = 0
+        self._rate_limited_until = 0.0
+
+    @property
+    def provider_name(self) -> str:
+        return "failing-after-first"
+
+    def is_healthy(self) -> bool:
+        return self._rate_limited_until <= time.time()
+
+    def generate_content(self, contents, system_instruction=None, model=None, temperature=0.0) -> str:
+        self.call_count += 1
+        if self.call_count == 1:
+            content_str = str(contents)
+            start_idx = content_str.find("{")
+            end_idx = content_str.rfind("}") + 1
+            payload = json.loads(content_str[start_idx:end_idx])
+            results = [
+                {
+                    "fact_id": item["fact_id"],
+                    "evidence_id": item["evidence_id"],
+                    "result": "SUPPORTS",
+                    "confidence": 0.95,
+                    "rationale": "Batch 1 success"
+                }
+                for item in payload.get("items", [])
+            ]
+            return json.dumps({"results": results})
+        else:
+            self._rate_limited_until = time.time() + 60.0
+            raise RuntimeError("HTTP 429: Rate limit reached on tokens per day (TPD)")
+
+    def generate_structured(self, contents, response_schema, system_instruction=None, model=None, temperature=0.0):
+        raw = self.generate_content(contents, system_instruction, model, temperature)
+        return response_schema.model_validate(json.loads(raw))
+
+
+def _make_test_envelope(num_facts: int = 3, duplicate_evidence: bool = False, candidates_per_fact: int = 1) -> CaseEnvelope:
+    """Helper to build synthetic CaseEnvelope with controlled fact & candidate counts."""
+    facts = []
+    shared_ev = Evidence(
+        source_id="test_case.pdf",
+        source_type=EvidenceType.PDF_TEXT,
+        page_or_location="Page 1, Box 1",
+        verbatim_snippet="Common clinical documentation snippet shared across facts."
+    )
+
+    for i in range(num_facts):
+        ev_list = []
+        if duplicate_evidence:
+            ev_list.append(shared_ev)
+        else:
+            for c in range(candidates_per_fact):
+                ev_list.append(Evidence(
+                    source_id="test_case.pdf",
+                    source_type=EvidenceType.PDF_TEXT,
+                    page_or_location=f"Page {i+1}, Box {c+1}",
+                    verbatim_snippet=f"Unique clinical observation {i}_{c} establishing assertion."
+                ))
+        
+        f = Fact(
+            fact_id=f"fact-test-{i+1:03d}",
+            field=f"clinical_field_{i+1}",
+            value=f"Value_{i+1}",
+            status=FactStatus.CONFIRMED,
+            evidence=ev_list
+        )
+        facts.append(f)
+
+    return CaseEnvelope(
+        envelope_id="env-batch-test-01",
+        message_id="msg-batch-01",
+        source_filename="test_case.pdf",
+        language_detected="English",
+        triage=TriageResult(
+            is_multi_label=False,
+            primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+            labels=[],
+            executive_summary="Batch verification test case."
+        ),
+        document_summary="Synthetic batch test document.",
+        reviewer_summary="Synthetic brief.",
+        icsr=IcsrPayload(facts=facts),
+        fact_ledger=facts
+    )
+
+
+# 1. One small case uses one batch
+def test_batching_small_case_uses_one_batch():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=3)
+
+    verified = verifier.verify_envelope(envelope)
+    metrics = verified.metadata["verification_metrics"]
+    assert metrics["number_of_verification_batches"] == 1
+    assert metrics["groq_requests_sent"] == 1
+    assert provider.call_count == 1
+
+
+# 2. Medium case splits into multiple batches
+def test_batching_medium_case_splits_into_multiple_batches():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    # 20 facts with max batch items 15 -> 2 batches
+    envelope = _make_test_envelope(num_facts=20)
+
+    verified = verifier.verify_envelope(envelope)
+    metrics = verified.metadata["verification_metrics"]
+    assert metrics["number_of_verification_batches"] == 2
+    assert metrics["groq_requests_sent"] == 2
+    assert provider.call_count == 2
+
+
+# 3. Dense case uses bounded batches
+def test_batching_dense_case_uses_bounded_batches():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    # 45 facts with max batch items 15 -> 3 batches
+    envelope = _make_test_envelope(num_facts=45)
+
+    verified = verifier.verify_envelope(envelope)
+    metrics = verified.metadata["verification_metrics"]
+    assert metrics["number_of_verification_batches"] == 3
+    assert metrics["groq_requests_sent"] == 3
+    assert provider.call_count == 3
+    assert metrics["groq_requests_avoided"] == 45 - 3
+
+
+# 4. Duplicate evidence is deduplicated in catalog
+def test_batching_duplicate_evidence_is_deduplicated():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    # 10 facts sharing the exact same evidence snippet
+    envelope = _make_test_envelope(num_facts=10, duplicate_evidence=True)
+
+    verified = verifier.verify_envelope(envelope)
+    metrics = verified.metadata["verification_metrics"]
+    assert metrics["total_unique_evidence_items"] == 1
+    # Check that in the submitted prompt, evidence catalog has 1 entry
+    prompt = provider.submitted_prompts[0]
+    assert "evidence_catalog" in prompt
+
+
+# 5. Weak redundant candidates are pruned
+def test_batching_weak_redundant_candidates_are_pruned():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    # 1 fact with 5 candidates, default top K is 2
+    envelope = _make_test_envelope(num_facts=1, candidates_per_fact=5)
+
+    verified = verifier.verify_envelope(envelope)
+    fact = verified.fact_ledger[0]
+    assert len(fact.evidence) == 5
+    # First 2 candidates were evaluated
+    assert fact.evidence[0].verification_metadata["verifier_method"] == "llm_semantic_nli"
+    assert fact.evidence[1].verification_metadata["verifier_method"] == "llm_semantic_nli"
+    # Excess 3 candidates were pruned
+    for excess in fact.evidence[2:]:
+        assert excess.verification_result == VerificationResult.INSUFFICIENT
+        assert excess.verification_metadata["verifier_method"] == "pruned"
+        assert excess.verification_metadata["rule"] == "excess_candidate_budget"
+
+
+# 6. Every verification result preserves fact_id
+def test_batching_every_verification_result_preserves_fact_id():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=5)
+
+    verified = verifier.verify_envelope(envelope)
+    for i, f in enumerate(verified.fact_ledger):
+        assert f.fact_id == f"fact-test-{i+1:03d}"
+
+
+# 7. Every verification result preserves evidence_id
+def test_batching_every_verification_result_preserves_evidence_id():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=4)
+
+    original_ids = [f.evidence[0].evidence_id for f in envelope.fact_ledger]
+    verified = verifier.verify_envelope(envelope)
+    for i, f in enumerate(verified.fact_ledger):
+        assert f.evidence[0].evidence_id == original_ids[i]
+
+
+# 8. Malformed structured output is rejected safely
+def test_batching_malformed_structured_output_is_rejected_safely():
+    malformed_provider = MalformedJsonLLMProvider()
+    verifier = EvidenceVerifier(provider=malformed_provider)
+    envelope = _make_test_envelope(num_facts=3)
+
+    verified = verifier.verify_envelope(envelope)
+    for f in verified.fact_ledger:
+        for ev in f.evidence:
+            assert ev.verification_result == VerificationResult.INSUFFICIENT
+            assert ev.verification_confidence == 0.0
+            assert ev.verification_metadata["verifier_method"] == "fallback"
+
+
+# 9. Unknown fact_id is rejected
+def test_batching_unknown_fact_id_is_rejected():
+    class RogueFactProvider(LLMProvider):
+        @property
+        def provider_name(self) -> str:
+            return "rogue-fact-provider"
+        def is_healthy(self) -> bool:
+            return True
+        def generate_content(self, contents, system_instruction=None, model=None, temperature=0.0) -> str:
+            return json.dumps({
+                "results": [
+                    {"fact_id": "fact-UNKNOWN-999", "evidence_id": "ev-01", "result": "SUPPORTS", "confidence": 0.99, "rationale": "Rogue fact injection"}
+                ]
+            })
+        def generate_structured(self, contents, response_schema, system_instruction=None, model=None, temperature=0.0):
+            return response_schema.model_validate(json.loads(self.generate_content(contents)))
+
+    verifier = EvidenceVerifier(provider=RogueFactProvider())
+    envelope = _make_test_envelope(num_facts=2)
+
+    verified = verifier.verify_envelope(envelope)
+    # Submitted items were not matched by the rogue fact_id, so they must safely fall back to INSUFFICIENT
+    for f in verified.fact_ledger:
+        for ev in f.evidence:
+            assert ev.verification_result == VerificationResult.INSUFFICIENT
+            assert ev.verification_confidence == 0.0
+
+
+# 10. Unknown evidence_id is rejected
+def test_batching_unknown_evidence_id_is_rejected():
+    class RogueEvidenceProvider(LLMProvider):
+        @property
+        def provider_name(self) -> str:
+            return "rogue-evidence-provider"
+        def is_healthy(self) -> bool:
+            return True
+        def generate_content(self, contents, system_instruction=None, model=None, temperature=0.0) -> str:
+            content_str = str(contents)
+            start_idx = content_str.find("{")
+            end_idx = content_str.rfind("}") + 1
+            payload = json.loads(content_str[start_idx:end_idx])
+            items = payload.get("items", [])
+            return json.dumps({
+                "results": [
+                    {"fact_id": items[0]["fact_id"], "evidence_id": "UNKNOWN-EVID-999", "result": "SUPPORTS", "confidence": 0.99, "rationale": "Rogue evidence"}
+                ]
+            })
+        def generate_structured(self, contents, response_schema, system_instruction=None, model=None, temperature=0.0):
+            return response_schema.model_validate(json.loads(self.generate_content(contents)))
+
+    verifier = EvidenceVerifier(provider=RogueEvidenceProvider())
+    envelope = _make_test_envelope(num_facts=2)
+
+    verified = verifier.verify_envelope(envelope)
+    # First item had wrong evidence_id, so it falls back to INSUFFICIENT
+    assert verified.fact_ledger[0].evidence[0].verification_result == VerificationResult.INSUFFICIENT
+
+
+# 11. Duplicate returned result is rejected
+def test_batching_duplicate_returned_result_is_rejected():
+    class DuplicateResultProvider(LLMProvider):
+        @property
+        def provider_name(self) -> str:
+            return "dup-result-provider"
+        def is_healthy(self) -> bool:
+            return True
+        def generate_content(self, contents, system_instruction=None, model=None, temperature=0.0) -> str:
+            content_str = str(contents)
+            start_idx = content_str.find("{")
+            end_idx = content_str.rfind("}") + 1
+            payload = json.loads(content_str[start_idx:end_idx])
+            items = payload.get("items", [])
+            f0 = items[0]["fact_id"]
+            e0 = items[0]["evidence_id"]
+            return json.dumps({
+                "results": [
+                    {"fact_id": f0, "evidence_id": e0, "result": "SUPPORTS", "confidence": 0.95, "rationale": "First result"},
+                    {"fact_id": f0, "evidence_id": e0, "result": "CONTRADICTS", "confidence": 0.10, "rationale": "Duplicate illegal result"}
+                ]
+            })
+        def generate_structured(self, contents, response_schema, system_instruction=None, model=None, temperature=0.0):
+            return response_schema.model_validate(json.loads(self.generate_content(contents)))
+
+    verifier = EvidenceVerifier(provider=DuplicateResultProvider())
+    envelope = _make_test_envelope(num_facts=1)
+
+    verified = verifier.verify_envelope(envelope)
+    # First result was SUPPORTS, second was rejected
+    assert verified.fact_ledger[0].evidence[0].verification_result == VerificationResult.SUPPORTS
+    assert verified.fact_ledger[0].evidence[0].verification_confidence == 0.95
+
+
+# 12. Confidence validation works (bounds and finite floats)
+def test_batching_confidence_validation_works():
+    class OutOfBoundsConfidenceProvider(LLMProvider):
+        @property
+        def provider_name(self) -> str:
+            return "bounds-provider"
+        def is_healthy(self) -> bool:
+            return True
+        def generate_content(self, contents, system_instruction=None, model=None, temperature=0.0) -> str:
+            content_str = str(contents)
+            start_idx = content_str.find("{")
+            end_idx = content_str.rfind("}") + 1
+            payload = json.loads(content_str[start_idx:end_idx])
+            items = payload.get("items", [])
+            return json.dumps({
+                "results": [
+                    {"fact_id": items[0]["fact_id"], "evidence_id": items[0]["evidence_id"], "result": "SUPPORTS", "confidence": 1.45, "rationale": "Over 1.0"},
+                    {"fact_id": items[1]["fact_id"], "evidence_id": items[1]["evidence_id"], "result": "SUPPORTS", "confidence": -0.80, "rationale": "Negative"}
+                ]
+            })
+        def generate_structured(self, contents, response_schema, system_instruction=None, model=None, temperature=0.0):
+            return response_schema.model_validate(json.loads(self.generate_content(contents)))
+
+    verifier = EvidenceVerifier(provider=OutOfBoundsConfidenceProvider())
+    envelope = _make_test_envelope(num_facts=2)
+
+    verified = verifier.verify_envelope(envelope)
+    assert verified.fact_ledger[0].evidence[0].verification_confidence == 1.0  # Clamped to 1.0
+    assert verified.fact_ledger[1].evidence[0].verification_confidence == 0.0  # Clamped to 0.0
+
+
+# 13. SUPPORTS preserved
+def test_batching_supports_preserved():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.98)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=2)
+
+    verified = verifier.verify_envelope(envelope)
+    assert verified.fact_ledger[0].evidence[0].verification_result == VerificationResult.SUPPORTS
+    assert verified.fact_ledger[0].verification_state == VerificationResult.SUPPORTS
+
+
+# 14. CONTRADICTS preserved
+def test_batching_contradicts_preserved():
+    provider = MockBatchLLMProvider(default_result="CONTRADICTS", default_confidence=0.97)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=2)
+
+    verified = verifier.verify_envelope(envelope)
+    assert verified.fact_ledger[0].evidence[0].verification_result == VerificationResult.CONTRADICTS
+    assert verified.fact_ledger[0].verification_state == VerificationResult.CONTRADICTS
+
+
+# 15. INSUFFICIENT preserved
+def test_batching_insufficient_preserved():
+    provider = MockBatchLLMProvider(default_result="INSUFFICIENT", default_confidence=0.30)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=2)
+
+    verified = verifier.verify_envelope(envelope)
+    assert verified.fact_ledger[0].evidence[0].verification_result == VerificationResult.INSUFFICIENT
+    assert verified.fact_ledger[0].verification_state == VerificationResult.INSUFFICIENT
+
+
+# 16. Provider instance reused across batches
+def test_batching_provider_instance_reused_across_batches():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=32)  # 3 batches
+
+    verified = verifier.verify_envelope(envelope)
+    # The exact same provider was called 3 times
+    assert provider.call_count == 3
+    assert verifier._provider is provider
+
+
+# 17. Groq 429 opens circuit breaker
+def test_batching_groq_429_opens_circuit_breaker():
+    provider = FailingAfterFirstBatchProvider()
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=32)  # 3 batches
+
+    verified = verifier.verify_envelope(envelope)
+    # On batch 2, 429 was raised, setting _rate_limited_until
+    assert provider._rate_limited_until > time.time()
+    assert not provider.is_healthy()
+
+
+# 18. Later batches do NOT make additional Groq calls after breaker opens
+def test_batching_later_batches_do_not_call_groq_after_breaker_opens():
+    provider = FailingAfterFirstBatchProvider()
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=45)  # 3 batches: Batch 1 (OK), Batch 2 (429), Batch 3 (Short-circuited)
+
+    verified = verifier.verify_envelope(envelope)
+    # Call count stopped at 2; batch 3 did NOT invoke generate_content
+    assert provider.call_count == 2
+    metrics = verified.metadata["verification_metrics"]
+    assert metrics["short_circuited_batches"] == 1
+
+
+# 19. Unresolved batches become INSUFFICIENT
+def test_batching_unresolved_batches_become_insufficient():
+    provider = FailingAfterFirstBatchProvider()
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=32)  # 3 batches
+
+    verified = verifier.verify_envelope(envelope)
+    # Batch 1 facts have SUPPORTS
+    assert verified.fact_ledger[0].evidence[0].verification_result == VerificationResult.SUPPORTS
+    # Batch 2 and 3 facts have INSUFFICIENT
+    assert verified.fact_ledger[20].evidence[0].verification_result == VerificationResult.INSUFFICIENT
+    assert verified.fact_ledger[30].evidence[0].verification_result == VerificationResult.INSUFFICIENT
+
+
+# 20. Step 6 receives valid per-fact verification results
+def test_batching_step6_receives_valid_per_fact_verification_results():
+    from app.services.consistency_validator import ConsistencyValidator
+    from app.schemas.validation_schema import ValidationGatingStatus
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.95)
+    verifier = EvidenceVerifier(provider=provider)
+    envelope = _make_test_envelope(num_facts=5)
+
+    verified = verifier.verify_envelope(envelope)
+    validator = ConsistencyValidator()
+    report = validator.validate_envelope(verified)
+    assert report.passed is True
+    assert report.gating_status in (ValidationGatingStatus.READY_FOR_REVIEW, ValidationGatingStatus.REVIEW_WITH_WARNINGS)
+    # Zero verification integrity errors
+    verification_errors = [i for i in (report.errors + report.warnings) if i.code.startswith("VERIFICATION_")]
+    assert len(verification_errors) == 0
+
+
+# 21. No benchmark-specific logic in verifier
+def test_batching_no_benchmark_specific_logic():
+    import app.services.evidence_verifier as ev_mod
+    src = open(ev_mod.__file__, "r", encoding="utf-8").read()
+    assert "Cardioril" not in src
+    assert "Pt M.K." not in src
+    assert "cioms_form_MK_Cardioril" not in src
+
+
+# 22. Arbitrary synthetic case works cleanly
+def test_batching_arbitrary_synthetic_case_works():
+    provider = MockBatchLLMProvider(default_result="SUPPORTS", default_confidence=0.92)
+    verifier = EvidenceVerifier(provider=provider)
+
+    fact = Fact(
+        fact_id="fact-novel-001",
+        field="adverse_event",
+        value="Acute Myoclonus",
+        status=FactStatus.CONFIRMED,
+        evidence=[
+            Evidence(
+                source_id="novel_report.pdf",
+                source_type=EvidenceType.PDF_TEXT,
+                page_or_location="Page 1",
+                verbatim_snippet="Patient experienced acute myoclonus following administration of Neurobexil."
+            )
+        ]
+    )
+
+    envelope = CaseEnvelope(
+        envelope_id="env-synthetic-novel",
+        message_id="msg-novel-99",
+        source_filename="novel_report.pdf",
+        language_detected="English",
+        triage=TriageResult(
+            is_multi_label=False,
+            primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+            labels=[],
+            executive_summary="Novel drug case."
+        ),
+        document_summary="Novel report summary.",
+        reviewer_summary="Novel brief.",
+        fact_ledger=[fact]
+    )
+
+    verified = verifier.verify_envelope(envelope)
+    assert verified.fact_ledger[0].verification_state == VerificationResult.SUPPORTS
+    assert verified.metadata["verification_metrics"]["number_of_verification_batches"] == 1
