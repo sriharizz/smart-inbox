@@ -61,7 +61,7 @@ The platform is designed as a decoupled, 3-tier polyglot architecture mirroring 
 |                            Python 3.11 + FastAPI                                  |
 |  - Layout-Aware PDF Parser (PyMuPDF / fitz) & 2D Table Matrix Extractor           |
 |  - Native Multimodal Vision: Scanned Forms & Physical Defect Images               |
-|  - Pure Dynamic Live AI Inference via Google GenAI SDK (gemini-2.5-flash)         |
+|  - Pure Dynamic Live AI Inference via Google GenAI SDK (gemini-3.5-flash)         |
 |  - Zero-Hallucination ICH E2B Extractor with Strict "Not stated" Grounding        |
 |  - Literature Screening Engine with Multi-Patient Series Disaggregation           |
 +-----------------------------------------------------------------------------------+
@@ -75,7 +75,7 @@ The platform is designed as a decoupled, 3-tier polyglot architecture mirroring 
 | **Backend Orchestrator** | Spring Boot 3.3 (Java 21 OpenJDK LTS) | Enterprise standard for transaction boundaries, mail ingestion protocols (Angus Mail / Jakarta Mail), JPA persistence, and audit immutability. |
 | **Asynchronous Task Queue** | `ThreadPoolTaskExecutor` | Decouples wire-speed email intake from AI processing latency (1.5–3.0s), preventing mail server timeouts. |
 | **AI Microservice** | Python 3.11 + FastAPI + Pydantic v2 | Python provides premier document processing libraries (PyMuPDF) and official AI SDKs; Pydantic v2 guarantees deterministic JSON schema enforcement. |
-| **GenAI Engine** | Google GenAI SDK (`gemini-2.5-flash`) | Native multimodal processing (text, handwriting, physical photos), large context window (>1M tokens), low latency (~1.8s), zero token fragmentation. |
+| **GenAI Engine** | Google GenAI SDK (`gemini-3.5-flash` with `gemini-3.5-flash-lite` fallback) | Native multimodal processing (text, handwriting, physical photos), large context window (>1M tokens), low latency (~1.8s), zero token fragmentation. |
 | **Database Persistence** | Dual Profile: H2 (Oracle Mode) / Oracle 19c DDL | Zero-dependency local evaluation via embedded H2 in Oracle syntax mode; production-ready Oracle PL/SQL schema (`database/oracle/schema.sql`) with tamper-proof triggers. |
 
 ---
@@ -200,7 +200,7 @@ In keeping with engineering integrity, current prototype limitations are explici
 
 1. **Synthetic Data Boundaries**: The current system is evaluated against realistic synthetic clinical cases. Real-world faxes, multi-generation degraded photocopies, and extreme cursive handwriting will require expanded threshold tuning and fine-tuning.
 2. **Deferred Requirement**: In accordance with project planning, the 2nd scanned/handwritten PDF is explicitly declared **DEFERRED** in `manifest.json` and the validation test suites, reserved for live physical paper form testing.
-3. **Single Model Dependency**: The prototype currently operates on Google GenAI (`gemini-2.5-flash`). Commercial production requires a multi-vendor gateway.
+3. **Single Model Dependency**: The prototype currently operates on Google GenAI (`gemini-3.5-flash`). Commercial production requires a multi-vendor gateway.
 4. **Dictionary Auto-Coding**: Extracted verbatim terms are not yet auto-coded against licensed proprietary dictionaries (MedDRA and WHO Drug).
 
 ---
@@ -211,7 +211,7 @@ To transition this prototype into a commercial, enterprise-scale pharmacovigilan
 
 1. **Client-Side PHI De-Identification**: Deploy an on-premise Named Entity Recognition (NER) pipeline (e.g. Microsoft Presidio) to redact patient names, dates of birth, and contact information before transmitting payloads to cloud LLM APIs.
 2. **MedDRA & WHO Drug Auto-Coding**: Integrate automated term mapping against MedDRA Lowest Level Terms (LLTs) and WHO Drug Medicinal Product Identifiers (MPIDs), computing similarity confidence scores for human reviewer sign-off.
-3. **Multi-Model Gateway with Dynamic Circuit Breakers**: Implement an abstract model routing layer with automated failover across Google Vertex AI (Gemini 2.5 Flash), AWS Bedrock (Claude 3.5 Sonnet), and Azure OpenAI (GPT-4o).
+3. **Multi-Model Gateway with Dynamic Circuit Breakers**: Implement an abstract model routing layer with automated failover across Google Vertex AI (Gemini 3.5 Flash), AWS Bedrock (Claude 3.5 Sonnet), and Azure OpenAI (GPT-4o).
 4. **Distributed Event Broker**: Transition from Spring Boot's internal `ThreadPoolTaskExecutor` to an enterprise event streaming platform (Apache Kafka or AWS SQS) with dead-letter queues and guaranteed at-least-once processing.
 5. **Computer System Validation (CSV)**: Execute formal GAMP 5 Category 4/5 software validation protocols, including Installation Qualification (IQ), Operational Qualification (OQ), and Performance Qualification (PQ).
 
