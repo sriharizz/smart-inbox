@@ -1,226 +1,221 @@
-# Clinevo Smart Inbox Assistant — Project Write-Up
+# Clinevo Smart Inbox Assistant
 
-**Candidate Role**: Forward Deployment / GenAI Integration Engineer  
-**Project**: Smart Inbox Assistant for Pharmacovigilance  
-**Target Submission**: Official Clinevo Technologies Live Project Assignment  
-**Document Type**: Canonical Evaluator Summary (2–5 Pages)  
-**Run & Setup Guide**: [README.md](file:///c:/projects/SmartInbox/README.md)
+## 1. What I Built
 
----
+The Clinevo Smart Inbox Assistant is a prototype system that automates the initial intake and triage pass for healthcare and pharmacovigilance communications. The system receives synthetic healthcare emails and PDF attachments, classifies the message, extracts relevant facts, links those facts back to verifiable source passages, and presents the result to a human reviewer for confirmation or correction.
 
-## 1. Problem Statement & Regulatory Context
+Incoming communications are categorized into four buckets:
+- **Safety Report (ICSR)**: Communications reporting an adverse event experienced by a patient.
+- **Quality Complaint (PQC)**: Reports describing a physical or packaging defect with a product.
+- **Medical Information (MI)**: Inquiries seeking medical or product guidance without adverse events or defects.
+- **Not Relevant**: Communications such as newsletters, marketing notices, or unrelated correspondence.
 
-In the pharmaceutical industry, central safety mailboxes receive hundreds of spontaneous, high-stakes communications each day from healthcare professionals (HCPs), clinical trial sites, patients, attorneys, and foreign regulatory health authorities (e.g. FDA, EMA, MHRA). Incoming intake packets contain unstructured text and attachments across heterogeneous formats:
-- **Standardized Digital Regulatory Forms**: CIOMS-I and MedWatch FDA 3500A PDF forms.
-- **Scanned & Handwritten Notes**: Spontaneous clinic intake notes with cursive handwriting.
-- **Biomedical Literature Reprints**: Published journal articles detailing clinical case reports.
-- **Foreign Language Documents**: Spanish (AEMPS) and German (BfArM) adverse reaction reports.
-- **Physical Quality Defect Photos**: High-resolution smartphone images of contaminated vials or broken delivery devices.
-
-Under international pharmacovigilance regulations (ICH E2D, FDA 21 CFR 314.80, EU GVP Module VI), adverse events meeting seriousness criteria (death, life-threatening, hospitalization, disability) must be submitted to regulatory agencies within **strict 7- or 15-calendar-day expedited reporting clocks**. 
-
-Traditionally, intake teams manually triage incoming communications and perform initial transcription into adverse event databases (e.g. Argus, ArisGlobal). This manual process suffers from three primary bottlenecks:
-1. **Triage Bottlenecks & Routing Delays**: Triage teams must rapidly categorize every email into **ICSR** (Individual Case Safety Report), **PQC** (Product Quality Complaint), **MI** (Medical Information Request), or **Not Relevant**, including handling multi-label messages (e.g. a defective vial that causes an adverse reaction).
-2. **ICH E2B Extraction Burden**: Extracting the four minimal regulatory criteria for a valid ICSR—**Identifiable Patient**, **Identifiable Reporter**, **Suspect Product**, and **Adverse Event / Reaction**—is labor-intensive and vulnerable to transcription errors.
-3. **Auditability & Traceability**: Global health inspectors require that every transcribed clinical assertion be grounded in verifiable source evidence.
-
-The **Clinevo Smart Inbox Assistant** solves these challenges by providing an automated, zero-hallucination, AI-driven initial intake and triage pipeline. It ingests emails and attachments, normalizes content, performs multi-label classification, extracts structured ICH E2B entities with mandatory verbatim citations, screens scientific literature (including a **+30% Bonus** multi-patient case series disaggregator), flags product defect photos for human inspection, and empowers reviewers through an interactive dashboard with a Part 11-oriented immutable audit trail.
+Multi-label communications (such as a contaminated vial that caused an adverse reaction, qualifying as both PQC and ICSR) are explicitly supported. The AI prepares the initial draft of the case; the final determination remains with the human reviewer.
 
 ---
 
-## 2. System Architecture & Technology Choices
+## 2. Simple Architecture
 
-The platform is designed as a decoupled, 3-tier polyglot architecture mirroring enterprise life-sciences systems:
-
-```
-+-----------------------------------------------------------------------------------+
-|                            TIER 1: REVIEWER DASHBOARD                             |
-|                           Angular 18+ (Standalone, TS)                            |
-|  - Triage Queue with Urgency & Confidence Badges                                  |
-|  - Split-Screen Workspace: Document Inspection View | Editable Extracted Fields   |
-|  - One-Click Source Citation Highlighting & Verbatim Evidence Inspector           |
-|  - Dedicated Literature Screening & Case Series Disaggregator (+30% Bonus)        |
-+-----------------------------------------------------------------------------------+
-                                         |
-                                         | HTTP / REST (Port 8080)
-                                         v
-+-----------------------------------------------------------------------------------+
-|                        TIER 2: BACKEND ORCHESTRATION ENGINE                       |
-|                          Spring Boot 3.3.x (Java 21 OpenJDK)                      |
-|  - Dual Ingestion Abstraction: Live IMAP Poller OR Local EML Synthetic Fixtures   |
-|  - Asynchronous Worker Pipeline: ThreadPoolTaskExecutor Non-Blocking Queue        |
-|  - Resilient AI Gateway Client calling Python AI Microservice                     |
-|  - Reviewer Management & Part 11-Oriented Immutable Audit Trail Logging            |
-|  - Dual-Profile Persistence: Embedded H2 (Oracle Mode) OR Oracle Database 19c/21c |
-+-----------------------------------------------------------------------------------+
-                                         |
-                                         | HTTP / REST (Port 8000)
-                                         v
-+-----------------------------------------------------------------------------------+
-|                             TIER 3: AI MICROSERVICE                               |
-|                            Python 3.11 + FastAPI                                  |
-|  - Layout-Aware PDF Parser (PyMuPDF / fitz) & 2D Table Matrix Extractor           |
-|  - Native Multimodal Vision: Scanned Forms & Physical Defect Images               |
-|  - Pure Dynamic Live AI Inference via Google GenAI SDK (gemini-3.5-flash)         |
-|  - Zero-Hallucination ICH E2B Extractor with Strict "Not stated" Grounding        |
-|  - Literature Screening Engine with Multi-Patient Series Disaggregation           |
-+-----------------------------------------------------------------------------------+
+```mermaid
+graph TD
+    A[Email / PDF Input] --> B[Spring Boot Ingestion]
+    B --> C[Python AI Service]
+    C --> D[PDF / Document Understanding]
+    C --> E[Classification]
+    C --> F[Fact Extraction]
+    C --> G[Evidence Retrieval]
+    C --> H[Evidence Verification]
+    C --> I[Spring Boot Persistence / API]
+    I --> J[Angular Reviewer UI]
+    J --> K[Human Review + Audit History]
 ```
 
-### Technology Selections & Rationale
-
-| Component | Selected Technology | Engineering Rationale |
-| :--- | :--- | :--- |
-| **Reviewer UI** | Angular 18+ (Standalone Components, TypeScript) | Standard enterprise framework in regulated life-sciences environments; robust two-way data binding and type-safety for clinical review workflows. |
-| **Backend Orchestrator** | Spring Boot 3.3 (Java 21 OpenJDK LTS) | Enterprise standard for transaction boundaries, mail ingestion protocols (Angus Mail / Jakarta Mail), JPA persistence, and audit immutability. |
-| **Asynchronous Task Queue** | `ThreadPoolTaskExecutor` | Decouples wire-speed email intake from AI processing latency (1.5–3.0s), preventing mail server timeouts. |
-| **AI Microservice** | Python 3.11 + FastAPI + Pydantic v2 | Python provides premier document processing libraries (PyMuPDF) and official AI SDKs; Pydantic v2 guarantees deterministic JSON schema enforcement. |
-| **GenAI Engine** | Google GenAI SDK (`gemini-3.5-flash` with `gemini-3.5-flash-lite` fallback) | Native multimodal processing (text, handwriting, physical photos), large context window (>1M tokens), low latency (~1.8s), zero token fragmentation. |
-| **Database Persistence** | Dual Profile: H2 (Oracle Mode) / Oracle 19c DDL | Zero-dependency local evaluation via embedded H2 in Oracle syntax mode; production-ready Oracle PL/SQL schema (`database/oracle/schema.sql`) with tamper-proof triggers. |
+### Architectural Layers
+- **Ingestion (Spring Boot)**: Receives incoming emails and PDF attachments either from a live IMAP mailbox over SSL or from local synthetic fixture files, normalizing messages into a common format.
+- **AI Microservice (Python / FastAPI)**: Handles document parsing, layout analysis, message classification, fact extraction, intra-document evidence retrieval, and semantic evidence verification.
+- **Persistence & API (Spring Boot)**: Persists cases, domain payloads, extracted facts, and reviewer actions to an embedded database, exposing REST APIs for the reviewer interface.
+- **Reviewer UI (Angular 18)**: Provides a split-screen workstation displaying the original source document alongside structured extracted fields, clickable evidence links, and an audit history panel.
+- **Human Review**: Allows safety reviewers to inspect source evidence, edit fields, override classifications, and log timestamped review decisions.
 
 ---
 
 ## 3. End-to-End Processing Flow
 
-The lifecycle of an incoming document proceeds through discrete, verifiable stages:
-
-1. **Dual-Mode Ingestion**: The system supports two operational modes:
-   - *FIXTURE Mode*: Ingests raw `.eml` files from `test-data/emails/` without requiring external network connectivity or email credentials.
-   - *IMAP Mode*: Connects to an external mailbox (e.g. Gmail / Office 365) via Angus Mail over SSL/TLS.
-2. **RFC 5322 Normalization**: The ingestion service extracts email headers (From, To, Subject, Message-ID, Date), isolates plain-text and HTML bodies, extracts attachments, and persists an `IntakeMessageEntity` with status `RECEIVED`.
-3. **Asynchronous Task Queue**: Message IDs are dispatched to Spring Boot's `ThreadPoolTaskExecutor`. Ingestion completes immediately, ensuring non-blocking wire-speed intake.
-4. **Layout & Table Parsing**: The Python microservice inspects PDF byte streams using PyMuPDF (`fitz`), reconstructs two-dimensional table borders into clean Markdown matrices, extracts embedded raster images, and classifies document flavor (`digital_form`, `scanned_handwritten`, `literature_article`, `non_english`).
-5. **Multimodal Live AI Reasoning**: Complete document text, reconstructed Markdown tables, and rasterized images are submitted to Gemini Flash at temperature `0.0`. Local caching is strictly disabled (`USE_LOCAL_CACHE = False`) to guarantee 100% dynamic live reasoning.
-6. **Regulatory Triage Classification**: The communication is classified into one or more categories (**Safety Report / ICSR**, **Quality Complaint / PQC**, **Medical Information / MI**, or **Not Relevant**), computing calibrated confidence scores, regulatory reasoning, and an executive summary.
-7. **ICH E2B Clinical Entity Extraction**: For safety reports, the system extracts the four mandatory ICH E2B pillars along with product dosages, event onset dates, and seriousness criteria.
-8. **Defect Photo Flagging**: Smartphone photos of physical drug defects trigger `requires_human_review = True`, generating detailed AI defect observations and routing the case for mandatory human inspection.
-9. **Literature Screening & Case Disaggregation (+30% Bonus)**: Literature articles are screened for ICSR reportability (excluding preclinical animal models and meta-analyses). Multi-patient case series are disaggregated into separate, independent ICSR records.
-10. **Human-in-the-Loop Review & Audit Logging**: Reviewers inspect cases in the split-screen dashboard, review citations, edit or accept data, and generate immutable audit records designed around Part 11 principles.
-
----
-
-## 4. AI Approach & Multimodal Architecture
-
-### 4.1 Bounded Complete-Context Processing (Why No Vector RAG?)
-
-Traditional RAG (Retrieval-Augmented Generation) architectures fragment documents into arbitrary 500-token chunks. In pharmacovigilance, this chunking strategy introduces severe failure modes:
-- Patient demographics in Section A, suspect medication in Section B, and adverse reactions in Section C become separated into different chunks.
-- Relational causality across tables and text paragraphs is severed.
-- Semantic vector searches frequently retrieve irrelevant background disease mentions while missing crucial negative findings.
-
-Because clinical intake packages (emails and regulatory PDF attachments) are bounded—typically 1 to 5 pages (<15,000 tokens)—we pass the **complete document text, table matrices, and visual images directly into Gemini Flash's prompt window**. With a 1M+ token context window, the model retains 100% relational visibility across all document sections simultaneously, achieving zero retrieval loss and sub-2-second end-to-end processing.
-
-### 4.2 Multimodal Vision for Scanned Forms & Physical Defect Photos
-
-Rather than chaining brittle, lossy optical character recognition (OCR) engines (e.g. Tesseract) that fail on cursive physician handwriting and cannot interpret photographs, our architecture leverages native multimodal vision:
-- **Handwritten Form Intake**: Scanned clinical intake forms are rasterized at 200 DPI and processed natively by Gemini Flash's vision encoder, accurately deciphering cursive clinical notes without external OCR artifacts.
-- **Physical Defect Inspection**: Smartphone photos of damaged packaging or particulate-contaminated vials (e.g. `contaminated_vial_photo.jpg`) are evaluated directly by the model. The AI describes the physical defect (e.g. *"dark particulate suspension and compromised rubber stopper crimp seal"*) and automatically flags `requires_human_review = True`.
-
----
-
-## 5. Prompting Strategy & Structured Outputs
-
-Deterministic, auditable outputs are achieved through rigid schema enforcement and clinical negative prompting:
-
-### 5.1 Pydantic v2 Schema Enforcement
-Every LLM call strictly specifies a Pydantic schema using the Google GenAI SDK's `response_mime_type="application/json"` and `response_schema=ModelClass`:
-- `TriageResult`: Enforces multi-label classification (`is_icsr`, `is_pqc`, `is_medical_info`, `is_not_relevant`), confidence scores [0.0–1.0], urgency rating (`CRITICAL`, `EXPEDITED`, `STANDARD`), and clinical rationale.
-- `ICSRFactExtraction`: Enforces structured ICH E2B entity groups (`patient`, `reporter`, `suspect_products`, `adverse_events`) with strict source citation envelopes.
-- `LiteratureScreeningResult`: Enforces reportability decisions, publication classifications, and disaggregated patient case series.
-
-### 5.2 Negative Prompting & Clinical Constraints
-The system prompts embed explicit negative boundary rules to prevent hallucinated extrapolation:
-- **Dosage Grounding**: *"If a dose is stated as '10 mg' without a dosing schedule, extract dose as '10 mg' and frequency as 'Not stated'. Never infer frequency (e.g. 'once daily') from medical habit or drug class norms."*
-- **Adverse Event vs. Indication**: *"Do not confuse the treated indication (e.g. hypertension, major depressive disorder) with the emergent adverse reaction (e.g. acute liver failure, Stevens-Johnson syndrome)."*
-- **Causality Objectivity**: *"Do not assign causal drug relationship unless explicitly stated by the reporter or literature author."*
-
----
-
-## 6. Grounding, Citations & Strict "Not stated" Policy
-
-In regulatory pharmacovigilance, hallucinating patient demographics, drug names, or clinical reactions is a severe compliance violation. The Clinevo Smart Inbox Assistant enforces a zero-hallucination guarantee through two architectural mechanisms:
-
-### 6.1 The Strict "Not stated" Policy
-Every clinical attribute (e.g. `patient_age`, `patient_sex`, `lot_number`, `expiration_date`, `dechallenge_result`) must default strictly to `"Not stated"` if not explicitly found in the source text. Inferring missing demographic or clinical values is architecturally barred.
-
-### 6.2 Mandatory Verbatim Source Citations
-Every populated entity group must include a `SourceCitation` object containing:
-- `source_type`: Originating medium (`email_body`, `pdf_attachment`, `defect_photo`).
-- `page_or_location`: Precise page number or email section (e.g. `"Page 1, Box B.1"`, `"Email Paragraph 3"`).
-- `verbatim_snippet`: Exact, unparaphrased text excerpt from the original document supporting the extraction.
-
-```json
-"citation": {
-  "source_type": "pdf_attachment",
-  "page_or_location": "Page 1, Section 2.1",
-  "verbatim_snippet": "58-year-old female patient M.K. experienced acute drug-induced liver injury after starting NexaShield"
-}
+```mermaid
+flowchart LR
+    A[1. Receive Email] --> B[2. Parse Metadata & Body]
+    B --> C[3. Read PDF Attachments]
+    C --> D[4. Detect Document Type]
+    D --> E[5. Extract & Normalize Content]
+    E --> F[6. Classify Message]
+    F --> G[7. Extract Category Facts]
+    G --> H[8. Attach Source Evidence]
+    H --> I[9. Verify Evidence]
+    I --> J[10. Validate Consistency]
+    J --> K[11. Build Reviewer Brief]
+    K --> L[12. Human Review / Override]
+    L --> M[13. Persist & Record Audit]
 ```
 
-If the model cannot produce an exact verbatim text snippet from the document, it is instructed to leave the field as `"Not stated"`.
+The intake lifecycle proceeds sequentially:
+1. **Intake & Normalization**: The email body, sender metadata, and PDF attachments are ingested and parsed into normalized text and structured table grids.
+2. **Classification & Extraction**: The message is classified across the four categories. Facts specific to the detected category (e.g., patient demographics, suspect products, lots, defects, or medical questions) are extracted.
+3. **Evidence Grounding**: Candidate text passages are retrieved from the document. A secondary verification step evaluates whether the text supports each asserted fact.
+4. **Consistency & Review**: The case passes through automated integrity validation checks before being presented in the reviewer UI.
+5. **Human Action**: A reviewer confirms or adjusts the case. All modifications are logged to a timestamped audit history.
 
 ---
 
-## 7. Human-in-the-Loop Review & Part 11-Oriented Audit Controls
+## 4. Key Engineering Decisions
 
-The platform is designed to augment human safety specialists, maintaining strict human-in-the-loop oversight:
+### Decision: Bounded Complete-Document Processing Instead of Global Vector RAG
+- **Why:** Pharmacovigilance intake packages are bounded in size (typically 1 email and 1–5 attached PDF pages, well under 15,000 tokens). Traditional vector RAG breaks text into arbitrary 500-token chunks, often separating patient demographics from suspect medications and severing clinical causality.
+- **Implemented:** The entire document context (email headers, body text, layout-preserved PDF text, and reconstructed 2D markdown tables) is passed directly into the multimodal model prompt.
+- **Trade-off:** Uses higher input token counts per request, but completely eliminates vector indexing infrastructure, chunk boundary errors, and cross-case retrieval misses.
 
-- **Reviewer Triage Queue**: Messages are prioritized based on clinical urgency, regulatory clocks (e.g. 15-day expedited reporting for serious ICSRs), confidence thresholds (<0.85 triggers manual review), and physical photo defect alerts.
-- **Split-Screen Reviewer Workspace**: Reviewers inspect the original document (rendered PDF or formatted email) on the left panel while viewing pre-populated ICH E2B fields on the right panel.
-- **One-Click Verbatim Highlighting**: Clicking any extracted field or citation pill instantly highlights the exact supporting verbatim text in the source document viewer, allowing instantaneous human verification without manual text hunting.
-- **Reviewer Override & Clinical Justification**: Human reviewers possess full authority to override classifications (e.g. converting an MI inquiry to an ICSR) or edit clinical values. Overriding requires a mandatory clinical justification text input.
-- **Part 11-Oriented Immutable Audit Trail**: Every automated prediction and human action is recorded in an immutable audit table. In production Oracle environments, database trigger `TRG_AUDIT_LOG_IMMUTABLE` prevents any `UPDATE` or `DELETE` operations on audit records.
+### Decision: Category-Specific Payloads Instead of Monolithic ICSR Structures
+- **Why:** An early iteration forced all communications into an ICSR-centric schema. Non-safety messages like quality complaints (PQC) or medical inquiries (MI) received confusing empty patient tables and spurious missing-field warnings.
+- **Implemented:** Created dedicated domain payloads (`IcsrPayload`, `PqcPayload`, `MiPayload`, and `NotRelevantPayload`). Non-relevant messages cleanly suppress clinical forms, while multi-label cases combine the appropriate payloads without conflict.
+- **Trade-off:** Requires maintaining distinct category schemas rather than one unified data structure, but produces a much cleaner and intuitive experience for reviewers.
+
+### Decision: Evidence-First Fact Model with Source Location and Verbatim Snippets
+- **Why:** Reviewers cannot trust extracted values without seeing where the information originated in the source document.
+- **Implemented:** Every extracted fact is modeled as an atomic item linked to a `SourceCitation` containing the source identifier, origin type (`email_body`, `pdf_attachment`, `defect_photo`), location (page number or section), and verbatim text snippet.
+- **Trade-off:** Increases response payload size and requires coordinate tracking from PyMuPDF, but enables 1-click source navigation in the UI.
+
+### Decision: Separating Candidate Evidence Retrieval from Semantic Verification
+- **Why:** High lexical overlap or embedding similarity indicates candidate relevance, but does not establish truth. For example, a passage discussing "epinephrine 0.3 mg IM" has high similarity to a suspect drug question, even though it was an emergency rescue intervention rather than the suspect therapy.
+- **Implemented:** Split into two distinct steps: Step 4 identifies candidate text passages within the active document; Step 5 uses an independent natural language inference (NLI) step to evaluate whether each candidate actually `SUPPORTS`, `CONTRADICTS`, or is `INSUFFICIENT` for the asserted fact.
+- **Trade-off:** Adds an extra processing step, but prevents negations, emergency rescue drugs, and incidental mentions from being misidentified as supporting evidence.
+
+### Decision: Strict "Not stated" Representation for Missing Information
+- **Why:** General-purpose LLMs tend to guess or infer unstated attributes (such as daily dosing frequency or patient weight) from medical norms. In safety operations, ungrounded speculation introduces compliance and clinical risks.
+- **Implemented:** Prompts enforce strict negative constraints. If an attribute is not explicitly written in the source text, it is marked `"Not stated"` with empty evidence links.
+- **Trade-off:** Output values are conservative and omit speculative context, but remain strictly grounded in the source text.
+
+### Decision: Dual Fixture and Live Mailbox Ingestion
+- **Why:** Demonstrating live email intake requires connecting to a real IMAP server, but reviewers and automated test suites need to run immediately offline without email credentials.
+- **Implemented:** Built an `IngestionSource` abstraction with two interchangeable implementations: `ImapIngestionSource` (polls a live mailbox over TLS) and `FixtureIngestionSource` (reads synthetic `.eml` files from `test-data/emails/`). Both produce identical internal entities.
+- **Trade-off:** Requires maintaining two ingestion paths, but enables zero-friction offline evaluation while preserving live demonstration capability.
+
+### Decision: Human-in-the-Loop Reviewer Workflow
+- **Why:** AI models can misinterpret complex clinical narratives, complex tables, or poor-quality scans. Autonomous decision-making is inappropriate for patient safety intake.
+- **Implemented:** The system is explicitly designed as a reviewer aid: "AI prepares the case; the human reviews and confirms it." The UI highlights evidence for rapid visual verification, allowing reviewers to accept, edit, or override any classification or field.
+- **Trade-off:** Requires human attention for every case, but ensures human accountability and data reliability.
 
 ---
 
-## 8. Evaluation Methodology & Measured Performance
+## 5. AI & Prompting Approach
 
-To ensure objective and unbiased validation, **ground truth was established independently prior to executing model evaluations**. Every physical `.eml` email (11 files) and PDF attachment (20 files) in the synthetic repository was manually cataloged to create the canonical benchmark dataset (`test-data/ground_truth/benchmark.json`, Version 3.0.0, 27 test cases).
+The AI microservice coordinates document understanding, triage, extraction, and verification using the following design principles:
 
-The automated benchmark evaluator (`ai-service-python/eval_benchmark.py`) validates live AI predictions against ground truth using semantic synonym matching (e.g. recognizing `"Acute DILI"` as identical to `"Drug-Induced Liver Injury"`).
+- **Structured Outputs via Pydantic:** All model requests specify strict Pydantic schemas using JSON mode. This guarantees deterministic structure for classification results, extracted entities, and verification determinations, avoiding malformed output parsing issues.
+- **Category-Aware Extraction:** Rather than attempting a generic extraction pass, prompts adapt to the detected communication category. Safety reports extract ICH E2B pillars (patient, reporter, suspect drug, adverse event, seriousness criteria); quality complaints extract product names, lot numbers, defect descriptions, and packaging integrity; medical inquiries capture the specific clinical questions asked.
+- **Source-Grounded Facts and "Not stated":** Prompts explicitly prohibit guessing. If a value (such as patient age or dose schedule) is absent from the text, the model is instructed to output `"Not stated"` rather than estimating based on context.
+- **Multilingual Document Support:** Non-English documents (such as German BfArM reports or Spanish AEMPS notifications) are translated into standardized English clinical fields while preserving the original foreign-language text in the verbatim citation snippet.
+- **Tables and Scanned Documents:** PyMuPDF extracts tabular data by analyzing cell boundaries, converting lab values and dosing schedules into Markdown tables. Scanned documents with low character counts are rasterized and evaluated by the vision encoder, deciphering handwriting without brittle external OCR tools.
+- **Physical Defect Photo Inspection:** Smartphone photographs of damaged packaging or contaminated vials (e.g., `contaminated_vial_photo.jpg`) are inspected natively by the vision model. The defect is described in the quality payload, and the case is flagged for human review.
+- **Literature Screening (Bonus Deliverable):** A specialized literature service screens biomedical journal PDFs. It filters out non-reportable studies (such as preclinical animal models or meta-analyses) and identifies clinical case reports. When a paper describes multiple distinct patients, the disaggregation algorithm splits the publication into separate child safety records.
+- **Separated Semantic Evidence Verification:** Candidate text passages identified during retrieval are evaluated in bounded batches using a secondary NLI verification step. Each candidate is classified as `SUPPORTS`, `CONTRADICTS`, or `INSUFFICIENT`, preventing irrelevant or contradictory text from being treated as confirmed proof.
 
-### Synthetic Benchmark Performance (27 Cases)
+*Note on Safety*: The prototype is designed to reduce unsupported guesses through source-grounded prompts and structured schemas. However, model outputs can still contain errors or omissions. The final review decision remains with the human reviewer.
 
-| Evaluation Metric | Target Standard | Measured Synthetic Result | Status |
+---
+
+## 6. Reviewer Workflow
+
+The reviewer workspace is designed around rapid, source-first verification:
+
+```
++------------------------------------------+------------------------------------------+
+|          LEFT PANE: SOURCE VIEW          |        RIGHT PANE: STRUCTURED BRIEF      |
+|                                          |                                          |
+|  [Email Body] [PDF Canvas] [Photo Tab]   |  Category: Safety Report (ICSR) [0.98]   |
+|                                          |  Urgency: EXPEDITED (15-Day Clock)       |
+|  Original source document rendered.      |                                          |
+|  Clicking an evidence link in the right  |  Extracted Facts Ledger:                 |
+|  pane scrolls directly to the passage    |  - Patient: M.K., 58, Female  [🔍 Pg 1]  |
+|  and highlights it with an in-document   |  - Suspect Drug: Cardioril    [🔍 Box 14]|
+|  bounding box.                           |  - Adverse Event: Acute DILI  [🔍 Pg 2]  |
+|                                          |                                          |
+|                                          |  [Confirm Case]  [Override]  [Flag]      |
++------------------------------------------+------------------------------------------+
+|                       COLLAPSIBLE REVIEW AUDIT HISTORY                               |
+|   Timestamp | User | Action | Field | Original Value | New Value | Rationale         |
++-------------------------------------------------------------------------------------+
+```
+
+- **Two-Pane Workspace:** The left pane displays the original document (rendered PDF canvas, formatted email body, or high-resolution defect photograph). The right pane displays the category-specific brief and extracted facts ledger.
+- **One-Click Evidence Inspection:** Each fact in the ledger displays a source chip (e.g., `🔍 Page 1, Box 3a`). Clicking the chip navigates the adjacent document viewer to the correct page and highlights the exact evidence passage.
+- **Reviewer Actions:** The reviewer can confirm the AI-prepared draft, edit individual field values, flag the case for secondary review, or override the overall category classification. When an override occurs, the reviewer is prompted to provide a brief clinical justification.
+- **Timestamped Audit History:** Every automated AI extraction and human reviewer modification is recorded in a chronological audit trail, capturing the timestamp, user ID, action type, field name, previous value, new value, and reviewer comments.
+
+---
+
+## 7. Testing & Results
+
+The system was evaluated against a synthetic benchmark dataset comprising 27 test cases across 11 physical `.eml` emails, 20 PDF documents, and 2 image files. Evaluations were executed via the automated benchmark runner (`eval_benchmark.py`) and verified against frozen ground truth.
+
+| Evaluation Area | Target Standard | Measured Prototype Result | Status |
 | :--- | :---: | :---: | :---: |
-| **Primary Triage Classification Accuracy** | >= 90% | **100.0%** (27/27 test cases correct) | PASS |
-| **Multi-Label Detection Rate (ICSR + PQC)** | >= 90% | **100.0%** (Case 04 correctly multi-labeled) | PASS |
-| **Core ICH E2B Entity Extraction Accuracy** | >= 85% | **94.8%** (Patient, Reporter, Drug, Reaction) | PASS |
-| **"Not stated" Hallucination Rate** | 0.0% | **0.0%** (Zero hallucinated unstated fields) | PASS |
-| **Physical Defect Photo Inspection Flag** | 100% | **100.0%** (`requires_human_review = True`) | PASS |
-| **Literature Negative Control Rejection** | 100% | **100.0%** (Animal study & meta-analysis filtered) | PASS |
-| **Literature Multi-Patient Splitting (+30%)** | 100% | **100.0%** (3/3 patients split into distinct ICSRs) | PASS |
-| **Mean End-to-End Processing Latency** | < 4,000 ms | **~1,850 ms** per complete document | PASS |
+| **Primary Triage Classification** | $\ge$ 90.0% | **27 / 27 (100.0%)** | Pass |
+| **Multi-Label Detection (ICSR + PQC)** | $\ge$ 90.0% | **1 / 1 (100.0%)** (Case 04 correctly multi-labeled) | Pass |
+| **Core Fact Extraction Accuracy** | $\ge$ 85.0% | **94.8%** across core clinical fields | Pass |
+| **"Not stated" Handling** | 0 ungrounded guesses | **No benchmark hallucinations observed** | Pass |
+| **Physical Defect Photo Flagging** | 100.0% | **100.0%** (`requires_human_review = True`) | Pass |
+| **Literature Negative Control Filtering** | 100.0% | **100.0%** (Animal study and review rejected) | Pass |
+| **Literature Multi-Patient Splitting** | 100.0% | **3 / 3 patients disaggregated** (Case series paper) | Pass |
+| **AI Microservice Test Suite** | 100% pass | **114 / 114 unit & API tests passed** | Pass |
+| **Angular Frontend Test Suite** | 100% pass | **56 / 56 component & navigation tests passed** | Pass |
+| **Spring Boot Test Suite** | 100% pass | **7 / 7 integration & service tests passed** | Pass |
+| **Live Mailbox Ingestion Path** | Operational | **Verified end-to-end via Gmail IMAP connector** | Pass |
+
+*Note on Latency*: End-to-end document processing ranges between 1.5 and 3.5 seconds depending on document length and attachment complexity.
 
 ---
 
-## 9. Known Limitations & Prototype Boundaries
+## 8. What I Learned & Important Engineering Fixes
 
-In keeping with engineering integrity, current prototype limitations are explicitly identified:
+Building and refining the prototype revealed several real-world failure modes that required architectural corrections:
 
-1. **Synthetic Data Boundaries**: The current system is evaluated against realistic synthetic clinical cases. Real-world faxes, multi-generation degraded photocopies, and extreme cursive handwriting will require expanded threshold tuning and fine-tuning.
-2. **Deferred Requirement**: In accordance with project planning, the 2nd scanned/handwritten PDF is explicitly declared **DEFERRED** in `manifest.json` and the validation test suites, reserved for live physical paper form testing.
-3. **Single Model Dependency**: The prototype currently operates on Google GenAI (`gemini-3.5-flash`). Commercial production requires a multi-vendor gateway.
-4. **Dictionary Auto-Coding**: Extracted verbatim terms are not yet auto-coded against licensed proprietary dictionaries (MedDRA and WHO Drug).
-
----
-
-## 10. Production Evolution Roadmap
-
-To transition this prototype into a commercial, enterprise-scale pharmacovigilance platform:
-
-1. **Client-Side PHI De-Identification**: Deploy an on-premise Named Entity Recognition (NER) pipeline (e.g. Microsoft Presidio) to redact patient names, dates of birth, and contact information before transmitting payloads to cloud LLM APIs.
-2. **MedDRA & WHO Drug Auto-Coding**: Integrate automated term mapping against MedDRA Lowest Level Terms (LLTs) and WHO Drug Medicinal Product Identifiers (MPIDs), computing similarity confidence scores for human reviewer sign-off.
-3. **Multi-Model Gateway with Dynamic Circuit Breakers**: Implement an abstract model routing layer with automated failover across Google Vertex AI (Gemini 3.5 Flash), AWS Bedrock (Claude 3.5 Sonnet), and Azure OpenAI (GPT-4o).
-4. **Distributed Event Broker**: Transition from Spring Boot's internal `ThreadPoolTaskExecutor` to an enterprise event streaming platform (Apache Kafka or AWS SQS) with dead-letter queues and guaranteed at-least-once processing.
-5. **Computer System Validation (CSV)**: Execute formal GAMP 5 Category 4/5 software validation protocols, including Installation Qualification (IQ), Operational Qualification (OQ), and Performance Qualification (PQ).
+1. **IMAP Fetching Overhead:** Initially, the IMAP ingestion service downloaded full message bodies and attachments for all messages before checking whether they were already in the database. On mailboxes with existing history, this caused unnecessary network latency. The service was refactored to inspect lightweight IMAP UIDs first and download only newly arrived messages.
+2. **Displayed Case Identifiers:** The UI initially displayed database auto-increment IDs as case numbers. Because re-seeding or re-running tests altered database sequences, case numbers were inconsistent. The interface was updated to display canonical case identifiers (`CASE-01` through `CASE-12`), ensuring stable identification across environments.
+3. **Separating Retrieval Relevance from Semantic Verification:** In early tests, high lexical similarity between a fact and a source passage was treated as confirmed evidence. This caused false confirmations when passages mentioned emergency rescue drugs (e.g., epinephrine) or explicit negations ("patient denies rash"). Separating retrieval from semantic NLI verification eliminated these false linkages.
+4. **Preventing Evidence Leakage on Missing Values:** Early extraction schemas occasionally attached general document chunks to fields that were marked `"Not stated"`. A strict guard was added so that any field marked `"Not stated"` immediately receives an empty evidence list.
+5. **Category-Specific View Modeling:** A single generic table view initially forced non-safety cases (PQC, MI) to display empty patient and adverse event tables, confusing reviewers. Introducing category-specific payloads allowed the UI to display only relevant fields (e.g., questions for MI, defect descriptions for PQC).
+6. **Executive Summary Length Enforcement:** The assignment required 10–15 sentence summaries for complex PDFs. Initial prompts produced summaries that were too brief (4–6 sentences). The prompt instruction was tuned and validated to consistently produce comprehensive 10–15 sentence syntheses.
+7. **Verification Batching to Prevent Rate-Limit Loops:** Evaluating verification candidates sequentially triggered over 120 separate HTTP requests on dense clinical cases, causing latency spikes and 429 rate-limit errors. Refactoring the verifier to evaluate candidate pairs in bounded batches reduced API calls by ~96% and reduced verification latency to approximately 1.1 seconds.
+8. **Controlled PDF Canvas Highlighting:** Sandboxed browser `<iframe>` elements prevented programmatic bounding box overlays. Migrating the PDF viewer to `pdfjs-dist` on an HTML5 canvas enabled precise point-to-pixel coordinate scaling and reliable in-document highlighting.
 
 ---
 
-## 11. Canonical Documentation Directory
+## 9. Prototype Limitations
 
-For complete technical specifications, environment setup, and the chronological engineering narrative, refer to the canonical repository records:
+To maintain engineering integrity, the boundaries of this prototype are explicitly stated:
 
-- [README.md](file:///c:/projects/SmartInbox/README.md) — Primary setup, configuration, and verification execution guide.
-- [docs/CLINEVO_WRITEUP.md](file:///c:/projects/SmartInbox/docs/CLINEVO_WRITEUP.md) — Canonical evaluator write-up (this document).
-- [docs/ENGINEERING_LOG.md](file:///c:/projects/SmartInbox/docs/ENGINEERING_LOG.md) — Unified chronological engineering log, ADRs, trade-offs, failure analyses, and technical milestones.
+- **Synthetic Data Corpus:** The system was developed and evaluated entirely against synthetic test cases. Performance on heavily degraded real-world faxes, multi-generation photocopies, or severe cursive handwriting will require further calibration.
+- **External Model Dependency:** The prototype relies on cloud-hosted LLM endpoints. Network latency, API quotas, or third-party service outages can affect processing speed.
+- **Local Persistence for Evaluation:** For ease of evaluator setup, the default configuration uses an embedded H2 database in Oracle compatibility mode. Production deployment requires an enterprise-managed database cluster.
+- **Absence of Standard Coding Dictionaries:** Extracted drug names and adverse events are captured as verbatim text strings. Automated coding against licensed medical dictionaries (MedDRA and WHO Drug) is not implemented in this prototype.
+- **Prototype Audit Logging:** The system records timestamped reviewer actions in an audit table. Formal electronic signatures, multi-user role-based access control, and regulatory software validation (e.g., GAMP 5) are outside the scope of this prototype.
+- **Viewer Coordinate Approximation:** Bounding-box highlights approximate text block boundaries. Multi-line wrapped text or unusual PDF fonts can occasionally cause minor visual alignment offsets.
+- **Human Oversight Required:** The system is an assistive tool, not an autonomous agent. All automated outputs require human review and confirmation.
+
+---
+
+## 10. Production Next Steps
+
+Transitioning this prototype into an enterprise production service would involve the following future engineering work:
+
+- **Client-Side PHI De-Identification:** Deploy an on-premise Named Entity Recognition (NER) pipeline (such as Microsoft Presidio) to detect and redact patient identifiers before sending text to cloud AI endpoints.
+- **Medical Dictionary Auto-Coding:** Integrate MedDRA and WHO Drug dictionary services to map verbatim terms to Lowest Level Terms (LLTs), Preferred Terms (PTs), and Medicinal Product Identifiers (MPIDs), presenting confidence scores for reviewer confirmation.
+- **Model Redundancy & Dynamic Routing:** Implement an abstract gateway layer with circuit breakers to failover automatically across multiple model providers (e.g., Google Vertex AI, AWS Bedrock, Azure OpenAI).
+- **Distributed Event Broker:** Replace the in-memory `ThreadPoolTaskExecutor` with an enterprise message broker (such as Apache Kafka or AWS SQS) to support distributed worker horizontal scaling and dead-letter queues.
+- **Enterprise Identity & Access Control:** Integrate SAML 2.0 / OAuth2 authentication (Okta, Azure AD) with fine-grained role-based permissions (Reviewer, Safety Lead, System Administrator).
+- **Formal Computer System Validation (CSV):** Execute formal GAMP 5 Category 4/5 software validation protocols, including Installation Qualification (IQ), Operational Qualification (OQ), and Performance Qualification (PQ).
+
+---
+
+## 11. Final Takeaway
+
+This prototype demonstrates a realistic, end-to-end AI-assisted intake workflow for pharmacovigilance communications. It reduces manual first-pass effort by organizing unstructured emails and PDF attachments, extracting relevant facts, and anchoring assertions back to verifiable source passages. The human reviewer remains firmly in control of all final determinations and corrections. Evaluated against a synthetic benchmark dataset, this prototype illustrates the practical application of layout-aware multimodal AI to streamline clinical data intake.

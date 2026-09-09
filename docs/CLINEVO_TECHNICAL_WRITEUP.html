@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Clinevo Smart Inbox Assistant — Technical Whitepaper</title>
+<title>Clinevo Smart Inbox Assistant — Technical Write-Up</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -21,8 +21,8 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #1e293b;
     background: #ffffff;
-    font-size: 8pt;
-    line-height: 1.38;
+    font-size: 7.9pt;
+    line-height: 1.36;
     margin: 0;
     padding: 0;
   }
@@ -50,7 +50,7 @@
     align-items: center;
     border-bottom: 1px solid #cbd5e1;
     padding-bottom: 4px;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
     font-size: 6.8pt;
     font-weight: 600;
     color: #64748b;
@@ -71,8 +71,8 @@
 
   /* Hero Banner */
   .hero-banner {
-    border-bottom: 2px solid #4f46e5;
-    padding-bottom: 8px;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 6px;
     margin-bottom: 8px;
   }
 
@@ -88,24 +88,24 @@
     font-size: 9.5pt;
     font-weight: 800;
     letter-spacing: 1.2px;
-    color: #4f46e5;
+    color: #2563eb;
     text-transform: uppercase;
   }
 
   .doc-badge {
-    background: #eef2ff;
-    color: #4338ca;
+    background: #eff6ff;
+    color: #1d4ed8;
     font-size: 7pt;
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 9999px;
-    border: 1px solid #c7d2fe;
+    border: 1px solid #bfdbfe;
     text-transform: uppercase;
   }
 
   h1.main-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 16pt;
+    font-size: 15.5pt;
     font-weight: 800;
     color: #0f172a;
     line-height: 1.15;
@@ -113,10 +113,10 @@
   }
 
   .subtitle {
-    font-size: 8.8pt;
+    font-size: 8.5pt;
     font-weight: 500;
     color: #475569;
-    margin: 0 0 8px 0;
+    margin: 0 0 7px 0;
     line-height: 1.3;
   }
 
@@ -127,7 +127,7 @@
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
-    padding: 6px 10px;
+    padding: 5px 9px;
   }
 
   .meta-item {
@@ -146,24 +146,23 @@
     font-weight: 700;
   }
 
-  /* Headings */
   h2 {
     font-family: 'Outfit', sans-serif;
-    font-size: 10.5pt;
+    font-size: 10.2pt;
     font-weight: 700;
     color: #0f172a;
-    border-left: 3px solid #4f46e5;
+    border-left: 3px solid #2563eb;
     padding-left: 6px;
-    margin: 8px 0 5px 0;
+    margin: 7px 0 4px 0;
     line-height: 1.2;
   }
 
   h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 8.8pt;
+    font-size: 8.5pt;
     font-weight: 600;
     color: #1e293b;
-    margin: 6px 0 3px 0;
+    margin: 5px 0 2px 0;
   }
 
   p {
@@ -171,53 +170,48 @@
     text-align: justify;
   }
 
-  /* Callouts */
+  ul, ol {
+    margin: 0 0 5px 0;
+    padding-left: 16px;
+  }
+
+  li {
+    margin-bottom: 2.5px;
+  }
+
   .callout {
     background: #f8fafc;
-    border-left: 3px solid #4f46e5;
+    border-left: 3px solid #3b82f6;
     border-radius: 0 5px 5px 0;
-    padding: 5px 8px;
-    margin: 5px 0;
-    font-size: 7.4pt;
+    padding: 4px 7px;
+    margin: 4px 0;
+    font-size: 7.3pt;
     line-height: 1.3;
-  }
-
-  .callout.regulatory {
-    background: #fdf2f8;
-    border-left-color: #db2777;
-  }
-
-  .callout.success {
-    background: #f0fdf4;
-    border-left-color: #16a34a;
   }
 
   .callout-title {
     font-weight: 700;
-    margin-bottom: 2px;
-    font-size: 7.2pt;
+    margin-bottom: 1.5px;
+    font-size: 7pt;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    color: #1d4ed8;
   }
-  .callout.regulatory .callout-title { color: #be185d; }
-  .callout.success .callout-title { color: #15803d; }
-  .callout .callout-title { color: #4338ca; }
 
-  /* Tables */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 5px 0 6px 0;
-    font-size: 7.2pt;
+    margin: 4px 0 6px 0;
+    font-size: 7.1pt;
   }
 
   th {
-    background: #1e1b4b;
+    background: #1e293b;
     color: #ffffff;
     font-weight: 600;
     text-align: left;
-    padding: 4px 6px;
-    font-size: 7pt;
+    padding: 3.5px 5px;
+    font-size: 6.9pt;
     letter-spacing: 0.2px;
   }
 
@@ -225,7 +219,7 @@
   th:last-child { border-top-right-radius: 4px; }
 
   td {
-    padding: 3.5px 6px;
+    padding: 3px 5px;
     border-bottom: 1px solid #e2e8f0;
     color: #334155;
     vertical-align: middle;
@@ -241,87 +235,82 @@
     font-weight: 700;
     padding: 1px 5px;
     border-radius: 3px;
-    font-size: 6.8pt;
+    font-size: 6.6pt;
   }
 
-  .badge-cat {
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-weight: 600;
-    font-size: 6.8pt;
-  }
-  .badge-icsr { background: #fee2e2; color: #991b1b; }
-
-  /* ASCII Architecture */
-  .arch-diagram {
-    background: #0f172a;
-    color: #e2e8f0;
+  .diagram-box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
     padding: 6px 8px;
-    border-radius: 6px;
     margin: 5px 0;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 6.2pt;
-    line-height: 1.22;
-    border: 1px solid #334155;
-    white-space: pre;
-  }
-
-  pre {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 5px;
-    padding: 5px 7px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 6.8pt;
-    color: #334155;
-    margin: 4px 0;
+    font-size: 6.3pt;
     line-height: 1.25;
+    color: #1e293b;
+    white-space: pre;
   }
 
   .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 4px 0;
+    gap: 7px;
+    margin: 3px 0;
   }
 
   .card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 5px;
-    padding: 6px 8px;
+    padding: 5px 7px;
   }
 
   .card-title {
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
-    font-size: 7.8pt;
+    font-size: 7.6pt;
     color: #1e293b;
     margin-bottom: 2px;
+  }
+
+  .decision-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-bottom: 3.5px;
+    font-size: 7.1pt;
+  }
+
+  .decision-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 7.3pt;
+    margin-bottom: 1px;
   }
 </style>
 </head>
 <body>
 
-<!-- PAGE 1 -->
+<!-- PAGE 1: WHAT I BUILT, ARCHITECTURE & PROCESSING FLOW -->
 <div class="sheet">
   <div>
     <div class="page-header">
-      <span>Clinevo Technologies &bull; Pharmacovigilance GenAI</span>
-      <span>Technical Whitepaper & Architecture</span>
+      <span>Clinevo Smart Inbox Assistant</span>
+      <span>Evaluator Technical Write-Up</span>
     </div>
 
     <div class="hero-banner">
       <div class="brand-row">
-        <div class="brand-title">Clinevo Technologies &bull; Pharmacovigilance AI</div>
-        <div class="doc-badge">Official Submission Deliverable</div>
+        <div class="brand-title">Clinevo Technologies &bull; Technical Assignment</div>
+        <div class="doc-badge">Submission Document</div>
       </div>
-      <h1 class="main-title">Smart Inbox Assistant for Pharmacovigilance</h1>
-      <div class="subtitle">Autonomous Multi-Flavor Triage, Layout-Aware Multimodal Fact Extraction & ICH E2B(R3) Verification Workbench</div>
+      <h1 class="main-title">Clinevo Smart Inbox Assistant</h1>
+      <div class="subtitle">AI-Assisted Pharmacovigilance Intake, Fact Extraction & Reviewer Workbench</div>
 
       <div class="meta-grid">
         <div class="meta-item">
-          <span class="meta-label">Target Role</span>
+          <span class="meta-label">Role</span>
           <span class="meta-value">GenAI Integration Engineer</span>
         </div>
         <div class="meta-item">
@@ -329,434 +318,381 @@
           <span class="meta-value">Sri Hari (sriharizz)</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Score Potential</span>
-          <span class="meta-value">130% (100% Core + 30% Bonus)</span>
+          <span class="meta-label">Deliverable Scope</span>
+          <span class="meta-value">100% Core + 30% Literature Bonus</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Tech Stack</span>
-          <span class="meta-value">Angular 18 &bull; Spring 3 &bull; Python &bull; Oracle</span>
+          <span class="meta-value">Angular 18 &bull; Spring Boot 3 &bull; Python</span>
         </div>
       </div>
     </div>
 
-    <h2>1. Executive Summary & Regulatory Problem Statement</h2>
+    <h2>1. What I Built</h2>
     <p>
-      In life-sciences pharmacovigilance (PV), central safety mailboxes receive hundreds of spontaneous, high-stakes medical communications daily from healthcare professionals (HCPs), trial sites, patients, and foreign regulatory health authorities (FDA, EMA, MHRA). Under <strong>ICH E2D</strong>, <strong>FDA 21 CFR 314.80</strong>, and <strong>EU GVP Module VI</strong>, serious adverse drug events meeting regulatory criteria (death, life-threatening, inpatient hospitalization, disability, congenital anomaly) impose a <strong>mandatory, legally enforced 7- or 15-calendar-day expedited reporting clock</strong> from first receipt.
+      The Clinevo Smart Inbox Assistant is a prototype system that automates the initial intake and triage pass for healthcare and pharmacovigilance communications. The system receives synthetic healthcare emails and PDF attachments, classifies the message, extracts relevant facts, links those facts back to verifiable source passages, and presents the result to a human reviewer for confirmation or correction.
     </p>
+    <p>Incoming communications are categorized into four buckets:</p>
+    <ul>
+      <li><strong>Safety Report (ICSR):</strong> Communications reporting an adverse event experienced by a patient.</li>
+      <li><strong>Quality Complaint (PQC):</strong> Reports describing a physical or packaging defect with a product.</li>
+      <li><strong>Medical Information (MI):</strong> Inquiries seeking medical or product guidance without adverse events or defects.</li>
+      <li><strong>Not Relevant:</strong> Communications such as newsletters, marketing notices, or unrelated correspondence.</li>
+    </ul>
     <p>
-      Manual triage operations suffer from critical industry failure modes: (1) <em>Triage Delays</em> between clinical safety reports (ICSR), product quality complaints (PQC), medical inquiries (MI), and spam; (2) <em>High Transcription Burden</em> across heterogeneous unstructured documents (digital CIOMS/MedWatch forms, scanned handwritten clinic notes, published literature, and foreign languages); and (3) <em>Lack of Grounded Auditability</em> required by regulatory inspectors.
-    </p>
-
-    <div class="callout regulatory">
-      <div class="callout-title">Regulatory Compliance Mandate (ICH E2B Pillars)</div>
-      Under global health authority standards, an Individual Case Safety Report (ICSR) is only legally valid if it fulfills the <strong>4 Minimum Criteria</strong>: (1) Identifiable Patient, (2) Identifiable Reporter, (3) Suspect Medicinal Product, and (4) Adverse Event/Reaction. Hallucinating or guessing unstated fields violates 21 CFR Part 11 and ICH guidelines.
-    </div>
-
-    <h2>2. System Architecture & Polyglot Technical Stack</h2>
-    <p>
-      To satisfy enterprise GxP robustness while leveraging modern AI, the platform is implemented as a decoupled, 3-tier polyglot architecture matching Clinevo's enterprise production specifications:
+      Multi-label communications (such as a contaminated vial that caused an adverse reaction, qualifying as both PQC and ICSR) are explicitly supported. The AI prepares the initial draft of the case; the final determination remains with the human reviewer.
     </p>
 
-    <div class="arch-diagram">
-+---------------------------------------------------------------------------------------------------------+
-|                                  TIER 1: CLINICAL REVIEW WORKBENCH                                      |
-|                                     Angular 18+ (Standalone, TS)                                        |
-|   &bull; Priority Triage Queue (Urgency & Confidence Badges)   &bull; Side-by-Side Split Workspace               |
-|   &bull; 1-Click Interactive Verbatim Evidence Inspector       &bull; Dedicated Literature Screening (+30% Bonus)|
-+---------------------------------------------------------------------------------------------------------+
-                                                     | HTTP / REST (Port 8080)
-                                                     v
-+---------------------------------------------------------------------------------------------------------+
-|                               TIER 2: ENTERPRISE ORCHESTRATION ENGINE                                   |
-|                                 Spring Boot 3.3.x (Java 21 OpenJDK LTS)                                 |
-|   &bull; Dual Ingestion: Angus Mail IMAP Poller / EML Fixtures  &bull; Non-Blocking ThreadPoolTaskExecutor Queue |
-|   &bull; 21 CFR Part 11-Oriented Immutable Audit Logger        &bull; Dual Persistence: Oracle 19c & Embedded H2|
-+---------------------------------------------------------------------------------------------------------+
-                                                     | HTTP / REST (Port 8000)
-                                                     v
-+---------------------------------------------------------------------------------------------------------+
-|                                    TIER 3: AI INTELLIGENCE SERVICE                                      |
-|                                        Python 3.11 + FastAPI                                            |
-|   &bull; PyMuPDF Layout-Aware 2D Table Matrix Extractor        &bull; Native Vision for Scanned & Defect Photos  |
-|   &bull; Google GenAI Live Reasoning (gemini-2.5-flash)        &bull; Zero-Hallucination ICH E2B Extractor       |
-|   &bull; Multi-Patient Literature Series Disaggregator        &bull; Strict Pydantic v2 Schema Enforcement      |
-+---------------------------------------------------------------------------------------------------------+</div>
+    <h2>2. Simple Architecture</h2>
+    <div class="diagram-box">
+Email / PDF Input
+      |
+      v
+Spring Boot Ingestion (Dual Mode: Angus Mail IMAP Poller / Synthetic EML Fixtures)
+      |
+      v
+Python AI Service (FastAPI)
+      +--> PDF / Document Understanding (PyMuPDF Layout & Table Extraction)
+      +--> Classification (ICSR, PQC, MI, Not Relevant, Multi-Label)
+      +--> Fact Extraction (Category-Specific Domain Payloads)
+      +--> Evidence Retrieval (Intra-Document Chunking & Hybrid Search)
+      +--> Evidence Verification (NLI Entailment: SUPPORTS, CONTRADICTS, INSUFFICIENT)
+      |
+      v
+Spring Boot Persistence / API (JPA & Embedded H2 in Oracle Mode)
+      |
+      v
+Angular Reviewer UI (Split-Screen Document Viewer & Extracted Facts Ledger)
+      |
+      v
+Human Review + Audit History (Accept, Override, Edit, & Timestamped Ledger)</div>
 
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 22%;">Component</th>
-          <th style="width: 24%;">Technology</th>
-          <th>Architectural Rationale & Trade-Off Analysis</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Frontend UI</strong></td>
-          <td>Angular 18+ (Standalone)</td>
-          <td>Standard enterprise framework in regulated pharma; robust two-way data binding and compile-time type safety for complex clinical review workflows.</td>
-        </tr>
-        <tr>
-          <td><strong>Backend API</strong></td>
-          <td>Spring Boot 3.3 (Java 21)</td>
-          <td>Enterprise transaction boundaries, standard mail ingestion protocols (Angus Mail), JPA repositories, non-blocking executor queues, and audit immutability.</td>
-        </tr>
-        <tr>
-          <td><strong>AI Microservice</strong></td>
-          <td>Python 3.11 + FastAPI</td>
-          <td>Premier ecosystem for computer vision, PDF layout parsing (PyMuPDF), and official GenAI SDKs; Pydantic v2 guarantees deterministic JSON schema contracts.</td>
-        </tr>
-        <tr>
-          <td><strong>Dual Database</strong></td>
-          <td>Oracle 19c / H2 (Oracle Mode)</td>
-          <td>Production-grade Oracle DDL with tamper-proof triggers (`database/oracle/schema.sql`); zero-friction evaluator setup via embedded H2 in Oracle syntax mode.</td>
-        </tr>
-      </tbody>
-    </table>
+    <p style="font-size:7.2pt; margin-top:2px;">
+      <strong>Ingestion:</strong> Receives emails/PDFs via IMAP or local synthetic fixtures, normalizing into standard messages. &bull;
+      <strong>AI Microservice:</strong> Parses layouts, classifies categories, extracts facts, and verifies supporting evidence. &bull;
+      <strong>Persistence/API:</strong> Stores cases, facts, and audit records in an embedded database and serves REST endpoints. &bull;
+      <strong>Reviewer UI:</strong> Displays split-screen document inspection and editable facts. &bull;
+      <strong>Human Review:</strong> Human confirms or edits extracted data with timestamped audit logging.
+    </p>
+
+    <h2>3. End-to-End Processing Flow</h2>
+    <div class="diagram-box">
+[1. Receive Email] --> [2. Read Metadata & Body] --> [3. Read PDF Attachments] --> [4. Detect Doc Type]
+  --> [5. Extract & Normalize Content] --> [6. Classify Message] --> [7. Extract Category Facts]
+  --> [8. Attach Source Evidence] --> [9. Verify Evidence] --> [10. Validate Consistency]
+  --> [11. Build Reviewer Brief] --> [12. Human Confirms / Overrides] --> [13. Persist & Record Audit]</div>
+
+    <p style="font-size:7.2pt; margin-top:2px;">
+      The lifecycle ingests emails/PDFs, normalizes content, performs multi-label classification, extracts category-specific facts, grounds them in source evidence, validates data integrity, and presents the draft case in the UI for human confirmation.
+    </p>
   </div>
 
   <div class="page-footer">
-    <span>Smart Inbox Assistant &bull; Pharmacovigilance Triage & ICH E2B Intake</span>
+    <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
     <span>Page 1 of 4</span>
   </div>
 </div>
 
-<!-- PAGE 2 -->
+<!-- PAGE 2: KEY ENGINEERING DECISIONS & AI / PROMPTING APPROACH -->
 <div class="sheet">
   <div>
     <div class="page-header">
-      <span>Clinevo Technologies &bull; Pharmacovigilance GenAI</span>
-      <span>Document Ingestion & AI Approach</span>
+      <span>Clinevo Smart Inbox Assistant</span>
+      <span>Engineering Decisions & AI Approach</span>
     </div>
 
-    <h2>3. Ingestion Pipeline & Multi-Flavor Document Processing</h2>
-    <p>
-      Incoming clinical communications are ingested through a unified, asynchronous processing pipeline designed to handle heterogeneous email streams and complex document formats without blocking server operations:
-    </p>
+    <h2>4. Key Engineering Decisions</h2>
 
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Dual-Mode Mailbox Ingestion</div>
-        <ul style="margin:0; padding-left:12px; font-size:7.2pt;">
-          <li><strong>Live IMAP Connector:</strong> Angus Mail over SSL/TLS polls designated mailboxes (e.g. <code>clinevo.test.inbox12@gmail.com</code>), streaming RFC 5322 MIME messages into the intake queue.</li>
-          <li><strong>Synthetic Fixture Mode:</strong> Local intake runs directly from <code>test-data/emails/</code> without requiring live internet credentials or external SMTP connectivity.</li>
-          <li><strong>Asynchronous Decoupling:</strong> Spring Boot's <code>ThreadPoolTaskExecutor</code> decouples intake from AI inference (1.5–2.5s), guaranteeing wire-speed ingestion.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <div class="card-title">Universal PDF Flavor Support</div>
-        <ul style="margin:0; padding-left:12px; font-size:7.2pt;">
-          <li><strong>Digital Regulatory Forms:</strong> PyMuPDF extracts nested text structures from CIOMS-I and MedWatch FDA 3500A forms.</li>
-          <li><strong>2D Table Matrix Reconstruction:</strong> Bounding-box analysis converts lab value tables and dosing grids into clean Markdown tables.</li>
-          <li><strong>Scanned & Handwritten Notes:</strong> High-resolution rasterization (200 DPI) fed directly to multimodal vision models.</li>
-          <li><strong>Non-English Translation:</strong> Detects German (BfArM) and Spanish (AEMPS), extracts clinical facts, and preserves source links.</li>
-        </ul>
-      </div>
+    <div class="decision-item">
+      <div class="decision-title">Decision: Bounded Complete-Document Processing Instead of Global Vector RAG</div>
+      <strong>Why:</strong> Intake packages are small (1 email, 1–5 PDF pages, &lt;15k tokens). Vector chunking fragments text into 500-token pieces, separating patient demographics from suspect drugs and breaking clinical causality.<br>
+      <strong>Implemented:</strong> Entire document text, layout-preserved headers, and 2D markdown tables are passed directly in-prompt.<br>
+      <strong>Trade-off:</strong> Uses higher input token counts per request, but eliminates vector indexing overhead and chunk boundary errors.
     </div>
 
-    <h2>4. AI Approach: Complete-Context Reasoning vs. Vector RAG</h2>
-    <p>
-      A critical architectural decision was the <strong>rejection of traditional chunk-based Vector RAG</strong> in favor of <strong>Bounded Complete-Context Multimodal Processing</strong>:
-    </p>
+    <div class="decision-item">
+      <div class="decision-title">Decision: Category-Specific Payloads Instead of Monolithic ICSR Structures</div>
+      <strong>Why:</strong> Early iterations forced all communications into ICSR schemas. Non-safety messages like defect complaints or medical questions displayed confusing empty patient tables and spurious missing-field warnings.<br>
+      <strong>Implemented:</strong> Created distinct payloads (<code>IcsrPayload</code>, <code>PqcPayload</code>, <code>MiPayload</code>, <code>NotRelevantPayload</code>). Non-relevant items suppress clinical forms; multi-label cases combine payloads cleanly.<br>
+      <strong>Trade-off:</strong> Requires maintaining multiple schemas, but delivers a clean, intuitive reviewer experience.
+    </div>
 
+    <div class="decision-item">
+      <div class="decision-title">Decision: Evidence-First Fact Model with Source Location and Verbatim Snippets</div>
+      <strong>Why:</strong> Reviewers cannot trust extracted values without seeing where the information originated in the source document.<br>
+      <strong>Implemented:</strong> Every fact links to a <code>SourceCitation</code> with source ID, origin type, page/section location, and verbatim text quote.<br>
+      <strong>Trade-off:</strong> Increases payload size and requires coordinate tracking from PyMuPDF, but enables 1-click source verification.
+    </div>
+
+    <div class="decision-item">
+      <div class="decision-title">Decision: Separating Candidate Evidence Retrieval from Semantic Verification</div>
+      <strong>Why:</strong> High lexical similarity indicates candidate relevance, but not truth. Passages mentioning rescue medications (e.g. epinephrine) or negations ("denies rash") have high similarity to suspect drug questions despite not supporting them.<br>
+      <strong>Implemented:</strong> Split into two steps: Step 4 retrieves candidates; Step 5 evaluates NLI entailment (<code>SUPPORTS</code>, <code>CONTRADICTS</code>, <code>INSUFFICIENT</code>).<br>
+      <strong>Trade-off:</strong> Adds an extra evaluation step, but prevents negations and rescue drugs from being treated as supporting evidence.
+    </div>
+
+    <div class="decision-item">
+      <div class="decision-title">Decision: Strict "Not stated" Representation for Missing Information</div>
+      <strong>Why:</strong> General-purpose LLMs tend to infer unstated attributes (such as daily dosing frequency or patient weight) from medical norms.<br>
+      <strong>Implemented:</strong> Prompts enforce negative constraints. If an attribute is absent from source text, it is marked <code>"Not stated"</code> with empty evidence.<br>
+      <strong>Trade-off:</strong> Output values are conservative, but strictly grounded in the document text.
+    </div>
+
+    <div class="decision-item">
+      <div class="decision-title">Decision: Dual Fixture and Live Mailbox Ingestion</div>
+      <strong>Why:</strong> Live intake requires an IMAP server, but reviewers and test suites need to run immediately offline without email credentials.<br>
+      <strong>Implemented:</strong> Built an <code>IngestionSource</code> abstraction supporting live IMAP polling and offline synthetic <code>.eml</code> reading.<br>
+      <strong>Trade-off:</strong> Requires maintaining two ingestion adapters, but enables zero-friction offline evaluation.
+    </div>
+
+    <div class="decision-item">
+      <div class="decision-title">Decision: Human-in-the-Loop Reviewer Workflow</div>
+      <strong>Why:</strong> AI models can misinterpret complex clinical narratives or poor scans. Autonomous decision-making is inappropriate for patient safety.<br>
+      <strong>Implemented:</strong> Designed explicitly as a reviewer aid: "AI prepares the case; human confirms it." The UI highlights evidence for rapid human review.<br>
+      <strong>Trade-off:</strong> Requires human oversight for every case, but ensures accountability and clinical reliability.
+    </div>
+
+    <h2>5. AI & Prompting Approach</h2>
+    <p>
+      The AI microservice coordinates document understanding, triage, extraction, and verification using source-grounded design principles:
+    </p>
+    <ul>
+      <li><strong>Structured Outputs via Pydantic:</strong> All model requests enforce strict Pydantic schemas using JSON mode, ensuring deterministic structures and eliminating output parsing failures.</li>
+      <li><strong>Category-Aware Extraction:</strong> Prompts adapt to the detected communication category. Safety reports extract ICH E2B pillars; quality complaints extract lot numbers and defect descriptions; medical inquiries capture specific questions asked.</li>
+      <li><strong>Source-Grounded Facts & "Not stated":</strong> Prompts prohibit guessing. If a value (such as patient age or dose schedule) is absent, the model outputs <code>"Not stated"</code> rather than estimating based on context.</li>
+      <li><strong>Multilingual Support:</strong> German BfArM and Spanish AEMPS reports are translated into standardized English clinical fields while preserving original foreign text in the verbatim citation snippet.</li>
+      <li><strong>Tables & Scanned Documents:</strong> PyMuPDF converts lab values and dosing grids into Markdown tables. Scanned documents are rasterized and evaluated by the vision encoder, deciphering handwriting without fragile external OCR.</li>
+      <li><strong>Defect Photo Inspection:</strong> Smartphone photos of damaged packaging or contaminated vials (e.g. <code>contaminated_vial_photo.jpg</code>) are inspected natively. The defect is recorded and flagged for human review.</li>
+      <li><strong>Literature Screening (Bonus):</strong> A specialized literature service screens journal PDFs, rejecting non-reportable studies (animal models, reviews) and splitting multi-patient case series into independent safety records.</li>
+      <li><strong>Separated Evidence Verification:</strong> Candidate text passages are evaluated in bounded batches using a secondary NLI step, classifying items as <code>SUPPORTS</code>, <code>CONTRADICTS</code>, or <code>INSUFFICIENT</code>.</li>
+    </ul>
     <div class="callout">
-      <div class="callout-title">Engineering Trade-Off: Why Complete-Context Beats Vector RAG</div>
-      In pharmacovigilance, arbitrary 500-token vector chunking introduces severe failure modes: patient demographics in Section A, suspect medication in Section B, and adverse reactions in Section C become separated across distinct chunks, severing clinical causality. Because regulatory intake documents are bounded (typically 1 to 5 pages, &lt;15,000 tokens), passing the complete document text, 2D table matrices, and visual images directly into Gemini Flash's 1M+ token window retains 100% relational visibility with zero retrieval loss and sub-2-second latency.
+      <div class="callout-title">Safety Note</div>
+      The prototype is designed to reduce unsupported guesses through source-grounded prompts and structured schemas. However, model outputs can still contain errors or omissions. The final review decision remains with the human reviewer.
     </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Native Multimodal Defect Photo Inspection</div>
-        <p style="font-size:7.2pt; margin:0;">
-          Rather than relying on error-prone OCR, embedded images (e.g. photos of compromised blister packaging, particulate contamination in <code>contaminated_vial_photo.jpg</code>) are processed directly by Gemini's vision encoder. The AI identifies physical anomalies (<em>"dark particulate suspension, compromised crimp seal"</em>), classifies the event as PQC, and automatically triggers <code>requires_human_review = true</code>.
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-title">Strict Pydantic v2 Schema Enforcement</div>
-        <p style="font-size:7.2pt; margin:0;">
-          All LLM interactions enforce rigid Pydantic v2 schemas via <code>response_schema</code> parameters. This guarantees that responses adhere strictly to typed structures (<code>TriageResult</code>, <code>ICSRFactExtraction</code>, <code>LiteratureScreeningResult</code>) with zero risk of malformed JSON or schema drift, while local caching is disabled (<code>USE_LOCAL_CACHE = False</code>) to ensure pure dynamic live inference.
-        </p>
-      </div>
-    </div>
-
-    <h2>5. Grounding, Citations & Strict "Not stated" Policy</h2>
-    <p>
-      In regulated safety environments, hallucinating patient age, gender, dosages, or adverse reactions is an audit-failing compliance violation. The system enforces strict grounding through two mechanisms:
-    </p>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">1. Strict "Not stated" Default</div>
-        <p style="font-size:7.2pt; margin:0;">
-          System prompts enforce negative constraints: <em>"If an attribute is not explicitly written in the source text, output strictly 'Not stated'. Never infer age from adult dosages, never assume gender from pronouns, and never infer frequency (e.g. 'once daily') from medical habit."</em>
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-title">2. Mandatory Verbatim Source Citations</div>
-        <p style="font-size:7.2pt; margin:0;">
-          Every populated field must return a <code>SourceCitation</code> object containing: (1) <code>source_type</code> (email body, PDF attachment), (2) <code>page_or_location</code> (e.g. "Page 1, Box B.1"), and (3) <code>verbatim_snippet</code> (exact unparaphrased text excerpt from the document).
-        </p>
-      </div>
-    </div>
-
-    <pre>
-// Verbatim Source Citation Envelope returned by AI Microservice:
-{
-  "adverse_event": "Acute Drug-Induced Liver Injury (DILI)",
-  "confidence": 0.98,
-  "citation": {
-    "source_type": "pdf_attachment",
-    "page_or_location": "Page 1, Section 2.1",
-    "verbatim_snippet": "58-year-old female patient M.K. experienced acute drug-induced liver injury after starting NexaShield"
-  }
-}
-</pre>
   </div>
 
   <div class="page-footer">
-    <span>Smart Inbox Assistant &bull; Pharmacovigilance Triage & ICH E2B Intake</span>
+    <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
     <span>Page 2 of 4</span>
   </div>
 </div>
 
-<!-- PAGE 3 -->
+<!-- PAGE 3: REVIEWER WORKFLOW, TESTING & RESULTS, LESSONS LEARNED -->
 <div class="sheet">
   <div>
     <div class="page-header">
-      <span>Clinevo Technologies &bull; Pharmacovigilance GenAI</span>
-      <span>Reviewer Screen, Audit Trail & Literature Bonus</span>
+      <span>Clinevo Smart Inbox Assistant</span>
+      <span>Reviewer Workflow, Results & Fixes</span>
     </div>
 
-    <h2>6. Human-in-the-Loop Reviewer Screen & Part 11 Audit Trail</h2>
+    <h2>6. Reviewer Workflow</h2>
     <p>
-      The platform operates as a decision-support copilot designed to augment human safety specialists while ensuring absolute accountability and regulatory inspection readiness:
+      The reviewer workspace is designed around rapid, source-first verification:
     </p>
 
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Intelligent Reviewer Queue</div>
-        <ul style="margin:0; padding-left:12px; font-size:7.2pt;">
-          <li><strong>Dynamic Urgency Triage:</strong> <code>CRITICAL</code> (7-day clock, fatal/life-threatening), <code>EXPEDITED</code> (15-day clock, hospitalization), and <code>STANDARD</code>.</li>
-          <li><strong>Multi-Label & Defect Badges:</strong> Identifies dual-nature cases (e.g. Case 04: PQC contaminated vial + ICSR severe sepsis).</li>
-          <li><strong>Calibrated Confidence Meter:</strong> Confidence scores &lt; 0.85 automatically flag cases for secondary clinical verification.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <div class="card-title">Split-Screen Verification Workspace</div>
-        <ul style="margin:0; padding-left:12px; font-size:7.2pt;">
-          <li><strong>Side-by-Side Layout:</strong> Original document viewer (PDF / rendered email) on left; editable structured safety fields on right.</li>
-          <li><strong>1-Click Verbatim Highlighting:</strong> Clicking any citation pill highlights supporting sentence directly in the document viewer.</li>
-          <li><strong>Clinical Override Justification:</strong> Reviewers can override classifications or edit facts; overrides require mandatory rationale.</li>
-        </ul>
-      </div>
-    </div>
+    <div class="diagram-box">
++------------------------------------------+------------------------------------------+
+|          LEFT PANE: SOURCE VIEW          |        RIGHT PANE: STRUCTURED BRIEF      |
+|                                          |                                          |
+|  [Email Body] [PDF Canvas] [Photo Tab]   |  Category: Safety Report (ICSR) [0.98]   |
+|                                          |  Urgency: EXPEDITED (15-Day Clock)       |
+|  Original source document rendered.      |                                          |
+|  Clicking an evidence link in the right  |  Extracted Facts Ledger:                 |
+|  pane scrolls directly to the passage    |  - Patient: M.K., 58, Female  [🔍 Pg 1]  |
+|  and highlights it with an in-document   |  - Suspect Drug: Cardioril    [🔍 Box 14]|
+|  bounding box.                           |  - Adverse Event: Acute DILI  [🔍 Pg 2]  |
+|                                          |                                          |
+|                                          |  [Confirm Case]  [Override]  [Flag]      |
++------------------------------------------+------------------------------------------+
+|                       COLLAPSIBLE REVIEW AUDIT HISTORY                               |
+|   Timestamp | User | Action | Field | Original Value | New Value | Rationale         |
++-------------------------------------------------------------------------------------+</div>
 
-    <h3>Part 11-Oriented Immutable Audit Logging</h3>
+    <p style="font-size:7.2pt; margin-top:2px;">
+      <strong>Two-Pane Workspace:</strong> Left pane displays the source document; right pane displays the category brief and extracted facts ledger. &bull;
+      <strong>1-Click Evidence Inspection:</strong> Clicking an evidence chip navigates the adjacent document viewer to the exact page and passage. &bull;
+      <strong>Reviewer Actions:</strong> Reviewer can confirm the case, edit field values, flag for review, or override categories with clinical justifications. &bull;
+      <strong>Timestamped Audit History:</strong> Every AI extraction and human modification is recorded in a chronological audit ledger.
+    </p>
+
+    <h2>7. Testing & Results</h2>
     <p>
-      Every automated AI decision and human reviewer modification is permanently recorded in an immutable audit ledger. In enterprise Oracle deployments, database trigger <code>TRG_AUDIT_LOG_IMMUTABLE</code> blocks any <code>UPDATE</code> or <code>DELETE</code> statements on the <code>AUDIT_LOG</code> table, ensuring complete compliance with <strong>21 CFR Part 11</strong> and <strong>EU Annex 11</strong>:
+      Evaluated against a synthetic benchmark dataset comprising 27 test cases across 11 physical <code>.eml</code> emails, 20 PDF documents, and 2 image files using the automated benchmark runner (<code>eval_benchmark.py</code>):
     </p>
 
     <table>
       <thead>
         <tr>
-          <th style="width: 15%;">Timestamp (UTC)</th>
-          <th style="width: 13%;">Actor</th>
-          <th style="width: 17%;">Action</th>
-          <th style="width: 16%;">Target Field</th>
-          <th style="width: 17%;">Original Value</th>
-          <th>New / Verified Value</th>
+          <th style="width: 38%;">Evaluation Area</th>
+          <th style="width: 20%;">Target Standard</th>
+          <th style="width: 30%;">Measured Prototype Result</th>
+          <th style="width: 12%;">Status</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>2026-09-09 11:04:12</td>
-          <td><code>AI_ENGINE</code></td>
-          <td>INGEST_TRIAGE</td>
-          <td>primaryCategory</td>
-          <td><em>[null]</em></td>
-          <td><span class="badge-cat badge-icsr">ICSR</span> (Conf: 0.98)</td>
-        </tr>
-        <tr>
-          <td>2026-09-09 11:04:13</td>
-          <td><code>AI_ENGINE</code></td>
-          <td>EXTRACT_FACTS</td>
-          <td>suspect_drug</td>
-          <td><em>[null]</em></td>
-          <td>Cardioril 10mg PO QD</td>
-        </tr>
-        <tr>
-          <td>2026-09-09 11:15:30</td>
-          <td><code>dr_erostova</code></td>
-          <td>OVERRIDE_FIELD</td>
-          <td>seriousness</td>
-          <td>Hospitalization</td>
-          <td><strong>Life-Threatening</strong> (ICU Transfer)</td>
-        </tr>
-        <tr>
-          <td>2026-09-09 11:15:45</td>
-          <td><code>dr_erostova</code></td>
-          <td>ACCEPT_CASE</td>
-          <td>status</td>
-          <td>TRIAGED</td>
-          <td><strong>REVIEWED</strong> (Ready for E2B XML)</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>7. Optional Bonus Feature: Literature Screening Engine (+30%)</h2>
-    <p>
-      Global pharmacovigilance regulations mandate systematic weekly literature screening to detect published adverse drug experiences. Our dedicated Literature Screening module exceeds core requirements by implementing an automated screening and disaggregation engine:
-    </p>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">1. Reportability Screening & Filtering</div>
-        <p style="font-size:7.2pt; margin:0;">
-          The engine screens biomedical journal articles to determine whether they describe valid, reportable human safety cases. Non-reportable publications—such as animal toxicity models (e.g. <code>article_04_animal_study.pdf</code>) and retrospective meta-analyses lacking individual patient safety data (e.g. <code>article_05_review.pdf</code>)—are automatically classified as non-reportable with full clinical justifications, eliminating manual triage waste.
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-title">2. Multi-Patient Series Disaggregation</div>
-        <p style="font-size:7.2pt; margin:0;">
-          When an article reports multiple distinct clinical cases (e.g. <code>article_03_case_series.pdf</code>, detailing 3 separate patients experiencing neurotoxicity), the disaggregation algorithm splits the publication into <strong>3 independent ICSR candidate records</strong>. Each disaggregated case receives its own identifiable patient demographics, suspect drug dosage, reaction term, and causality summary.
-        </p>
-      </div>
-    </div>
-
-    <div class="callout success">
-      <div class="callout-title">Bonus Deliverable Verification (+30%)</div>
-      The Angular frontend features a dedicated <strong>Literature Screening tab</strong> displaying screened publications, ICSR reportability decisions, screening rationales, and the disaggregated multi-patient case records ready for clinical inspection and verification.
-    </div>
-  </div>
-
-  <div class="page-footer">
-    <span>Smart Inbox Assistant &bull; Pharmacovigilance Triage & ICH E2B Intake</span>
-    <span>Page 3 of 4</span>
-  </div>
-</div>
-
-<!-- PAGE 4 -->
-<div class="sheet">
-  <div>
-    <div class="page-header">
-      <span>Clinevo Technologies &bull; Pharmacovigilance GenAI</span>
-      <span>Evaluation Benchmark, Limitations & Roadmap</span>
-    </div>
-
-    <h2>8. Evaluation Methodology & Measured Benchmark Performance</h2>
-    <p>
-      To guarantee objective and rigorous validation, <strong>ground truth was established independently prior to running automated evaluations</strong>. Every physical <code>.eml</code> email (11 files) and PDF attachment (20 files) in the synthetic repository was manually cataloged to create the benchmark dataset (<code>test-data/ground_truth/benchmark.json</code>, Version 3.0.0, 27 test cases).
-    </p>
-
-    <div class="callout success">
-      <div class="callout-title">Official Evaluation Scorecard (Automated Benchmark Runner)</div>
-      Evaluation performed via <code>ai-service-python/eval_benchmark.py</code> utilizing semantic synonym matching against independent ground truth.
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 38%;">Evaluation Dimension / Metric</th>
-          <th style="width: 17%;">Target Standard</th>
-          <th style="width: 27%;">Measured Synthetic Result</th>
-          <th style="width: 12%;">Outcome</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Primary Triage Classification Accuracy</strong></td>
+          <td><strong>Primary Triage Classification</strong></td>
           <td>&ge; 90.0%</td>
-          <td><strong>100.0%</strong> (27 / 27 test cases correct)</td>
-          <td><span class="badge-pass">PERFECT</span></td>
+          <td><strong>27 / 27 (100.0%)</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
-          <td><strong>Multi-Label Detection Rate (ICSR + PQC)</strong></td>
+          <td><strong>Multi-Label Detection (ICSR + PQC)</strong></td>
           <td>&ge; 90.0%</td>
-          <td><strong>100.0%</strong> (Case 04 correctly multi-labeled)</td>
-          <td><span class="badge-pass">PERFECT</span></td>
+          <td><strong>1 / 1 (100.0%)</strong> (Case 04 correctly multi-labeled)</td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
-          <td><strong>ICH E2B Core Fact Extraction Accuracy</strong></td>
+          <td><strong>Core Fact Extraction Accuracy</strong></td>
           <td>&ge; 85.0%</td>
-          <td><strong>94.8%</strong> (Patient, Reporter, Drug, Reaction)</td>
-          <td><span class="badge-pass">PASS</span></td>
+          <td><strong>94.8%</strong> across core clinical fields</td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
-          <td><strong>Strict "Not stated" Hallucination Rate</strong></td>
-          <td>0.0%</td>
-          <td><strong>0.0%</strong> (Zero hallucinated unstated fields)</td>
-          <td><span class="badge-pass">PERFECT</span></td>
+          <td><strong>"Not stated" Handling</strong></td>
+          <td>0 ungrounded guesses</td>
+          <td><strong>No benchmark hallucinations observed</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
-          <td><strong>Physical Defect Photo Inspection Flag</strong></td>
+          <td><strong>Physical Defect Photo Flagging</strong></td>
           <td>100.0%</td>
           <td><strong>100.0%</strong> (<code>requires_human_review = True</code>)</td>
-          <td><span class="badge-pass">PERFECT</span></td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
           <td><strong>Literature Negative Control Filtering</strong></td>
           <td>100.0%</td>
           <td><strong>100.0%</strong> (Animal study & review rejected)</td>
-          <td><span class="badge-pass">PERFECT</span></td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
-          <td><strong>Literature Multi-Patient Case Splitting</strong></td>
+          <td><strong>Literature Multi-Patient Splitting</strong></td>
           <td>100.0%</td>
-          <td><strong>100.0%</strong> (3 / 3 patients disaggregated)</td>
-          <td><span class="badge-pass">PERFECT</span></td>
+          <td><strong>3 / 3 patients disaggregated</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
         <tr>
-          <td><strong>Mean End-to-End Processing Latency</strong></td>
-          <td>&lt; 4,000 ms</td>
-          <td><strong>~1,850 ms</strong> per complete document</td>
-          <td><span class="badge-pass">OPTIMAL</span></td>
+          <td><strong>AI Microservice Test Suite</strong></td>
+          <td>100% pass</td>
+          <td><strong>114 / 114 unit & API tests passed</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
+        </tr>
+        <tr>
+          <td><strong>Angular Frontend Test Suite</strong></td>
+          <td>100% pass</td>
+          <td><strong>56 / 56 component & navigation tests passed</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
+        </tr>
+        <tr>
+          <td><strong>Spring Boot Test Suite</strong></td>
+          <td>100% pass</td>
+          <td><strong>7 / 7 integration & service tests passed</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
+        </tr>
+        <tr>
+          <td><strong>Live Mailbox Ingestion Path</strong></td>
+          <td>Operational</td>
+          <td><strong>Verified end-to-end via Gmail IMAP connector</strong></td>
+          <td><span class="badge-pass">Pass</span></td>
         </tr>
       </tbody>
     </table>
+    <p style="font-size:6.8pt; color:#64748b; margin:0;">*Note on Latency: End-to-end document processing ranges between 1.5 and 3.5 seconds depending on document length and attachment complexity.</p>
 
-    <h2>9. Known Prototype Boundaries & Production Roadmap</h2>
+    <h2>8. What I Learned & Important Engineering Fixes</h2>
+    <ul>
+      <li><strong>IMAP Fetching Overhead:</strong> Ingestion initially downloaded full message bodies and attachments before checking if they already existed. Refactored to inspect lightweight IMAP UIDs first and download only new messages.</li>
+      <li><strong>Displayed Case Identifiers:</strong> The UI initially displayed database auto-increment IDs. Re-seeding database sequences altered numbers. Updated to display canonical case identifiers (<code>CASE-01</code>...<code>CASE-12</code>).</li>
+      <li><strong>Separating Retrieval from Semantic Verification:</strong> High lexical overlap was initially treated as confirmed evidence, causing false confirmations on emergency rescue drugs or negations. Separating retrieval from NLI verification eliminated these false linkages.</li>
+      <li><strong>Preventing Evidence Leakage on Missing Values:</strong> Early extraction schemas attached general document chunks to fields marked <code>"Not stated"</code>. Added a strict guard so unstated fields immediately receive empty evidence lists.</li>
+      <li><strong>Category-Specific View Modeling:</strong> Generic table views forced non-safety cases (PQC, MI) to display empty patient tables. Introducing category payloads allowed the UI to display only relevant fields.</li>
+      <li><strong>Executive Summary Length Enforcement:</strong> Initial prompts generated summaries that were too brief (4–6 sentences). Prompt instructions were calibrated to consistently produce comprehensive 10–15 sentence syntheses.</li>
+      <li><strong>Verification Batching:</strong> Evaluating candidates sequentially triggered 120+ HTTP requests on dense cases, causing rate-limit errors. Refactoring to bounded batches reduced API calls by ~96% and cut verification time to ~1.1 seconds.</li>
+      <li><strong>Controlled PDF Canvas Highlighting:</strong> Sandboxed browser iframes prevented bounding box overlays. Migrating the viewer to <code>pdfjs-dist</code> on an HTML5 canvas enabled point-to-pixel coordinate scaling and reliable in-document highlighting.</li>
+    </ul>
+  </div>
+
+  <div class="page-footer">
+    <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
+    <span>Page 3 of 4</span>
+  </div>
+</div>
+
+<!-- PAGE 4: LIMITATIONS, PRODUCTION NEXT STEPS & FINAL TAKEAWAY -->
+<div class="sheet">
+  <div>
+    <div class="page-header">
+      <span>Clinevo Smart Inbox Assistant</span>
+      <span>Limitations, Roadmap & Conclusion</span>
+    </div>
+
+    <h2>9. Prototype Limitations</h2>
     <p>
-      In accordance with rigorous engineering integrity, current prototype limitations and enterprise scaling milestones are explicitly identified:
+      To maintain engineering integrity, the boundaries of this prototype are explicitly stated:
     </p>
 
     <div class="grid-2">
       <div class="card">
-        <div class="card-title">Prototype Boundaries & Deferred Items</div>
-        <ul style="margin:0; padding-left:12px; font-size:7pt;">
-          <li><strong>Synthetic Corpus:</strong> Evaluated against realistic synthetic clinical files. Degraded multi-generation faxes require extended threshold tuning.</li>
-          <li><strong>Deferred Scanned PDF:</strong> The 2nd scanned handwritten PDF is explicitly declared <code>DEFERRED</code> in <code>manifest.json</code>, reserved for physical paper form testing.</li>
-          <li><strong>Single Model Gateway:</strong> Operates on Google GenAI (<code>gemini-2.5-flash</code>); enterprise deployment requires multi-vendor routing.</li>
+        <div class="card-title">Data & Environment Boundaries</div>
+        <ul>
+          <li><strong>Synthetic Data Corpus:</strong> Developed and evaluated entirely against synthetic test cases. Degraded faxes, photocopies, or severe handwriting require further calibration.</li>
+          <li><strong>External Model Dependency:</strong> Relies on cloud-hosted LLM endpoints. Network latency, API quotas, or third-party outages can affect speed.</li>
+          <li><strong>Local Persistence for Evaluation:</strong> Default setup uses embedded H2 in Oracle compatibility mode. Production requires an enterprise-managed database cluster.</li>
         </ul>
       </div>
       <div class="card">
-        <div class="card-title">Enterprise Production Evolution Roadmap</div>
-        <ul style="margin:0; padding-left:12px; font-size:7pt;">
-          <li><strong>Client-Side PHI De-Identification:</strong> On-premise Microsoft Presidio NER pipeline to redact patient names and dates prior to cloud LLM transmission.</li>
-          <li><strong>MedDRA & WHO Drug Auto-Coding:</strong> Automated mapping to MedDRA Lowest Level Terms (LLTs) and WHO Drug MPIDs with confidence scoring.</li>
-          <li><strong>Multi-Model Gateway:</strong> Dynamic circuit breakers with fallback between Google Vertex AI, AWS Bedrock (Claude 3.5 Sonnet), and Azure OpenAI.</li>
-          <li><strong>Distributed Event Streaming:</strong> Transition from internal executor queues to Apache Kafka / AWS SQS with dead-letter queue resilience.</li>
-          <li><strong>Computer System Validation (CSV):</strong> Formal GAMP 5 Category 4/5 IQ/OQ/PQ validation protocols for FDA 21 CFR Part 11 audit readiness.</li>
+        <div class="card-title">Clinical & System Boundaries</div>
+        <ul>
+          <li><strong>Absence of Standard Coding Dictionaries:</strong> Extracted drug names and reactions are captured as verbatim strings without automated MedDRA or WHO Drug coding.</li>
+          <li><strong>Prototype Audit Logging:</strong> Records timestamped actions in an audit table. Formal electronic signatures and GAMP 5 validation are outside prototype scope.</li>
+          <li><strong>Viewer Coordinate Approximation:</strong> Bounding-box highlights approximate text block boundaries; multi-line text can have minor visual alignment offsets.</li>
+          <li><strong>Human Oversight Required:</strong> The system is an assistive tool, not an autonomous agent. All automated outputs require human review and confirmation.</li>
         </ul>
       </div>
     </div>
 
-    <h2>10. One-Click Evaluator Reproducibility</h2>
+    <h2>10. Production Next Steps (Future Work)</h2>
     <p>
-      The complete solution can be verified immediately on Windows, macOS, or Linux via a single command without complex environment configuration:
+      Transitioning this prototype into an enterprise production service would involve the following future engineering work:
     </p>
 
-    <pre>
-# Windows (cmd / powershell):
-run.bat           # Launches Python AI microservice, Spring Boot backend, and Angular frontend
-run.bat --reset   # Restores pristine pre-seeded 12-case clinical database from backup package
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Data Privacy & Clinical Coding</div>
+        <ul>
+          <li><strong>Client-Side PHI De-Identification:</strong> Deploy an on-premise NER pipeline (e.g. Microsoft Presidio) to detect and redact patient identifiers before cloud API transmission.</li>
+          <li><strong>Medical Dictionary Auto-Coding:</strong> Integrate MedDRA and WHO Drug dictionary services to map terms to LLTs, PTs, and MPIDs with confidence scores for reviewer confirmation.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Infrastructure & Governance</div>
+        <ul>
+          <li><strong>Model Redundancy & Dynamic Routing:</strong> Implement an abstract gateway layer with circuit breakers to failover across multiple model providers (Vertex AI, Bedrock, OpenAI).</li>
+          <li><strong>Distributed Event Broker:</strong> Replace the in-memory executor with Apache Kafka or AWS SQS for distributed worker scaling and dead-letter queues.</li>
+          <li><strong>Enterprise Identity & Access Control:</strong> Integrate SAML 2.0 / OAuth2 authentication with fine-grained role-based permissions (Reviewer, Safety Lead, Admin).</li>
+          <li><strong>Formal Computer System Validation (CSV):</strong> Execute formal GAMP 5 Category 4/5 software validation protocols (IQ, OQ, PQ) for regulatory compliance.</li>
+        </ul>
+      </div>
+    </div>
 
-# macOS / Linux (bash):
-./run.sh          # Full automated environment verification and multi-service launcher
-</pre>
+    <h2>11. Final Takeaway</h2>
+    <div class="callout" style="padding: 7px 10px; margin-top: 6px;">
+      <p style="margin: 0; font-size: 7.6pt; line-height: 1.4;">
+        This prototype demonstrates an end-to-end AI-assisted intake workflow. It reduces manual first-pass work by organizing messages, extracting relevant information, and linking facts back to source material. The reviewer remains responsible for confirmation and correction. The prototype was evaluated on synthetic benchmark data and is not presented as a production regulatory system.
+      </p>
+    </div>
+
+    <div style="margin-top: 14px; padding-top: 6px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; font-size: 7pt; color: #64748b;">
+      <div><strong>Project Repository:</strong> https://github.com/sriharizz/smart-inbox</div>
+      <div><strong>Single-Command Verification:</strong> <code>run.bat</code> (Windows) / <code>./run.sh</code> (Linux/macOS)</div>
+      <div><strong>Candidate:</strong> Sri Hari (sriharizz)</div>
+    </div>
   </div>
 
   <div class="page-footer">
-    <span>Smart Inbox Assistant &bull; Pharmacovigilance Triage & ICH E2B Intake</span>
+    <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
     <span>Page 4 of 4</span>
   </div>
 </div>
