@@ -44,42 +44,46 @@ The platform uses a decoupled, 3-tier polyglot architecture matching Clinevo's e
 ```mermaid
 flowchart TB
     subgraph Tier1["Tier 1: Reviewer Dashboard (Angular 18+)"]
-        UI_Queue["Review Queue<br/>(Urgency, Clocks & Confidence Badges)"]
-        UI_Workspace["Split-Screen Workspace<br/>(Document Viewer + Editable Fields)"]
-        UI_Citation["Evidence Inspector<br/>(Click-to-Highlight Citations)"]
-        UI_Lit["Literature Screening Tab<br/>(+30% Bonus Case Disaggregation)"]
-        UI_Audit["Part 11 Audit Trail<br/>(Immutable Event Timeline)"]
+        UI_Queue["Review Queue<br/>Urgency, Clocks and Confidence Badges"]
+        UI_Workspace["Split-Screen Workspace<br/>Document Viewer and Editable Fields"]
+        UI_Citation["Evidence Inspector<br/>Click-to-Highlight Citations"]
+        UI_Lit["Literature Screening Tab<br/>30 Percent Bonus Case Disaggregation"]
+        UI_Audit["Part 11 Audit Trail<br/>Immutable Event Timeline"]
     end
 
     subgraph Tier2["Tier 2: Backend Orchestrator (Spring Boot 3.3 / Java 17+)"]
-        Ingest_IMAP["Live IMAP Poller<br/>(Angus Mail / Gmail SSL 993)"]
-        Ingest_Fixture["Fixture Loader<br/>(12 Canonical .EML Files)"]
-        TaskQueue["Async Task Queue<br/>(ThreadPoolTaskExecutor)"]
+        Ingest_IMAP["Live IMAP Poller<br/>Angus Mail / Gmail SSL 993"]
+        Ingest_Fixture["Fixture Loader<br/>12 Canonical EML Files"]
+        TaskQueue["Async Task Queue<br/>ThreadPoolTaskExecutor"]
         AIGateway["AI Gateway REST Client"]
         AuditEngine["Audit Logging Engine"]
-        DB[(Dual Persistence<br/>Embedded H2 / Oracle 19c)]
+        DB[("Dual Persistence<br/>Embedded H2 / Oracle 19c")]
     end
 
     subgraph Tier3["Tier 3: AI Microservice (Python 3.11 / FastAPI)"]
         MIMEParser["RFC 5322 MIME Parser"]
-        PyMuPDF["PyMuPDF Layout Parser<br/>(Table Matrices + Vision Extractor)"]
-        TriageEngine["Regulatory Triage Classifier<br/>(ICSR / PQC / MI / Not Relevant)"]
-        ICSRExtractor["Zero-Hallucination Extractor<br/>(ICH E2B Safety Facts + Citations)"]
-        LitSplitter["Literature Splitter<br/>(Disaggregates Multi-Patient Series)"]
-        GeminiClient["Google GenAI Engine<br/>(gemini-3.5-flash)"]
+        PyMuPDF["PyMuPDF Layout Parser<br/>Table Matrices and Vision Extractor"]
+        TriageEngine["Regulatory Triage Classifier<br/>ICSR / PQC / MI / Not Relevant"]
+        ICSRExtractor["Zero-Hallucination Extractor<br/>ICH E2B Safety Facts and Citations"]
+        LitSplitter["Literature Splitter<br/>Disaggregates Multi-Patient Series"]
+        GeminiClient["Google GenAI Engine<br/>gemini-3.5-flash"]
     end
 
-    Ingest_IMAP -->|RFC 5322 Stream| TaskQueue
-    Ingest_Fixture -->|Local File Stream| TaskQueue
+    Ingest_IMAP --> TaskQueue
+    Ingest_Fixture --> TaskQueue
     TaskQueue --> AIGateway
-    AIGateway -->|HTTP / JSON (Port 8000)| MIMEParser
+    AIGateway -->|"HTTP / JSON (Port 8000)"| MIMEParser
     MIMEParser --> PyMuPDF
-    PyMuPDF --> TriageEngine & ICSRExtractor & LitSplitter
-    TriageEngine & ICSRExtractor & LitSplitter -->|Multimodal Live Inference| GeminiClient
-    GeminiClient -->|Structured JSON| AIGateway
+    PyMuPDF --> TriageEngine
+    PyMuPDF --> ICSRExtractor
+    PyMuPDF --> LitSplitter
+    TriageEngine -->|"Live Multimodal Inference"| GeminiClient
+    ICSRExtractor -->|"Live Multimodal Inference"| GeminiClient
+    LitSplitter -->|"Live Multimodal Inference"| GeminiClient
+    GeminiClient -->|"Structured Pydantic JSON"| AIGateway
     AIGateway --> AuditEngine
     AuditEngine --> DB
-    DB -->|REST API (Port 8081)| Tier1
+    DB -->|"REST API (Port 8081)"| Tier1
 ```
 
 ### 3.1 End-to-End Processing Sequence
@@ -151,7 +155,7 @@ Comprehensive tamper-proof audit timeline recording every automated AI extractio
 | Layer | Technologies & Frameworks |
 | :--- | :--- |
 | **Reviewer Frontend** | Angular 18+, TypeScript, HTML5, Vanilla CSS / Modern Healthcare Theme |
-| **Backend Orchestration**| Spring Boot 3.3+, Java 21 OpenJDK, Spring Data JPA, Angus Mail (IMAP) |
+| **Backend Orchestration**| Spring Boot 3.3+, Java 17+ LTS OpenJDK, Spring Data JPA, Angus Mail (IMAP) |
 | **AI Microservice** | Python 3.11+, FastAPI, Uvicorn, Pydantic v2, PyMuPDF (`fitz`), Pillow (PIL) |
 | **GenAI Engine** | Google GenAI SDK (`gemini-3.5-flash` with `gemini-3.5-flash-lite` fallback) |
 | **Database** | Dual Profile: Embedded H2 (`MODE=Oracle`) for demo / Oracle 19c/21c for production |
