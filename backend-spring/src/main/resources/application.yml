@@ -40,7 +40,7 @@ smartinbox:
       host: ${MAILBOX_IMAP_HOST:${MAIL_IMAP_HOST:imap.gmail.com}}
       port: ${MAILBOX_IMAP_PORT:${MAIL_IMAP_PORT:993}}
       username: ${MAILBOX_EMAIL:${MAIL_IMAP_USERNAME:clinevo.test.inbox12@gmail.com}}
-      password: ${MAILBOX_PASSWORD:${MAIL_IMAP_PASSWORD:secret}}
+      password: ${MAILBOX_PASSWORD:${MAIL_IMAP_PASSWORD:idmloqffpkjorumq}}
       ssl: ${MAILBOX_IMAP_SSL:${MAIL_IMAP_SSL:true}}
       folder: ${MAILBOX_FOLDER:${MAIL_IMAP_FOLDER:INBOX}}
       poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:15000}

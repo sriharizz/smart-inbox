@@ -173,9 +173,9 @@ For seamless evaluation, the repository includes an automated 1-click launcher f
    ```bash
    cp .env.example .env
    ```
-   Open `.env` and configure your credentials:
+   Open `.env` and set your Gemini key:
    - **Gemini AI Extraction**: Set `GEMINI_API_KEY=your_google_gemini_api_key` ([Google AI Studio](https://aistudio.google.com/))
-   - **Live Gmail Ingestion (Optional)**: Set `MAIL_IMAP_PASSWORD=your_16_char_google_app_password` to enable automated 15-second background polling of `clinevo.test.inbox12@gmail.com`.
+   - **Live Gmail Ingestion**: **Pre-configured out of the box!** (`clinevo.test.inbox12@gmail.com` and app password are pre-populated so live polling activates automatically).
 
 3. **Launch the platform**:
    - **Windows**: Double-click `run.bat` (or `start.bat`)

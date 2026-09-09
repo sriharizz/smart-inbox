@@ -15,7 +15,7 @@ if not exist ".env" (
     echo [INFO] .env not found. Creating .env from .env.example...
     copy ".env.example" ".env" >nul
     echo [SETUP REQUIRED] .env file created from template.
-    echo Please configure your GEMINI_API_KEY and MAIL_IMAP_PASSWORD in .env
+    echo Please configure your GEMINI_API_KEY in .env (Gmail credentials are pre-configured!)
     echo.
 )
 
