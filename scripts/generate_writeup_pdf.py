@@ -25,8 +25,8 @@ html_content = """<!DOCTYPE html>
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #1e293b;
     background: #ffffff;
-    font-size: 8.2pt;
-    line-height: 1.38;
+    font-size: 8.1pt;
+    line-height: 1.36;
     margin: 0;
     padding: 0;
   }
@@ -54,7 +54,7 @@ html_content = """<!DOCTYPE html>
     align-items: center;
     border-bottom: 1px solid #cbd5e1;
     padding-bottom: 3px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 7pt;
     font-weight: 600;
     color: #64748b;
@@ -65,15 +65,15 @@ html_content = """<!DOCTYPE html>
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid #cbd5e1;
-    padding-top: 4px;
-    margin-top: 6px;
+    padding-top: 3px;
+    margin-top: 4px;
     font-size: 7pt;
     color: #94a3b8;
   }
 
   h1.main-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 17pt;
+    font-size: 16.5pt;
     font-weight: 800;
     color: #0f172a;
     line-height: 1.15;
@@ -81,38 +81,38 @@ html_content = """<!DOCTYPE html>
   }
 
   .sub-title {
-    font-size: 9.5pt;
+    font-size: 9.2pt;
     font-weight: 600;
     color: #334155;
     margin: 0 0 2px 0;
   }
 
   .tagline {
-    font-size: 8pt;
+    font-size: 7.8pt;
     color: #64748b;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
   }
 
   .meta-bar {
     display: grid;
-    grid-template-columns: 1.2fr 1.5fr 1.8fr;
-    gap: 12px;
+    grid-template-columns: 1.1fr 1.6fr 1.8fr;
+    gap: 10px;
     background: #f8fafc;
     border-top: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
-    padding: 6px 10px;
-    margin-bottom: 10px;
+    padding: 5px 8px;
+    margin-bottom: 8px;
   }
 
   .meta-col {
-    font-size: 7.6pt;
+    font-size: 7.5pt;
   }
   .meta-label {
     color: #64748b;
     font-weight: 600;
     display: block;
     margin-bottom: 1px;
-    font-size: 6.8pt;
+    font-size: 6.6pt;
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
@@ -123,15 +123,15 @@ html_content = """<!DOCTYPE html>
 
   h2 {
     font-family: 'Outfit', sans-serif;
-    font-size: 10.5pt;
+    font-size: 10pt;
     font-weight: 700;
     color: #0f172a;
-    margin: 8px 0 4px 0;
+    margin: 7px 0 3px 0;
     line-height: 1.2;
   }
 
   p {
-    margin: 0 0 6px 0;
+    margin: 0 0 5px 0;
     text-align: justify;
   }
 
@@ -139,13 +139,13 @@ html_content = """<!DOCTYPE html>
   .category-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 6px 0;
+    gap: 6px;
+    margin: 5px 0;
   }
 
   .cat-card {
     border: 1px solid #cbd5e1;
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
   }
 
@@ -153,28 +153,96 @@ html_content = """<!DOCTYPE html>
     background: #0f2744;
     color: #ffffff;
     font-weight: 700;
-    font-size: 7.8pt;
-    padding: 3.5px 8px;
+    font-size: 7.6pt;
+    padding: 3px 7px;
   }
   .cat-header.accent {
     background: #1e528a;
   }
 
   .cat-body {
-    padding: 5px 8px;
-    font-size: 7.4pt;
+    padding: 4px 7px;
+    font-size: 7.3pt;
     background: #ffffff;
     color: #334155;
-    min-height: 28px;
+    min-height: 24px;
   }
 
-  /* Architecture & Flow Diagrams */
+  /* Clean Vertical Architecture Diagram */
   .arch-container {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 10px 8px 6px 8px;
-    margin: 6px 0;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin: 5px 0;
+  }
+
+  .arch-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .arch-node {
+    width: 100%;
+    background: #f8fafc;
+    border: 1.2px solid #64748b;
+    border-radius: 4px;
+    padding: 3.5px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 7.4pt;
+    color: #0f172a;
+  }
+
+  .arch-node.ai-service {
+    background: #f0f7ff;
+    border-color: #1e528a;
+    padding: 4px 8px;
+  }
+
+  .ai-title {
+    font-weight: 700;
+    color: #1e528a;
+    font-size: 7.6pt;
+    margin-bottom: 2px;
+    text-align: center;
+  }
+
+  .ai-bullets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 10px;
+    font-size: 6.9pt;
+    color: #334155;
+    text-align: left;
+    padding: 0 10px;
+  }
+
+  .arch-node.human-node {
+    background: #0f2744;
+    color: #ffffff;
+    border-color: #0f2744;
+    font-weight: 700;
+  }
+
+  .arch-arrow {
+    color: #64748b;
+    font-weight: 700;
+    font-size: 8.5pt;
+    line-height: 1;
+    margin: 1.5px 0;
+  }
+
+  /* Processing Flow Diagram */
+  .process-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 6px 8px;
+    margin: 5px 0;
   }
 
   .flow-row {
@@ -184,118 +252,47 @@ html_content = """<!DOCTYPE html>
     gap: 4px;
   }
 
-  .node-box {
+  .proc-node {
     background: #f8fafc;
     border: 1.2px solid #64748b;
-    border-radius: 5px;
-    padding: 8px 6px;
+    border-radius: 4px;
+    padding: 5px 4px;
     text-align: center;
     font-weight: 600;
-    font-size: 7.5pt;
-    color: #0f172a;
+    font-size: 7.2pt;
     flex: 1;
-    min-height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #0f172a;
   }
 
-  .node-ai-group {
-    flex: 1.25;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .node-ai-header {
-    background: #1e528a;
-    color: #ffffff;
-    border: 1px solid #1e528a;
-    border-radius: 4px;
-    padding: 6px 4px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 7.8pt;
-  }
-
-  .node-ai-sub {
-    background: #f8fafc;
-    border: 1px solid #94a3b8;
-    border-radius: 3px;
-    padding: 2.5px 4px;
-    text-align: center;
-    font-size: 6.8pt;
-    color: #334155;
-  }
-
-  .node-human {
+  .proc-node.audit-node {
     background: #0f2744;
+    border-color: #0f2744;
     color: #ffffff;
-    border: 1px solid #0f2744;
-    border-radius: 4px;
-    padding: 6px 4px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 7.5pt;
-    margin-top: 6px;
   }
 
   .arrow-right {
     color: #64748b;
     font-weight: 700;
-    font-size: 10pt;
+    font-size: 8.5pt;
     padding: 0 1px;
     user-select: none;
   }
 
-  .arch-banner {
-    background: #e2e8f0;
-    border-radius: 3px;
-    padding: 4px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 7.2pt;
-    color: #1e293b;
-    margin-top: 8px;
-  }
-
-  /* Processing Flow Diagram */
-  .process-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 8px 8px;
-    margin: 6px 0;
-  }
-
-  .proc-node {
-    background: #ffffff;
-    border: 1.2px solid #64748b;
-    border-radius: 4px;
-    padding: 7px 4px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 7.4pt;
-    flex: 1;
-    color: #0f172a;
-  }
-
-  .proc-node.dark {
-    background: #1e528a;
-    border-color: #1e528a;
-    color: #ffffff;
-    font-weight: 700;
+  .flow-connector {
+    text-align: right;
+    padding-right: 36px;
+    color: #64748b;
+    font-size: 8pt;
+    line-height: 1;
+    margin: 1px 0;
   }
 
   /* Tables */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 4px 0 6px 0;
-    font-size: 7.3pt;
+    margin: 3px 0 5px 0;
+    font-size: 7.2pt;
   }
 
   th {
@@ -303,13 +300,13 @@ html_content = """<!DOCTYPE html>
     color: #ffffff;
     font-weight: 700;
     text-align: left;
-    padding: 4px 6px;
-    font-size: 7.2pt;
+    padding: 3.5px 6px;
+    font-size: 7.1pt;
     border-bottom: 1.5px solid #0f172a;
   }
 
   td {
-    padding: 3.5px 6px;
+    padding: 3.2px 6px;
     border-bottom: 1px solid #e2e8f0;
     color: #1e293b;
     vertical-align: middle;
@@ -329,9 +326,9 @@ html_content = """<!DOCTYPE html>
     background: #f0f7ff;
     border: 1px solid #bfdbfe;
     border-radius: 4px;
-    padding: 5px 8px;
-    margin: 5px 0;
-    font-size: 7.2pt;
+    padding: 4px 8px;
+    margin: 4px 0;
+    font-size: 7.1pt;
     color: #1e40af;
   }
 
@@ -340,14 +337,14 @@ html_content = """<!DOCTYPE html>
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    margin: 6px 0 4px 0;
+    gap: 8px;
+    margin: 5px 0 4px 0;
   }
 
   .wf-card {
     flex: 1;
     border: 1px solid #cbd5e1;
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
   }
 
@@ -355,42 +352,43 @@ html_content = """<!DOCTYPE html>
     background: #0f2744;
     color: #ffffff;
     font-weight: 700;
-    font-size: 7.5pt;
-    padding: 3.5px 8px;
+    font-size: 7.3pt;
+    padding: 3px 6px;
     text-align: center;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
   }
 
   .wf-body {
-    padding: 6px 10px;
+    padding: 5px 8px;
     background: #ffffff;
-    font-size: 7.3pt;
-    line-height: 1.45;
+    font-size: 7.1pt;
+    line-height: 1.4;
     text-align: center;
+    color: #334155;
   }
 
   .wf-buttons {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 4px 0 6px 0;
+    margin: 4px 0 5px 0;
   }
 
   .wf-btn {
     border: 1px solid #cbd5e1;
     background: #f8fafc;
     border-radius: 3px;
-    padding: 2.5px 14px;
+    padding: 2px 14px;
     font-weight: 600;
-    font-size: 7.2pt;
+    font-size: 7.1pt;
     color: #0f172a;
   }
 
   .two-col-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 4px 0 6px 0;
+    gap: 8px;
+    margin: 3px 0 5px 0;
   }
 
   .two-col-list ul {
@@ -399,28 +397,28 @@ html_content = """<!DOCTYPE html>
   }
 
   .two-col-list li {
-    margin-bottom: 2.5px;
-    font-size: 7.3pt;
+    margin-bottom: 2px;
+    font-size: 7.2pt;
   }
 
   .quote-box {
     background: #f1f5f9;
     border-radius: 4px;
-    padding: 8px 10px;
-    margin: 6px 0 10px 0;
-    font-size: 7.3pt;
+    padding: 6px 9px;
+    margin: 5px 0 8px 0;
+    font-size: 7.2pt;
     font-style: italic;
     color: #334155;
-    line-height: 1.4;
+    line-height: 1.38;
   }
 
   .footer-links {
     display: flex;
     justify-content: space-between;
-    font-size: 7.2pt;
+    font-size: 7.1pt;
     font-weight: 600;
     color: #0f172a;
-    padding-top: 4px;
+    padding-top: 3px;
   }
 </style>
 </head>
@@ -445,7 +443,7 @@ html_content = """<!DOCTYPE html>
       </div>
       <div class="meta-col">
         <span class="meta-label">Deliverable Scope</span>
-        <span class="meta-val">Core (100%) + Literature Bonus (30%)</span>
+        <span class="meta-val">Core Intake (100%) + Literature Screening Bonus</span>
       </div>
       <div class="meta-col">
         <span class="meta-label">Tech Stack</span>
@@ -477,40 +475,37 @@ html_content = """<!DOCTYPE html>
       </div>
     </div>
 
-    <p style="margin-top: 4px; margin-bottom: 8px;">
+    <p style="margin-top: 3px; margin-bottom: 6px;">
       Multi-label cases are explicitly supported &mdash; for example, a contaminated vial that also caused an adverse reaction is classified as both PQC and ICSR.
     </p>
 
     <h2>2. Architecture</h2>
     <div class="arch-container">
-      <div class="flow-row">
-        <div class="node-box">Email / PDF<br>Input</div>
-        <div class="arrow-right">&rarr;</div>
-        <div class="node-box">Spring Boot<br>Ingestion</div>
-        <div class="arrow-right">&rarr;</div>
-        <div class="node-ai-group">
-          <div class="node-ai-header">Python AI Service</div>
-          <div class="node-ai-sub">Document Understanding</div>
-          <div class="node-ai-sub">Classification</div>
-          <div class="node-ai-sub">Fact Extraction</div>
-          <div class="node-ai-sub">Evidence Verification</div>
+      <div class="arch-box">
+        <div class="arch-node">Email / PDF</div>
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-node">Spring Boot Ingestion</div>
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-node ai-service">
+          <div class="ai-title">Python AI Service</div>
+          <div class="ai-bullets">
+            <span>&bull; Document Understanding</span>
+            <span>&bull; Classification</span>
+            <span>&bull; Fact Extraction</span>
+            <span>&bull; Evidence Verification</span>
+          </div>
         </div>
-        <div class="arrow-right">&rarr;</div>
-        <div class="node-box">Spring Boot<br>Persistence / API</div>
-        <div class="arrow-right">&rarr;</div>
-        <div style="flex: 1; display: flex; flex-direction: column;">
-          <div class="node-box" style="width: 100%;">Angular<br>Reviewer UI</div>
-          <div style="text-align: center; color: #64748b; font-size: 8pt; margin: 1px 0;">&darr;</div>
-          <div class="node-human">Human Reviewer</div>
-        </div>
-      </div>
-      <div class="arch-banner">
-        Angular 18 &nbsp;|&nbsp; Spring Boot 3 &nbsp;|&nbsp; Python / FastAPI &nbsp;|&nbsp; H2 (local evaluation)
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-node">Spring Boot API / Persistence</div>
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-node">Angular Reviewer UI</div>
+        <div class="arch-arrow">&darr;</div>
+        <div class="arch-node human-node">Human Reviewer</div>
       </div>
     </div>
 
     <h2>3. Processing Flow</h2>
-    <div class="process-grid">
+    <div class="process-container">
       <div class="flow-row">
         <div class="proc-node">Receive</div>
         <div class="arrow-right">&rarr;</div>
@@ -520,17 +515,15 @@ html_content = """<!DOCTYPE html>
         <div class="arrow-right">&rarr;</div>
         <div class="proc-node">Extract</div>
       </div>
-      <div style="display: flex; justify-content: flex-end; padding-right: 48px; color: #64748b; font-size: 9pt; margin: -3px 0;">
-        &darr;
-      </div>
+      <div class="flow-connector">&darr;</div>
       <div class="flow-row">
-        <div class="proc-node">Ground with<br>Evidence</div>
+        <div class="proc-node">Ground with Evidence</div>
         <div class="arrow-right">&rarr;</div>
         <div class="proc-node">Verify</div>
         <div class="arrow-right">&rarr;</div>
         <div class="proc-node">Human Review</div>
         <div class="arrow-right">&rarr;</div>
-        <div class="proc-node dark">Audit</div>
+        <div class="proc-node audit-node">Audit</div>
       </div>
     </div>
   </div>
@@ -562,27 +555,27 @@ html_content = """<!DOCTYPE html>
         <tr>
           <td><strong>Bounded document processing instead of global vector RAG</strong></td>
           <td>Intake packages are small; chunking would separate patient details from suspect drugs.</td>
-          <td>Entire document is passed in-prompt with layout preserved; no chunk-boundary errors.</td>
+          <td>Entire document is passed in-prompt with layout preserved; avoids document fragmentation caused by arbitrary chunk boundaries.</td>
         </tr>
         <tr>
           <td><strong>Category-specific payloads</strong></td>
           <td>Forcing all messages into an ICSR schema produced empty tables and false warnings.</td>
-          <td>Distinct payloads per category give a clean, relevant reviewer view.</td>
+          <td>Distinct payloads per category give a clean, relevant reviewer view and reduce schema confusion.</td>
         </tr>
         <tr>
           <td><strong>Evidence-linked fact model</strong></td>
           <td>Reviewers need to see where an extracted value came from before trusting it.</td>
-          <td>Every fact links to a source citation with location and verbatim snippet.</td>
+          <td>Extracted facts include source citations where available, providing location and verbatim snippet.</td>
         </tr>
         <tr>
           <td><strong>Separate retrieval from semantic verification</strong></td>
           <td>High lexical similarity does not guarantee a passage actually supports a fact.</td>
-          <td>Retrieval and NLI-based verification are split into two steps, reducing false linkages.</td>
+          <td>Retrieval and NLI-based verification are split into two steps; reduced false evidence linkages observed in earlier iterations.</td>
         </tr>
         <tr>
           <td><strong>&ldquo;Not stated&rdquo; for missing information</strong></td>
           <td>General-purpose models tend to infer unstated clinical details.</td>
-          <td>Prompts enforce negative constraints; missing values are marked &ldquo;Not stated.&rdquo;</td>
+          <td>Prompts enforce negative constraints; missing values are marked &ldquo;Not stated&rdquo; instead of guessing.</td>
         </tr>
         <tr>
           <td><strong>Fixture + live mailbox ingestion</strong></td>
@@ -592,7 +585,7 @@ html_content = """<!DOCTYPE html>
         <tr>
           <td><strong>Human-in-the-loop review</strong></td>
           <td>Autonomous decisions are inappropriate for patient-safety-relevant content.</td>
-          <td>The AI prepares a draft case; the human reviewer confirms or overrides it.</td>
+          <td>Human review remains required because model outputs can contain errors or omissions. The AI prepares a draft case; the human reviewer confirms or overrides it.</td>
         </tr>
       </tbody>
     </table>
@@ -600,16 +593,16 @@ html_content = """<!DOCTYPE html>
     <h2>5. AI / Prompting Approach</h2>
     <div class="two-col-list">
       <ul>
-        <li>Structured model outputs enforced via strict schemas</li>
-        <li>Category-aware extraction tailored to the detected communication type</li>
-        <li>Source-grounded facts, with every value traceable to source text</li>
-        <li>&ldquo;Not stated&rdquo; used instead of guessing at missing values</li>
+        <li><strong>Structured outputs:</strong> Enforced via structured schemas to reduce output parsing issues.</li>
+        <li><strong>Category-aware extraction:</strong> Tailored to the detected communication type (ICSR, PQC, or MI).</li>
+        <li><strong>Source-grounded facts:</strong> Extracted facts include source citations where available.</li>
+        <li><strong>&ldquo;Not stated&rdquo; for missing info:</strong> Negative constraints avoid guessing when data is absent.</li>
       </ul>
       <ul>
-        <li>Multilingual document handling (e.g. German, Spanish reports)</li>
-        <li>Table and scanned-document handling via layout-aware parsing</li>
-        <li>Separate evidence verification step (SUPPORTS / CONTRADICTS / INSUFFICIENT)</li>
-        <li>Literature screening extension for journal PDFs (bonus scope)</li>
+        <li><strong>Multilingual handling:</strong> Handles non-English communications (e.g. German, Spanish).</li>
+        <li><strong>Tables / scanned documents:</strong> Layout-aware parsing and vision models handle complex documents.</li>
+        <li><strong>Separate evidence verification:</strong> Two-stage verification checks passage support (SUPPORTS / CONTRADICTS).</li>
+        <li><strong>Literature screening bonus:</strong> Screens journal PDFs, rejecting negative controls and splitting multi-patient cases.</li>
       </ul>
     </div>
 
@@ -620,22 +613,23 @@ html_content = """<!DOCTYPE html>
     <h2>6. Reviewer Workflow</h2>
     <div class="workflow-container">
       <div class="wf-card">
-        <div class="wf-header">SOURCE DOCUMENT</div>
+        <div class="wf-header">SOURCE</div>
         <div class="wf-body">
-          Email / PDF / Image<br>
-          Evidence source location<br>
-          Verbatim source passages
+          Email / PDF / Image
         </div>
       </div>
-      <div class="arrow-right" style="font-size: 14pt;">&rarr;</div>
-      <div class="wf-card">
+      <div class="arrow-right" style="font-size: 11pt;">&rarr;</div>
+      <div class="wf-card" style="flex: 1.4;">
         <div class="wf-header">STRUCTURED REVIEW BRIEF</div>
         <div class="wf-body">
-          Category<br>
-          Summary<br>
-          Extracted facts<br>
-          Evidence links<br>
-          Reviewer actions
+          Category &bull; Summary &bull; Facts &bull; Evidence
+        </div>
+      </div>
+      <div class="arrow-right" style="font-size: 11pt;">&rarr;</div>
+      <div class="wf-card">
+        <div class="wf-header">REVIEWER</div>
+        <div class="wf-body">
+          Confirm &bull; Edit / Override &bull; Flag
         </div>
       </div>
     </div>
@@ -646,16 +640,16 @@ html_content = """<!DOCTYPE html>
       <div class="wf-btn">Flag</div>
     </div>
 
-    <p style="margin-top: 4px; font-size: 7.4pt;">
-      The reviewer workspace pairs the original source document with a structured review brief so every extracted fact can be checked in context. Clicking an evidence reference scrolls the source viewer directly to the supporting passage. The reviewer can confirm the draft case, edit or override any field, or flag it for further attention &mdash; with every action recorded in a timestamped audit history.
+    <p style="margin-top: 3px; font-size: 7.3pt;">
+      The reviewer workspace pairs the source document with a structured review brief so extracted facts can be verified in context. Clicking an evidence reference navigates to the relevant source region and provides document-level evidence highlighting where supported. The reviewer can confirm the draft case, edit or override any field, or flag it for further attention. Reviewer actions are recorded in the timestamped audit history.
     </p>
 
     <h2>7. Testing &amp; Results</h2>
     <table class="table-clean" style="margin-bottom: 0;">
       <thead>
         <tr>
-          <th style="width: 60%;">Evaluation</th>
-          <th style="width: 40%;">Result</th>
+          <th style="width: 60%;">Evaluation Area</th>
+          <th style="width: 40%;">Measured Prototype Result</th>
         </tr>
       </thead>
       <tbody>
@@ -688,8 +682,8 @@ html_content = """<!DOCTYPE html>
     <table class="table-clean" style="margin-top: 2px;">
       <thead>
         <tr>
-          <th style="width: 60%;">Evaluation</th>
-          <th style="width: 40%;">Result</th>
+          <th style="width: 60%;">Evaluation Area (Continued)</th>
+          <th style="width: 40%;">Measured Prototype Result</th>
         </tr>
       </thead>
       <tbody>
@@ -731,22 +725,23 @@ html_content = """<!DOCTYPE html>
         </tr>
       </tbody>
     </table>
-    <p style="font-size: 6.8pt; color: #64748b; margin-top: 2px; margin-bottom: 8px;">
+    <p style="font-size: 6.8pt; color: #64748b; margin-top: 2px; margin-bottom: 6px;">
       Evaluated on a synthetic benchmark of 27 cases spanning emails, PDFs, and images. Results reflect prototype-stage evaluation, not a claim of production-grade certainty.
     </p>
 
     <h2>8. Important Engineering Fixes</h2>
-    <ul style="margin: 3px 0 8px 0; padding-left: 14px; font-size: 7.3pt;">
-      <li style="margin-bottom: 2.5px;"><strong>IMAP Startup Baseline Polling:</strong> Ingestion was updated to index historical UIDs/timestamps at boot, ignoring past mailbox clutter and ingesting only live emails sent post-startup.</li>
-      <li style="margin-bottom: 2.5px;"><strong>Canonical Case Identifier Stability:</strong> Canonical CASE-01... identifiers were separated from database auto-increment IDs.</li>
-      <li style="margin-bottom: 2.5px;"><strong>Decoupled Semantic Verification:</strong> Retrieval and semantic verification were separated to remove false evidence linkages.</li>
-      <li style="margin-bottom: 2.5px;"><strong>Missing Value Evidence Isolation:</strong> &ldquo;Not stated&rdquo; fields were prevented from receiving unrelated evidence chunks.</li>
-      <li style="margin-bottom: 2.5px;"><strong>Category-Specific View Schemas:</strong> Distinct payloads removed irrelevant ICSR fields from PQC/MI cases.</li>
-      <li style="margin-bottom: 2.5px;"><strong>Entailment Request Batching:</strong> Verification was batched to reduce unnecessary API calls by ~96% and eliminate rate-limit pressure.</li>
+    <ul style="margin: 2px 0 6px 0; padding-left: 14px; font-size: 7.2pt;">
+      <li style="margin-bottom: 2px;"><strong>IMAP Fetching Optimization:</strong> Ingestion was optimized to index baseline UIDs and timestamps at startup, ignoring past mailbox clutter and ingesting only live emails.</li>
+      <li style="margin-bottom: 2px;"><strong>Canonical Case Identifiers:</strong> Stable canonical case identifiers (CASE-01 through CASE-12) were decoupled from database auto-increment keys.</li>
+      <li style="margin-bottom: 2px;"><strong>Retrieval vs. Semantic Verification Separation:</strong> Lexical retrieval and semantic NLI verification were separated into distinct stages; reduced false evidence linkages observed in earlier iterations.</li>
+      <li style="margin-bottom: 2px;"><strong>Missing-Value Evidence Isolation:</strong> Fields marked &ldquo;Not stated&rdquo; were isolated so they do not receive unrelated document text passages as evidence.</li>
+      <li style="margin-bottom: 2px;"><strong>Category-Specific Schemas:</strong> Distinct payloads were designed per category, reducing output parsing issues through structured schemas and removing irrelevant fields.</li>
+      <li style="margin-bottom: 2px;"><strong>Verification Batching:</strong> Fact verification requests were batched; reduced unnecessary API calls and rate-limit pressure.</li>
+      <li style="margin-bottom: 2px;"><strong>PDF Viewer / Highlighting Improvement:</strong> Coordinate-based document navigation was enhanced to direct reviewers to relevant source regions where supported.</li>
     </ul>
 
     <h2>9. Limitations</h2>
-    <table class="table-clean" style="margin-bottom: 8px;">
+    <table class="table-clean" style="margin-bottom: 6px;">
       <thead>
         <tr>
           <th style="width: 50%;">Prototype Boundary</th>
@@ -760,7 +755,7 @@ html_content = """<!DOCTYPE html>
         </tr>
         <tr>
           <td>Cloud model dependency</td>
-          <td>Multi-provider strategy</td>
+          <td>Multi-provider fallback strategy</td>
         </tr>
         <tr>
           <td>Local H2 evaluation database</td>
@@ -772,11 +767,11 @@ html_content = """<!DOCTYPE html>
         </tr>
         <tr>
           <td>Prototype audit history</td>
-          <td>Formal validation / signature controls</td>
+          <td>Formal validation and operational controls</td>
         </tr>
         <tr>
-          <td>PDF highlighting has some viewer limitations</td>
-          <td>Stronger document rendering / annotation layer</td>
+          <td>PDF viewer limitations</td>
+          <td>Document rendering / annotation layer improvements</td>
         </tr>
         <tr>
           <td>Human review required</td>
@@ -786,11 +781,11 @@ html_content = """<!DOCTYPE html>
     </table>
 
     <h2>10. Production Next Steps</h2>
-    <ul style="margin: 3px 0 8px 0; padding-left: 14px; font-size: 7.3pt;">
-      <li style="margin-bottom: 2.5px;">Data privacy and de-identification</li>
-      <li style="margin-bottom: 2.5px;">Enterprise authentication and access control</li>
-      <li style="margin-bottom: 2.5px;">Production database and distributed processing</li>
-      <li style="margin-bottom: 2.5px;">Formal validation and operational controls</li>
+    <ul style="margin: 2px 0 6px 0; padding-left: 14px; font-size: 7.2pt;">
+      <li style="margin-bottom: 2px;">Data privacy and de-identification</li>
+      <li style="margin-bottom: 2px;">Enterprise authentication and access control</li>
+      <li style="margin-bottom: 2px;">Production database and distributed processing</li>
+      <li style="margin-bottom: 2px;">Formal validation and operational controls</li>
     </ul>
 
     <h2>11. Final Takeaway</h2>
@@ -799,7 +794,7 @@ html_content = """<!DOCTYPE html>
     </div>
 
     <div class="footer-links">
-      <span>GitHub: github.com/sriharizz/smart-inbox</span>
+      <span>GitHub: https://github.com/sriharizz/smart-inbox</span>
       <span>Run locally: run.bat / ./run.sh</span>
     </div>
   </div>
@@ -836,3 +831,7 @@ subprocess.run(cmd, check=True)
 doc = fitz.open(output_pdf)
 print(f'SUCCESS: Generated {output_pdf} with {len(doc)} pages.')
 doc.close()
+
+if os.path.exists(temp_html):
+    os.remove(temp_html)
+
