@@ -1,7 +1,29 @@
 export interface SourceCitation {
   source_type?: string;
+  sourceType?: string;
+  source_id?: string;
+  sourceId?: string;
+  source_name?: string;
+  sourceName?: string;
   page_or_location?: string;
+  location?: string;
   verbatim_snippet?: string;
+  snippet?: string;
+  page_number?: number | null;
+  pageNumber?: number | null;
+  bounding_box?: any;
+  boundingBox?: any;
+  char_start?: number | null;
+  charStart?: number | null;
+  char_end?: number | null;
+  charEnd?: number | null;
+  anchor_level?: any;
+  anchorLevel?: any;
+  verification_result?: any;
+  verificationResult?: any;
+  verification_rationale?: string;
+  verificationRationale?: string;
+  [key: string]: any;
 }
 
 export interface Attachment {
@@ -11,7 +33,9 @@ export interface Attachment {
   sizeBytes: number;
   flavor?: string; // digital_form, scanned_handwritten, literature_article, non_english
   language?: string;
+  documentSummary?: string;
 }
+
 
 export interface IcsrReport {
   id?: number;
@@ -85,8 +109,10 @@ export interface IntakeMessage {
   isMultiLabel: boolean;
   labelsJson?: string;
   executiveSummary?: string;
+  language?: string;
   createdAt: string;
   updatedAt: string;
+  sourceFilename?: string;
   attachments: Attachment[];
   icsrReport?: IcsrReport;
   pqcReport?: PqcReport;

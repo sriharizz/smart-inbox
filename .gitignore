@@ -43,3 +43,9 @@ Desktop.ini
 *.log
 *.zip
 scratch/
+*.db
+*.db-shm
+*.db-wal
+runtime-backup/
+data/
+backend-spring/data/

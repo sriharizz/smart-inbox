@@ -95,6 +95,30 @@ public class MessageController {
         return ResponseEntity.ok(message);
     }
 
+    @PostMapping("/{id}/citations")
+    public ResponseEntity<IntakeMessageEntity> updateCitations(@PathVariable Long id, @RequestBody Map<String, Object> citations) {
+        Optional<IntakeMessageEntity> opt = messageRepository.findById(id);
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+
+        IntakeMessageEntity message = opt.get();
+        try {
+            String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(citations);
+            if (message.getIcsrReport() != null) {
+                message.getIcsrReport().setSourceCitationsJson(json);
+            }
+            if (message.getPqcReport() != null) {
+                message.getPqcReport().setSourceCitationsJson(json);
+            }
+            if (message.getMedicalInfo() != null) {
+                message.getMedicalInfo().setSourceCitationsJson(json);
+            }
+            messageRepository.save(message);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @PostMapping("/{id}/override")
     public ResponseEntity<IntakeMessageEntity> overrideMessage(@PathVariable Long id, @RequestBody ReviewerOverrideRequest request) {
         Optional<IntakeMessageEntity> opt = messageRepository.findById(id);
@@ -185,6 +209,26 @@ public class MessageController {
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+    @PostMapping("/process-fixture")
+    public ResponseEntity<Map<String, Object>> processSpecificFixture(
+            @RequestParam("filename") String filename,
+            @RequestParam(value = "fresh", defaultValue = "true") boolean fresh) {
+        try {
+            IntakeMessageEntity entity = ingestionService.ingestSingleFixtureEmail(filename, fresh);
+            return ResponseEntity.ok(Map.of(
+                    "status", "processing_started",
+                    "id", entity.getId(),
+                    "messageId", entity.getMessageId(),
+                    "filename", filename
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
                     "status", "error",
                     "message", e.getMessage()
             ));

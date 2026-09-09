@@ -55,6 +55,9 @@ public class IntakeMessageEntity {
     @Column(name = "EXECUTIVE_SUMMARY")
     private String executiveSummary;
 
+    @Column(name = "LANGUAGE", length = 50)
+    private String language = "English";
+
     @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -117,6 +120,9 @@ public class IntakeMessageEntity {
 
     public String getExecutiveSummary() { return executiveSummary; }
     public void setExecutiveSummary(String executiveSummary) { this.executiveSummary = executiveSummary; }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

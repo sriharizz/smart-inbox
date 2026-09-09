@@ -114,6 +114,8 @@ class CaseEnvelope(BaseModel):
 
     # Performance & Diagnostics
     processing_time_ms: int = Field(default=0, description="Processing latency in milliseconds")
+    extraction_status: str = Field(default="SUCCESS", description="SUCCESS, NEEDS_REVIEW, or FAILED")
+    extraction_error: Optional[str] = Field(default=None, description="Diagnostic extraction error details")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Extensible execution metadata")
 
     def __init__(self, **data):

@@ -16,7 +16,8 @@ class ParsedPDF:
         flavor: str,
         detected_language: str,
         raw_doc: fitz.Document,
-        blocks_by_page: Optional[Dict[int, List[Dict[str, Any]]]] = None
+        blocks_by_page: Optional[Dict[int, List[Dict[str, Any]]]] = None,
+        table_rows_by_page: Optional[Dict[int, List[Dict[str, Any]]]] = None
     ):
         self.filename = filename
         self.page_count = page_count
@@ -27,6 +28,7 @@ class ParsedPDF:
         self.detected_language = detected_language
         self._raw_doc = raw_doc
         self.blocks_by_page = blocks_by_page or {}
+        self.table_rows_by_page = table_rows_by_page or {}
 
     @property
     def full_text(self) -> str:
@@ -62,6 +64,7 @@ class PDFParser:
         text_by_page: Dict[int, str] = {}
         tables_by_page: Dict[int, List[str]] = {}
         blocks_by_page: Dict[int, List[Dict[str, Any]]] = {}
+        table_rows_by_page: Dict[int, List[Dict[str, Any]]] = {}
         extracted_images: List[Dict[str, Any]] = []
 
         total_chars = 0
@@ -93,16 +96,52 @@ class PDFParser:
 
             # Extract structured tables
             page_tables: List[str] = []
+            page_table_rows: List[Dict[str, Any]] = []
             try:
                 tabs = page.find_tables()
-                for t in tabs.tables:
+                for table_idx, t in enumerate(tabs.tables):
                     extracted = t.extract()
                     if extracted and len(extracted) > 1:
                         md_table = PDFParser._matrix_to_markdown(extracted)
                         page_tables.append(md_table)
+                        
+                        # Process individual rows with their bboxes
+                        headers = [str(c).replace("\n", " ").strip() if c is not None else "" for c in extracted[0]]
+                        for row_idx, row in enumerate(extracted[1:], start=1):
+                            row_cells = [str(c).replace("\n", " ").strip() if c is not None else "" for c in row]
+                            # Try to get bbox from t.rows if available
+                            row_bbox = None
+                            try:
+                                if hasattr(t, "rows") and row_idx < len(t.rows):
+                                    r_obj = t.rows[row_idx]
+                                    row_bbox = (float(r_obj.bbox[0]), float(r_obj.bbox[1]), float(r_obj.bbox[2]), float(r_obj.bbox[3]))
+                            except Exception:
+                                pass
+                            if row_bbox is None:
+                                row_bbox = (float(t.bbox[0]), float(t.bbox[1]), float(t.bbox[2]), float(t.bbox[3]))
+                            
+                            # Build readable key-value string
+                            kv_pairs = []
+                            for h, val in zip(headers, row_cells):
+                                if h and val:
+                                    kv_pairs.append(f"{h}: {val}")
+                                elif val:
+                                    kv_pairs.append(val)
+                            row_text = " | ".join(kv_pairs) if kv_pairs else " ".join(row_cells)
+                            
+                            page_table_rows.append({
+                                "page_number": page_num,
+                                "table_no": table_idx,
+                                "row_no": row_idx,
+                                "headers": headers,
+                                "values": row_cells,
+                                "text": row_text,
+                                "bbox": row_bbox
+                            })
             except Exception:
                 pass
             tables_by_page[page_num] = page_tables
+            table_rows_by_page[page_num] = page_table_rows
 
             # Extract embedded images
             image_list = page.get_images(full=True)
@@ -115,33 +154,33 @@ class PDFParser:
                     pil_img = Image.open(io.BytesIO(img_data))
                     # Only keep images that are large enough to be meaningful (ignore tiny icons/bullets)
                     if pil_img.width >= 100 and pil_img.height >= 100:
+                        rects = page.get_image_rects(xref)
+                        bbox = None
+                        if rects:
+                            r = rects[0]
+                            bbox = (float(r.x0), float(r.y0), float(r.x1), float(r.y1))
                         extracted_images.append({
+                            "source_filename": filename,
                             "page": page_num,
                             "width": pil_img.width,
                             "height": pil_img.height,
                             "format": img_ext,
-                            "pil_image": pil_img
+                            "pil_image": pil_img,
+                            "bbox": bbox
                         })
                 except Exception:
                     pass
 
         # Detect Language
-        detected_language = "English"
+        from app.parsers.language_detector import detect_language
         lower_text = all_text_combined.lower()
-        spanish_markers = ["notificación", "reacción adversa", "fármaco", "paciente", "aemps", "hospital", "madrid", "gravedad"]
-        german_markers = ["bericht", "unerwünschte", "arzneimittelwirkung", "charité", "patient", "berlin", "bfarm", "uaw"]
-        
-        spanish_hits = sum(1 for m in spanish_markers if m in lower_text)
-        german_hits = sum(1 for m in german_markers if m in lower_text)
-        
-        if spanish_hits >= 3:
-            detected_language = "Spanish"
-        elif german_hits >= 3:
-            detected_language = "German"
+        detected_language = detect_language(all_text_combined)
+        if detected_language == "Unknown":
+            detected_language = "English" if total_chars >= 50 else "Unknown"
 
         # Detect Flavor
         flavor = "digital_form"
-        if detected_language in ["Spanish", "German"]:
+        if detected_language not in ("English", "Unknown"):
             flavor = "non_english"
         elif total_chars < 200 and page_count <= 3:
             flavor = "scanned_handwritten"
@@ -159,7 +198,8 @@ class PDFParser:
             flavor=flavor,
             detected_language=detected_language,
             raw_doc=doc,
-            blocks_by_page=blocks_by_page
+            blocks_by_page=blocks_by_page,
+            table_rows_by_page=table_rows_by_page
         )
 
     @staticmethod

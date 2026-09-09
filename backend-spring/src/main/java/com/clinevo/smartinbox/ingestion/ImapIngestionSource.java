@@ -42,6 +42,11 @@ public class ImapIngestionSource implements IngestionSource {
 
     @Override
     public List<RawEmailPayload> fetchNewEmails() throws Exception {
+        return fetchNewEmails(msgId -> false);
+    }
+
+    @Override
+    public List<RawEmailPayload> fetchNewEmails(java.util.function.Predicate<String> isAlreadyIngested) throws Exception {
         List<RawEmailPayload> results = new ArrayList<>();
 
         Properties props = new Properties();
@@ -49,8 +54,14 @@ public class ImapIngestionSource implements IngestionSource {
         props.put("mail.imaps.host", host);
         props.put("mail.imaps.port", String.valueOf(port));
         props.put("mail.imaps.ssl.enable", String.valueOf(ssl));
-        props.put("mail.imaps.timeout", "10000");
-        props.put("mail.imaps.connectiontimeout", "10000");
+        props.put("mail.imaps.connectiontimeout", "15000");
+        props.put("mail.imaps.timeout", "25000");
+        props.put("mail.imaps.writetimeout", "15000");
+        props.put("mail.imap.connectiontimeout", "15000");
+        props.put("mail.imap.timeout", "25000");
+        props.put("mail.imap.writetimeout", "15000");
+        props.put("mail.imaps.partialfetch", "false");
+        props.put("mail.imaps.fetchsize", "1048576");
 
         Session session = Session.getInstance(props);
         Store store = null;
@@ -66,53 +77,88 @@ public class ImapIngestionSource implements IngestionSource {
             Message[] messages = folder.getMessages();
             log.info("IMAP mailbox connected: {} messages found in {}", messages.length, folderName);
 
+            if (messages.length == 0) {
+                return results;
+            }
+
+            UIDFolder uidFolder = (folder instanceof UIDFolder u) ? u : null;
+
+            // 1. Batch header pre-fetch in a single lightweight IMAP command
+            FetchProfile fp = new FetchProfile();
+            fp.add(FetchProfile.Item.ENVELOPE);
+            if (uidFolder != null) {
+                fp.add(UIDFolder.FetchProfileItem.UID);
+            }
+            fp.add("Message-ID");
+            folder.fetch(messages, fp);
+
             for (Message msg : messages) {
                 if (msg instanceof MimeMessage mimeMsg) {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    mimeMsg.writeTo(baos);
-                    byte[] rawBytes = baos.toByteArray();
-
                     long uid = msg.getMessageNumber();
-                    if (folder instanceof UIDFolder uidFolder) {
+                    if (uidFolder != null) {
                         try {
                             uid = uidFolder.getUID(msg);
                         } catch (Exception ignored) {}
                     }
 
-                    String messageId = mimeMsg.getMessageID();
-                    if (messageId == null || messageId.isBlank()) {
+                    String rawMessageId = mimeMsg.getMessageID();
+                    if ((rawMessageId == null || rawMessageId.isBlank()) && mimeMsg.getHeader("Message-ID") != null && mimeMsg.getHeader("Message-ID").length > 0) {
+                        rawMessageId = mimeMsg.getHeader("Message-ID")[0];
+                    }
+
+                    String messageId;
+                    if (rawMessageId == null || rawMessageId.isBlank()) {
                         messageId = "IMAP-UID-" + uid;
                     } else {
-                        messageId = messageId.replaceAll("[<>]", "").trim();
+                        messageId = rawMessageId.replaceAll("[<>]", "").trim();
+                    }
+
+                    // 2. Skip already ingested messages BEFORE downloading full MIME
+                    if (isAlreadyIngested != null && isAlreadyIngested.test(messageId)) {
+                        log.debug("Skipping already ingested email [UID: {}, MsgID: {}]", uid, messageId);
+                        continue;
+                    }
+
+                    log.info("Discovered new incoming email [UID: {}, MsgID: {}, Subject: {}]", uid, messageId, mimeMsg.getSubject());
+
+                    // 3. Download raw bytes once
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    mimeMsg.writeTo(baos);
+                    byte[] rawBytes = baos.toByteArray();
+
+                    // 4. Parse in-memory to prevent secondary IMAP network round-trips during attachment extraction
+                    MimeMessage parsedInMemoryMsg;
+                    try (InputStream bais = new java.io.ByteArrayInputStream(rawBytes)) {
+                        parsedInMemoryMsg = new MimeMessage(session, bais);
                     }
 
                     String subject = "No Subject";
                     try {
-                        if (mimeMsg.getSubject() != null) {
-                            subject = jakarta.mail.internet.MimeUtility.decodeText(mimeMsg.getSubject());
+                        if (parsedInMemoryMsg.getSubject() != null) {
+                            subject = jakarta.mail.internet.MimeUtility.decodeText(parsedInMemoryMsg.getSubject());
                         }
                     } catch (Exception ignored) {
-                        subject = mimeMsg.getSubject() != null ? mimeMsg.getSubject() : "No Subject";
+                        subject = parsedInMemoryMsg.getSubject() != null ? parsedInMemoryMsg.getSubject() : "No Subject";
                     }
 
-                    String date = mimeMsg.getSentDate() != null ? mimeMsg.getSentDate().toString() : "";
+                    String date = parsedInMemoryMsg.getSentDate() != null ? parsedInMemoryMsg.getSentDate().toString() : "";
 
                     String senderName = "";
                     String senderEmail = "";
-                    if (mimeMsg.getFrom() != null && mimeMsg.getFrom().length > 0) {
-                        InternetAddress address = (InternetAddress) mimeMsg.getFrom()[0];
+                    if (parsedInMemoryMsg.getFrom() != null && parsedInMemoryMsg.getFrom().length > 0) {
+                        InternetAddress address = (InternetAddress) parsedInMemoryMsg.getFrom()[0];
                         senderName = address.getPersonal() != null ? address.getPersonal() : address.getAddress();
                         senderEmail = address.getAddress();
                     }
 
                     String recipient = "";
-                    if (mimeMsg.getAllRecipients() != null && mimeMsg.getAllRecipients().length > 0) {
-                        recipient = mimeMsg.getAllRecipients()[0].toString();
+                    if (parsedInMemoryMsg.getAllRecipients() != null && parsedInMemoryMsg.getAllRecipients().length > 0) {
+                        recipient = parsedInMemoryMsg.getAllRecipients()[0].toString();
                     }
 
                     StringBuilder bodyText = new StringBuilder();
                     List<RawAttachmentPayload> attachments = new ArrayList<>();
-                    extractParts(mimeMsg, bodyText, attachments);
+                    extractParts(parsedInMemoryMsg, bodyText, attachments);
 
                     results.add(new RawEmailPayload(
                             "imap_" + uid + ".eml",
@@ -126,6 +172,7 @@ public class ImapIngestionSource implements IngestionSource {
                             attachments,
                             rawBytes
                     ));
+                    log.info("Successfully fetched new email [UID: {}, MsgID: {}] with {} attachments", uid, messageId, attachments.size());
                 }
             }
         } catch (AuthenticationFailedException e) {

@@ -128,12 +128,57 @@
             <div class="meta-row"><span class="meta-k">Subject:</span><span class="meta-v strong">{{ message.subject }}</span></div>
             <div class="meta-row"><span class="meta-k">Message-ID:</span><span class="meta-v mono">{{ message.messageId }}</span></div>
           </div>
-          <div class="email-body-content">{{ message.rawBody }}</div>
+
+          <!-- Safe Email Text Highlight Notification for Multiple Occurrences -->
+          <div class="email-ambiguity-notice" *ngIf="emailHighlightStatus === 'MULTIPLE_OCCURRENCES'">
+            ℹ️ Evidence passage occurs multiple times in email body without unique coordinates. Showing full text; refer to verbatim quote below.
+          </div>
+
+          <!-- Safe DOM-aware text segmented rendering (zero [innerHTML]) -->
+          <div class="email-body-content" #emailBodyContainer>
+            <ng-container *ngFor="let seg of emailSegments">
+              <span *ngIf="!seg.isHighlighted">{{ seg.text }}</span>
+              <mark *ngIf="seg.isHighlighted" class="evidence-highlight-email" id="email-evidence-target">{{ seg.text }}</mark>
+            </ng-container>
+          </div>
         </div>
 
-        <!-- 2. Embedded PDF -->
+        <!-- 2. Embedded PDF (Controlled Canvas with Exact Bounding Box Overlay) -->
         <div class="pdf-display" *ngIf="activeAttachment && isPdfAttachment(activeAttachment)">
+          <!-- Page Navigation & Canvas Toolbar -->
+          <div class="pdf-canvas-toolbar" *ngIf="!pdfRenderError">
+            <button type="button" class="btn-page-nav" (click)="prevPdfPage()" [disabled]="activePageNumber <= 1" title="Previous page">◀ Prev</button>
+            <span class="page-indicator">Page {{ activePageNumber }} of {{ pdfTotalPages }}</span>
+            <button type="button" class="btn-page-nav" (click)="nextPdfPage()" [disabled]="activePageNumber >= pdfTotalPages" title="Next page">Next ▶</button>
+            <span class="pdf-status-tag" *ngIf="isRenderingPdf">Rendering...</span>
+          </div>
+
+          <!-- Canvas & Overlay Container -->
+          <div class="pdf-canvas-scroll-wrap" *ngIf="!pdfRenderError">
+            <div class="pdf-viewport-container">
+              <canvas #pdfCanvas class="pdf-canvas"></canvas>
+              <!-- Exact Geometrically-Aligned Visual Highlight Overlay -->
+              <div 
+                class="pdf-overlay-layer" 
+                *ngIf="pdfHighlightBox"
+                [style.width.px]="pdfCanvasWidth"
+                [style.height.px]="pdfCanvasHeight">
+                <div 
+                  class="pdf-highlight-box" 
+                  [style.left.px]="pdfHighlightBox.x" 
+                  [style.top.px]="pdfHighlightBox.y" 
+                  [style.width.px]="pdfHighlightBox.w" 
+                  [style.height.px]="pdfHighlightBox.h" 
+                  id="pdf-evidence-target"
+                  title="Exact evidence passage on PDF page">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Native iframe fallback if canvas rendering encounters an issue -->
           <iframe 
+            *ngIf="pdfRenderError"
             [src]="safeAttachmentUrl" 
             class="pdf-frame" 
             title="PDF Document Viewer">
@@ -155,39 +200,45 @@
         </div>
       </div>
 
-      <!-- Docked Source Evidence Inspector -->
+      <!-- Docked Source Evidence Inspector / Compact HUD -->
       <div class="evidence-inspector-dock" *ngIf="activeEvidence">
         <div class="inspector-header">
           <div class="inspector-title">
             <span class="insp-icon">🔍</span>
-            <strong>Source Evidence Inspector</strong>
-            <span class="insp-field-tag">{{ activeEvidence.fieldLabel }}</span>
+            <span class="source-type-pill">{{ formatSourceBadge(activeEvidence) }}</span>
+            <span class="anchor-level-pill" [ngClass]="{
+              'level-1': activeEvidence.anchorLevel === 'LEVEL_1_EXACT_VISUAL',
+              'level-2': activeEvidence.anchorLevel === 'LEVEL_2_PAGE_TEXT',
+              'level-3': activeEvidence.anchorLevel === 'LEVEL_3_SNIPPET_ONLY'
+            }">
+              {{ formatAnchorLevelBadge(activeEvidence.anchorLevel) }}
+            </span>
           </div>
-          <button type="button" class="btn-close-insp" (click)="closeEvidence()" title="Close evidence drawer">✕</button>
+          <button type="button" class="btn-close-insp" (click)="closeEvidence()" title="Close evidence indicator">✕</button>
         </div>
 
         <div class="inspector-content">
           <div class="insp-fact-preview">
-            <span class="insp-k">Extracted Value:</span>
-            <span class="insp-v">{{ activeEvidence.factValue }}</span>
+            <span class="insp-fact-chip">{{ activeEvidence.fieldLabel }}: <strong>{{ activeEvidence.factValue }}</strong></span>
+            <span class="verif-tag" [ngClass]="{
+              'verif-supports': activeEvidence.verificationResult === 'SUPPORTS',
+              'verif-contradicts': activeEvidence.verificationResult === 'CONTRADICTS',
+              'verif-insufficient': activeEvidence.verificationResult === 'INSUFFICIENT'
+            }">
+              {{ activeEvidence.verificationResult === 'SUPPORTS' ? 'Supported' : (activeEvidence.verificationResult === 'CONTRADICTS' ? 'Contradicted' : 'Insufficient') }}
+            </span>
           </div>
 
           <div class="insp-quote-card">
-            <div class="quote-header">
-              <span class="quote-src">📄 {{ activeEvidence.sourceType }} · {{ activeEvidence.location }}</span>
-              <span class="verif-tag" [ngClass]="{
-                'verif-supports': activeEvidence.verificationResult === 'SUPPORTS',
-                'verif-contradicts': activeEvidence.verificationResult === 'CONTRADICTS',
-                'verif-insufficient': activeEvidence.verificationResult === 'INSUFFICIENT'
-              }">
-                {{ activeEvidence.verificationResult || 'SUPPORTS' }}
-              </span>
-            </div>
             <blockquote class="verbatim-quote">
               “{{ activeEvidence.snippet }}”
             </blockquote>
-            <div class="verif-rationale" *ngIf="activeEvidence.verificationRationale">
-              <span class="rat-k">Verification Rationale:</span> {{ activeEvidence.verificationRationale }}
+            <div class="verif-rationale" *ngIf="activeEvidence.verificationRationale && !isTechnicalBoilerplate(activeEvidence.verificationRationale)">
+              <span class="rat-k">Verification Note:</span> {{ activeEvidence.verificationRationale }}
+            </div>
+            <div class="coordinates-info" *ngIf="activeEvidence.boundingBox">
+              <span class="coord-label">Target Page Region:</span>
+              <span class="coord-val mono">Page {{ activeEvidence.boundingBox.pageNumber || activeEvidence.pageNumber || 1 }} [x: {{ activeEvidence.boundingBox.x0 | number:'1.0-1' }}, y: {{ activeEvidence.boundingBox.y0 | number:'1.0-1' }} — {{ activeEvidence.boundingBox.x1 | number:'1.0-1' }}, {{ activeEvidence.boundingBox.y1 | number:'1.0-1' }}]</span>
             </div>
           </div>
         </div>
@@ -195,7 +246,7 @@
 
       <div class="evidence-hint-bar" *ngIf="!activeEvidence">
         <span class="hint-icon">💡</span>
-        <span>Click any <strong>[View Evidence]</strong> button on the right to inspect exact verbatim quotes and verification rationale.</span>
+        <span>Click <strong>[View evidence]</strong> on any fact to navigate directly to the original supporting source passage.</span>
       </div>
     </section>
 
@@ -244,9 +295,14 @@
               <span class="cat-pill" *ngFor="let cat of brief.allCategories">{{ cat }}</span>
               <span class="multi-pill" *ngIf="brief.isMultiLabel">Multi-Label Submission</span>
             </div>
-            <div class="overview-confidence">
-              <span class="conf-lbl">AI Confidence:</span>
-              <span class="conf-val">{{ (brief.confidence * 100) | number:'1.0-0' }}%</span>
+            <div class="overview-confidence-block">
+              <div class="overview-confidence">
+                <span class="conf-lbl">Triage Confidence:</span>
+                <span class="conf-val">{{ (brief.confidence * 100) | number:'1.0-0' }}%</span>
+              </div>
+              <div class="overview-fact-stats" *ngIf="factSummaryLine">
+                <span class="stats-text">{{ factSummaryLine }}</span>
+              </div>
             </div>
           </div>
 
@@ -261,7 +317,45 @@
           </div>
 
           <div class="overview-rationale" *ngIf="brief.executiveSummary">
-            <span class="rat-lead">Executive Synthesis:</span> {{ brief.executiveSummary }}
+            <div class="synthesis-header">
+              <span class="rat-lead">Executive Synthesis</span>
+            </div>
+            <div class="synthesis-body" [class.collapsed]="!isExecutiveSummaryExpanded">
+              {{ brief.executiveSummary }}
+            </div>
+            <button 
+              type="button" 
+              class="synthesis-toggle-btn" 
+              (click)="toggleExecutiveSummary()" 
+              [attr.aria-expanded]="isExecutiveSummaryExpanded"
+              id="btn-toggle-synthesis">
+              {{ isExecutiveSummaryExpanded ? 'Collapse synthesis ▴' : 'Read full synthesis ▾' }}
+            </button>
+          </div>
+
+          <!-- Selected PDF Document Summary (10-15 Sentences) -->
+          <div class="pdf-summary-card" *ngIf="activeAttachment && isPdfAttachment(activeAttachment) && activeAttachment.documentSummary" id="pdf-summary-box">
+            <div class="pdf-summary-header">
+              <span class="pdf-sum-icon">📄</span>
+              <span class="pdf-sum-title">PDF Summary ({{ activeAttachment.filename }})</span>
+              <span class="pdf-sum-badge">Document Analysis (10–15 Sentences)</span>
+            </div>
+            <p class="pdf-sum-text">{{ activeAttachment.documentSummary }}</p>
+          </div>
+
+
+          <!-- Deterministic Reviewer Attention (Derived from Structured Facts & Flags) -->
+          <div class="reviewer-attention-box" *ngIf="brief.reviewerAttention && brief.reviewerAttention.length > 0">
+            <div class="att-box-header">
+              <span class="att-box-icon">⚡</span>
+              <span class="att-box-title">Reviewer Attention</span>
+            </div>
+            <ul class="att-box-list">
+              <li *ngFor="let item of brief.reviewerAttention" class="att-box-item">
+                <span class="att-bullet">•</span>
+                <span class="att-text">{{ item }}</span>
+              </li>
+            </ul>
           </div>
 
           <!-- Validation Gating Status -->
@@ -366,102 +460,91 @@
           </div>
         </div>
 
-        <!-- 4. CATEGORY-AWARE SPECIALIZED SECTIONS -->
-
-        <!-- A. NOT RELEVANT CASE VIEW -->
-        <div class="card not-relevant-card" *ngIf="brief.notRelevantDetails">
-          <div class="card-header">
-            <span class="card-title">Non-Pharmacovigilance Classification</span>
-            <span class="badge badge-muted">Not Reportable</span>
-          </div>
-          <div class="not-rel-body">
-            <p><strong>Exclusion Rationale:</strong> {{ brief.notRelevantDetails.reason }}</p>
-            <div class="not-rel-excerpt">
-              <strong>Source Text Excerpt:</strong>
-              <div class="excerpt-box">{{ brief.notRelevantDetails.sourceContext }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- B. MEDICAL INFORMATION (MI) INQUIRY VIEW -->
-        <div class="card mi-card" *ngIf="brief.miDetails && (selectedCategoryTab === 'ALL' || selectedCategoryTab === 'MI')">
-          <div class="card-header">
-            <span class="card-title">Medical Information Request Details</span>
-            <span class="badge badge-brand">Inquiry: {{ brief.miDetails.inquiryType }}</span>
-          </div>
-          <div class="mi-body">
-            <div class="inquiry-box">
-              <div class="inq-title-row">
-                <span class="inq-label">Inquired Question(s):</span>
-                <button 
-                  type="button" 
-                  class="btn-evidence-inline" 
-                  *ngIf="brief.miDetails.evidence" 
-                  (click)="openEvidenceForMi(brief.miDetails)">
-                  🔍 Trace Inquiry Evidence
-                </button>
+        <!-- 4. ADAPTIVE CANONICAL REVIEWER DOSSIER SECTIONS (Data-Driven Generic Renderer) -->
+        <div class="reviewer-dossier" *ngIf="visibleSections.length > 0">
+          <div *ngFor="let section of visibleSections" class="card dossier-section-card" [id]="'section-' + section.key">
+            <div class="dossier-section-header">
+              <div class="section-title-wrap">
+                <span class="section-icon" *ngIf="section.icon">{{ section.icon }}</span>
+                <h3 class="section-title">{{ section.title }}</h3>
               </div>
-              <ol class="inq-list">
-                <li *ngFor="let q of brief.miDetails.questions">{{ q }}</li>
-              </ol>
+              <span class="section-scope-badge" *ngIf="section.categoryScope && section.categoryScope !== 'ALL'">
+                {{ section.categoryScope }}
+              </span>
             </div>
 
-            <!-- Supporting Clinical / Procedural Context -->
-            <div class="mi-context-box" *ngIf="brief.miDetails.clinicalContext">
-              <strong>Supporting Clinical / Procedural Context:</strong>
-              <p>{{ brief.miDetails.clinicalContext }}</p>
+            <!-- A. GRID PRESENTATION: Structured key-value groups with compact source pin -->
+            <div *ngIf="section.presentationType === 'GRID' && section.fields && section.fields.length > 0" class="dossier-grid">
+              <div *ngFor="let field of section.fields" class="dossier-item" [class.item-not-stated]="field.status === 'NOT_STATED'">
+                <div class="dossier-item-header">
+                  <span class="dossier-label">{{ field.label }}</span>
+                  <span class="dossier-status-pill" [ngClass]="{
+                    'status-confirmed': field.status === 'CONFIRMED',
+                    'status-uncertain': field.status === 'UNCERTAIN',
+                    'status-conflict': field.status === 'CONFLICT',
+                    'status-not-stated': field.status === 'NOT_STATED'
+                  }">
+                    {{ field.status === 'CONFIRMED' ? 'Confirmed' : (field.status === 'UNCERTAIN' ? 'Uncertain' : (field.status === 'CONFLICT' ? 'Conflict' : 'Not stated')) }}
+                  </span>
+                </div>
+                <div class="dossier-item-content">
+                  <span class="dossier-value" [class.val-empty]="field.status === 'NOT_STATED'">
+                    {{ field.value }}
+                  </span>
+                  <button 
+                    *ngIf="field.evidence" 
+                    type="button" 
+                    class="btn-source-pin" 
+                    (click)="onViewEvidenceForDatum(field.evidence, field.key, field.label, field.value)"
+                    (keydown.enter)="onViewEvidenceForDatum(field.evidence, field.key, field.label, field.value)"
+                    (keydown.space)="onViewEvidenceForDatum(field.evidence, field.key, field.label, field.value); $event.preventDefault()"
+                    [title]="'View source in ' + (field.evidence.sourceName || field.evidence.sourceType || 'document') + ' (' + field.evidence.location + ')'"
+                    [attr.aria-label]="'Navigate to source evidence for ' + field.label">
+                    <span class="pin-symbol" aria-hidden="true">📄↗</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <!-- Specific Information Requested -->
-            <div class="mi-info-box" *ngIf="brief.miDetails.informationRequested">
-              <strong>Information Requested:</strong> {{ brief.miDetails.informationRequested }}
+            <!-- B. TABLE PRESENTATION: Repeated collections (medications, labs, questions) with compact per-row pin -->
+            <div *ngIf="section.presentationType === 'TABLE' && section.repeatedGroup && section.repeatedGroup.rows.length > 0" class="dossier-table-wrap">
+              <table class="dossier-table">
+                <thead>
+                  <tr>
+                    <th *ngFor="let col of section.repeatedGroup.columns" [style.width]="col.width || 'auto'">
+                      {{ col.label }}
+                    </th>
+                    <th class="th-pin" style="width: 50px;">Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of section.repeatedGroup.rows">
+                    <td *ngFor="let col of section.repeatedGroup.columns">
+                      {{ row.cells[col.key] || '—' }}
+                    </td>
+                    <td class="td-pin">
+                      <button 
+                        *ngIf="row.evidence" 
+                        type="button" 
+                        class="btn-source-pin" 
+                        (click)="onViewEvidenceForDatum(row.evidence, section.key, section.title, getRowSummary(row))"
+                        (keydown.enter)="onViewEvidenceForDatum(row.evidence, section.key, section.title, getRowSummary(row))"
+                        (keydown.space)="onViewEvidenceForDatum(row.evidence, section.key, section.title, getRowSummary(row)); $event.preventDefault()"
+                        [title]="'View source in ' + (row.evidence.sourceName || row.evidence.sourceType || 'document')"
+                        [attr.aria-label]="'Navigate to source evidence for this item'">
+                        <span class="pin-symbol" aria-hidden="true">📄↗</span>
+                      </button>
+                      <span *ngIf="!row.evidence" class="no-pin">—</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <div class="mi-meta-grid">
-              <div><strong>Product / Topic:</strong> {{ brief.miDetails.productName }}</div>
-              <div><strong>Response Urgency:</strong> {{ brief.miDetails.responseUrgency }}</div>
+            <!-- C. NARRATIVE PRESENTATION: Structured narrative/context synthesis -->
+            <div *ngIf="section.presentationType === 'NARRATIVE' && section.narrativeText" class="dossier-narrative">
+              <p class="narrative-text">{{ section.narrativeText }}</p>
             </div>
-          </div>
-        </div>
-
-        <!-- C. PRODUCT QUALITY COMPLAINT (PQC) DEFECT VIEW -->
-        <div class="card pqc-card" *ngIf="brief.pqcDetails && (selectedCategoryTab === 'ALL' || selectedCategoryTab === 'PQC')">
-          <div class="card-header">
-            <span class="card-title">Product Quality Complaint (PQC) Parameters</span>
-            <span class="badge badge-urgent" *ngIf="brief.pqcDetails.requiresHumanReview">Physical Defect</span>
-          </div>
-          <table class="clinical-table">
-            <tbody>
-              <tr>
-                <td class="c-lbl">Product Name</td>
-                <td class="c-val"><strong>{{ brief.pqcDetails.productName }}</strong></td>
-                <td class="c-lbl">Lot / Batch Number</td>
-                <td class="c-val mono">{{ brief.pqcDetails.lotNumber }}</td>
-              </tr>
-              <tr>
-                <td class="c-lbl">Defect Type</td>
-                <td class="c-val"><span class="badge badge-warning">{{ brief.pqcDetails.defectType }}</span></td>
-                <td class="c-lbl">Container Closure</td>
-                <td class="c-val">{{ brief.pqcDetails.packagingBreached ? 'Breached (Integrity Compromised)' : 'Intact' }}</td>
-              </tr>
-              <tr>
-                <td class="c-lbl">Defect Description</td>
-                <td class="c-val" colspan="3">{{ brief.pqcDetails.defectDescription }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- D. ICSR CLINICAL NARRATIVE -->
-        <div class="card narrative-card" *ngIf="brief.clinicalNarrative && (selectedCategoryTab === 'ALL' || selectedCategoryTab === 'ICSR')">
-          <div class="card-header">
-            <div class="narr-hdr-group">
-              <span class="card-title">Clinical Narrative</span>
-              <span class="narr-sub">Source chronological clinical synthesis</span>
-            </div>
-          </div>
-          <div class="narrative-body" [class.narrative-empty]="brief.clinicalNarrative === 'Clinical narrative not stated in source.'">
-            {{ brief.clinicalNarrative }}
           </div>
         </div>
 
@@ -534,19 +617,22 @@
                 <th class="th-val">Extracted Value</th>
                 <th class="th-status">Certainty Status</th>
                 <th class="th-conf">Confidence</th>
-                <th class="th-evidence">Traceable Evidence</th>
+                <th class="th-evidence">Evidence</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let fact of filteredFacts" [ngClass]="{
+                'row-selected': fact.isSelected || (selectedFact && selectedFact.field === fact.field),
                 'row-conflict': fact.status === 'CONFLICT',
                 'row-uncertain': fact.status === 'UNCERTAIN',
                 'row-not-stated': fact.status === 'NOT_STATED'
               }">
                 <!-- Parameter -->
                 <td class="td-field">
-                  <span class="fact-label">{{ fact.label }}</span>
-                  <span class="fact-section-tag">{{ fact.section }}</span>
+                  <div class="field-label-wrap">
+                    <span class="fact-label">{{ fact.label }}</span>
+                    <span class="fact-section-tag">{{ fact.section }}</span>
+                  </div>
                 </td>
 
                 <!-- Extracted Value -->
@@ -578,21 +664,26 @@
                   <span class="conf-pill" [ngClass]="{
                     'conf-high': fact.confidence === 'HIGH',
                     'conf-med': fact.confidence === 'MEDIUM',
-                    'conf-low': fact.confidence === 'LOW'
+                    'conf-low': fact.confidence === 'LOW',
+                    'conf-neutral': !fact.confidence || fact.confidence === '—' || fact.confidence === 'N/A'
                   }">
-                    {{ fact.confidence }}
+                    {{ fact.confidence || '—' }}
                   </span>
                 </td>
 
-                <!-- Traceable Evidence Button -->
+                <!-- Traceable Evidence Button (Compact Source Pin) -->
                 <td class="td-evidence">
                   <button 
                     type="button" 
-                    class="btn-evidence" 
+                    class="btn-source-pin" 
+                    [class.active]="fact.isSelected || (selectedFact && selectedFact.field === fact.field)"
                     *ngIf="fact.evidence" 
-                    (click)="openEvidenceForFact(fact)"
-                    title="Inspect verbatim quote and verification rationale">
-                    🔍 {{ fact.evidence.location || 'View Evidence' }}
+                    (click)="onViewEvidence(fact)"
+                    (keydown.enter)="onViewEvidence(fact)"
+                    (keydown.space)="onViewEvidence(fact); $event.preventDefault()"
+                    [title]="'View supporting evidence in ' + (fact.evidence.sourceName || fact.evidence.sourceType || 'document') + ' (' + fact.evidence.location + ')'"
+                    [attr.aria-label]="'Inspect evidence for ' + fact.label">
+                    <span class="pin-symbol" aria-hidden="true">📄↗</span>
                   </button>
                   <span class="no-evidence" *ngIf="!fact.evidence">—</span>
                 </td>

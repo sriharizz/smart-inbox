@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class MailboxIngestionService {
@@ -33,6 +35,8 @@ public class MailboxIngestionService {
 
     @Value("${smartinbox.ingestion.fresh-processing:true}")
     private boolean freshProcessing;
+
+    private final ReentrantLock ingestionLock = new ReentrantLock();
 
     public MailboxIngestionService(FixtureIngestionSource fixtureIngestionSource,
                                    ImapIngestionSource imapIngestionSource,
@@ -74,72 +78,143 @@ public class MailboxIngestionService {
         }
     }
 
-    public synchronized int triggerIngestion() throws Exception {
-        IngestionSource source = "IMAP".equalsIgnoreCase(ingestionMode) ? imapIngestionSource : fixtureIngestionSource;
-        log.info("Triggering mailbox ingestion from source: {}", source.getSourceName());
+    public int triggerIngestion() throws Exception {
+        if (!ingestionLock.tryLock()) {
+            log.info("Mailbox ingestion is already in-flight; skipping redundant trigger.");
+            return 0;
+        }
+        try {
+            IngestionSource source = "IMAP".equalsIgnoreCase(ingestionMode) ? imapIngestionSource : fixtureIngestionSource;
+            log.info("Triggering mailbox ingestion from source: {}", source.getSourceName());
 
-        List<RawEmailPayload> emails = source.fetchNewEmails();
-        int newMessagesCount = 0;
+            List<RawEmailPayload> emails = source.fetchNewEmails(messageRepository::existsByMessageId);
+            int newMessagesCount = 0;
 
-        for (RawEmailPayload email : emails) {
-            if (messageRepository.existsByMessageId(email.messageId())) {
-                log.debug("Skipping already ingested message: {}", email.messageId());
-                continue;
-            }
-
-            IntakeMessageEntity entity = new IntakeMessageEntity();
-            entity.setMessageId(email.messageId());
-            entity.setSender(email.sender());
-            entity.setSenderEmail(email.senderEmail());
-            entity.setRecipient(email.recipient());
-            entity.setSubject(email.subject());
-            entity.setReceivedDate(email.date());
-            entity.setRawBody(email.bodyText());
-            entity.setStatus("RECEIVED");
-
-            if (email.attachments() != null) {
-                for (RawAttachmentPayload att : email.attachments()) {
-                    AttachmentEntity attEntity = new AttachmentEntity();
-                    attEntity.setFilename(att.filename());
-                    attEntity.setContentType(att.contentType());
-                    attEntity.setSizeBytes(att.sizeBytes());
-                    attEntity.setContentBytes(att.bytes());
-                    
-                    String lowerName = att.filename().toLowerCase();
-                    if (lowerName.contains("cioms") || lowerName.contains("fda") || lowerName.contains("form")) {
-                        attEntity.setFlavor("digital_form");
-                    } else if (lowerName.contains("clinic") || lowerName.contains("handwritten")) {
-                        attEntity.setFlavor("scanned_handwritten");
-                    } else if (lowerName.contains("article") || lowerName.contains("journal")) {
-                        attEntity.setFlavor("literature_article");
-                    } else if (lowerName.contains("es") || lowerName.contains("de") || lowerName.contains("notificacion") || lowerName.contains("bericht")) {
-                        attEntity.setFlavor("non_english");
-                    } else {
-                        attEntity.setFlavor("digital_form");
+            for (RawEmailPayload email : emails) {
+                Optional<IntakeMessageEntity> existingOpt = messageRepository.findByMessageId(email.messageId());
+                if (existingOpt.isPresent()) {
+                    IntakeMessageEntity existing = existingOpt.get();
+                    if ("RECEIVED".equals(existing.getStatus())) {
+                        log.info("Triggering async processing for uncompleted message: {} (ID: {})", email.messageId(), existing.getId());
+                        asyncDocumentProcessor.processMessageAsync(existing.getId(), email.rawBytes(), email.filename(), freshProcessing);
                     }
-                    
-                    entity.addAttachment(attEntity);
+                    continue;
                 }
+
+                IntakeMessageEntity entity = new IntakeMessageEntity();
+                entity.setMessageId(email.messageId());
+                entity.setSender(email.sender());
+                entity.setSenderEmail(email.senderEmail());
+                entity.setRecipient(email.recipient());
+                entity.setSubject(email.subject());
+                entity.setReceivedDate(email.date());
+                entity.setRawBody(email.bodyText());
+                entity.setStatus("RECEIVED");
+
+                if (email.attachments() != null) {
+                    for (RawAttachmentPayload att : email.attachments()) {
+                        AttachmentEntity attEntity = new AttachmentEntity();
+                        attEntity.setFilename(att.filename());
+                        attEntity.setContentType(att.contentType());
+                        attEntity.setSizeBytes(att.sizeBytes());
+                        attEntity.setContentBytes(att.bytes());
+                        
+                        String lowerName = att.filename().toLowerCase();
+                        if (lowerName.contains("cioms") || lowerName.contains("fda") || lowerName.contains("form")) {
+                            attEntity.setFlavor("digital_form");
+                        } else if (lowerName.contains("clinic") || lowerName.contains("handwritten")) {
+                            attEntity.setFlavor("scanned_handwritten");
+                        } else if (lowerName.contains("article") || lowerName.contains("journal")) {
+                            attEntity.setFlavor("literature_article");
+                        } else {
+                            attEntity.setFlavor("digital_form");
+                        }
+                        
+                        entity.addAttachment(attEntity);
+                    }
+                }
+
+                IntakeMessageEntity saved = messageRepository.save(entity);
+                newMessagesCount++;
+
+                auditService.logEvent(
+                        saved.getId(),
+                        "SYSTEM_INGESTOR",
+                        "MESSAGE_INGESTED",
+                        "STATUS",
+                        "NEW",
+                        "RECEIVED",
+                        "Ingested from " + source.getSourceName() + " (" + email.filename() + ") with " + entity.getAttachments().size() + " attachments"
+                );
+
+                // Dispatch asynchronous processing
+                asyncDocumentProcessor.processMessageAsync(saved.getId(), email.rawBytes(), email.filename(), freshProcessing);
             }
 
-            IntakeMessageEntity saved = messageRepository.save(entity);
-            newMessagesCount++;
+            log.info("Ingestion run complete. Ingested {} new messages.", newMessagesCount);
+            return newMessagesCount;
+        } finally {
+            ingestionLock.unlock();
+        }
+    }
 
-            auditService.logEvent(
-                    saved.getId(),
-                    "SYSTEM_INGESTOR",
-                    "MESSAGE_INGESTED",
-                    "STATUS",
-                    "NEW",
-                    "RECEIVED",
-                    "Ingested from " + source.getSourceName() + " (" + email.filename() + ") with " + entity.getAttachments().size() + " attachments"
-            );
+    public IntakeMessageEntity ingestSingleFixtureEmail(String filename, boolean fresh) throws Exception {
+        List<RawEmailPayload> emails = fixtureIngestionSource.fetchNewEmails();
+        RawEmailPayload target = emails.stream()
+                .filter(e -> filename.equalsIgnoreCase(e.filename()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Fixture email not found in test-data/emails: " + filename));
 
-            // Dispatch asynchronous processing
-            asyncDocumentProcessor.processMessageAsync(saved.getId(), email.rawBytes(), email.filename(), freshProcessing);
+        // Clean up any existing record with this messageId so we get a fresh, isolated test ingestion
+        Optional<IntakeMessageEntity> existingOpt = messageRepository.findByMessageId(target.messageId());
+        existingOpt.ifPresent(messageRepository::delete);
+
+        IntakeMessageEntity entity = new IntakeMessageEntity();
+        entity.setMessageId(target.messageId());
+        entity.setSender(target.sender());
+        entity.setSenderEmail(target.senderEmail());
+        entity.setRecipient(target.recipient());
+        entity.setSubject(target.subject());
+        entity.setReceivedDate(target.date());
+        entity.setRawBody(target.bodyText());
+        entity.setStatus("RECEIVED");
+
+        if (target.attachments() != null) {
+            for (RawAttachmentPayload att : target.attachments()) {
+                AttachmentEntity attEntity = new AttachmentEntity();
+                attEntity.setFilename(att.filename());
+                attEntity.setContentType(att.contentType());
+                attEntity.setSizeBytes(att.sizeBytes());
+                attEntity.setContentBytes(att.bytes());
+
+                String lowerName = att.filename().toLowerCase();
+                if (lowerName.contains("cioms") || lowerName.contains("fda") || lowerName.contains("form")) {
+                    attEntity.setFlavor("digital_form");
+                } else if (lowerName.contains("clinic") || lowerName.contains("handwritten")) {
+                    attEntity.setFlavor("scanned_handwritten");
+                } else if (lowerName.contains("article") || lowerName.contains("journal")) {
+                    attEntity.setFlavor("literature_article");
+                } else {
+                    attEntity.setFlavor("digital_form");
+                }
+
+                entity.addAttachment(attEntity);
+            }
         }
 
-        log.info("Ingestion run complete. Ingested {} new messages.", newMessagesCount);
-        return newMessagesCount;
+        IntakeMessageEntity saved = messageRepository.save(entity);
+
+        auditService.logEvent(
+                saved.getId(),
+                "SYSTEM_INGESTOR",
+                "MESSAGE_INGESTED",
+                "STATUS",
+                "NEW",
+                "RECEIVED",
+                "Fixture benchmark ingested: " + target.filename() + " (attachments: " + entity.getAttachments().size() + ")"
+        );
+
+        asyncDocumentProcessor.processMessageAsync(saved.getId(), target.rawBytes(), target.filename(), fresh);
+        return saved;
     }
 }

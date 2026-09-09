@@ -2,15 +2,15 @@
   <!-- Page Header -->
   <header class="page-header">
     <div class="header-info">
-      <div class="badge-pill">Pharmacovigilance Automation</div>
-      <h1>Literature Screening & Case Splitting</h1>
+      <div class="badge-pill">Pharmacovigilance Automation — GVP Module VI</div>
+      <h1>Biomedical Literature Screening & Case Workspace</h1>
       <p class="subtitle">
-        Automated regulatory screening of biomedical literature reprints per GVP Module VI guidelines. Identifies ICSR reportability, negative control exclusions, and splits multi-patient case series.
+        AI-prepared literature screening assessment for human safety reviewer verification. Extracts individual ICSR safety cases, highlights source text & table rows in the original reprint, and splits multi-patient case series per ICH E2B(R3).
       </p>
     </div>
   </header>
 
-  <!-- Notification Toasts -->
+  <!-- Notification Alerts -->
   <div class="alert alert-success" *ngIf="successMessage">
     <span class="icon">✓</span> {{ successMessage }}
   </div>
@@ -23,8 +23,8 @@
     <div class="controls-grid">
       <!-- File Upload Card -->
       <div class="upload-box">
-        <h3>Upload Scientific Reprint</h3>
-        <p class="box-desc">Select a PDF literature article or publication reprint to screen for individual adverse event cases.</p>
+        <h3>Upload Medical Reprint</h3>
+        <p class="box-desc">Select any biomedical journal article (PDF) to screen for identifiable adverse event reports.</p>
         <div class="file-input-wrapper">
           <input 
             type="file" 
@@ -33,22 +33,23 @@
             (change)="onFileSelected($event)" 
             [disabled]="isScreening" />
           <label for="pdfFileInput" class="btn-file-upload">
-            <span *ngIf="!isScreening">Browse PDF File...</span>
+            <span *ngIf="!isScreening">Browse PDF Document...</span>
             <span *ngIf="isScreening">Screening in Progress...</span>
           </label>
         </div>
       </div>
 
-      <!-- Quick-Test Sample Articles -->
+      <!-- Quick-Test Benchmark Selector: ALL 7 ARTICLES -->
       <div class="sample-box">
-        <h3>Pre-Loaded Clinical Benchmark Articles</h3>
-        <p class="box-desc">Test with verified regulatory ground-truth reprints from the test dataset:</p>
-        <div class="samples-list">
+        <h3>Clinical Benchmark Articles (All 7 Regulated Scenarios)</h3>
+        <p class="box-desc">Load and inspect verified benchmark articles from the test corpus:</p>
+        <div class="samples-grid">
           <button 
             type="button" 
             class="btn-sample" 
             *ngFor="let sample of sampleArticles"
             (click)="screenSample(sample.name)"
+            [class.active-sample]="currentArticleName === sample.name"
             [disabled]="isScreening">
             <div class="sample-btn-title">{{ sample.label }}</div>
             <div class="sample-btn-desc">{{ sample.description }}</div>
@@ -62,114 +63,373 @@
   <div class="loading-state" *ngIf="isScreening">
     <div class="spinner"></div>
     <div class="loading-text">
-      <h4>Processing Literature Reprint with AI</h4>
-      <p>Analyzing publication text, assessing ICSR criteria, checking exclusion rules, and splitting multi-patient series...</p>
+      <h4>Screening Literature Reprint with AI</h4>
+      <p>Parsing layout and tables, evaluating ICSR criteria, assessing study design, and extracting grounded clinical facts...</p>
     </div>
   </div>
 
-  <!-- Current Screening Result Display -->
-  <div class="results-section" *ngIf="currentResult && !isScreening">
-    <div class="section-title-row">
-      <h2>Regulatory Screening Results</h2>
-      <span 
-        class="reportability-badge" 
-        [ngClass]="currentResult.is_reportable ? 'badge-reportable' : 'badge-excluded'">
-        {{ currentResult.is_reportable ? '✓ REPORTABLE ICSR' : '✕ NON-REPORTABLE / EXCLUDED' }}
-      </span>
-    </div>
-
-    <!-- Article Metadata Summary -->
-    <div class="article-meta-card">
-      <div class="meta-row main-title">
-        <span class="meta-label">Article Title:</span>
-        <span class="meta-value highlight">{{ currentResult.article_title || currentArticleName }}</span>
-      </div>
-      <div class="meta-grid">
-        <div class="meta-item">
-          <span class="meta-label">Journal:</span>
-          <span class="meta-value">{{ currentResult.journal || 'Medical Journal' }}</span>
+  <!-- MAIN SPLIT REVIEW WORKSPACE -->
+  <div class="workspace-split" *ngIf="currentResult && !isScreening">
+    
+    <!-- LEFT PANEL: SOURCE PDF VIEWER -->
+    <div class="panel-left pdf-panel">
+      <!-- PDF Controls Toolbar -->
+      <div class="pdf-toolbar">
+        <div class="toolbar-left">
+          <button type="button" class="btn-tool" (click)="prevPdfPage()" [disabled]="activePageNumber <= 1" title="Previous page">◀ Prev</button>
+          <span class="page-indicator">Page {{ activePageNumber }} of {{ pdfTotalPages }}</span>
+          <button type="button" class="btn-tool" (click)="nextPdfPage()" [disabled]="activePageNumber >= pdfTotalPages" title="Next page">Next ▶</button>
+          <span class="pdf-status-tag" *ngIf="isRenderingPdf">Rendering...</span>
         </div>
-        <div class="meta-item">
-          <span class="meta-label">Publication Year:</span>
-          <span class="meta-value">{{ currentResult.publication_year || '2025' }}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Study Design / Type:</span>
-          <span class="meta-value">{{ currentResult.study_type || 'Clinical Report' }}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Total Cases Identified:</span>
-          <span class="meta-value bold">{{ currentResult.patient_cases_count }} case(s)</span>
+        <div class="toolbar-right">
+          <button type="button" class="btn-tool" (click)="zoomOut()" title="Zoom out">−</button>
+          <span class="zoom-indicator">{{ zoomLevel }}%</span>
+          <button type="button" class="btn-tool" (click)="zoomIn()" title="Zoom in">+</button>
+          <button type="button" class="btn-tool reset" (click)="resetZoom()" title="Reset zoom">Reset</button>
         </div>
       </div>
-      <div class="meta-row">
-        <span class="meta-label">Authors:</span>
-        <span class="meta-value">{{ currentResult.authors || 'Not stated' }}</span>
+
+      <!-- Active Evidence Inspection Banner -->
+      <div class="evidence-inspection-banner" *ngIf="activeEvidenceContext">
+        <div class="banner-header-row">
+          <span class="banner-badge">VERIFIED SOURCE GROUNDING</span>
+          <span class="banner-field">{{ activeEvidenceContext.fieldLabel }}: <strong>{{ activeEvidenceContext.factValue }}</strong></span>
+          <button type="button" class="btn-clear-evidence" (click)="clearActiveEvidence()" title="Dismiss highlight">✕ Clear</button>
+        </div>
+        <div class="banner-snippet-row">
+          <span class="quote-symbol">“</span>
+          <span class="snippet-text">{{ activeEvidenceContext.verbatimSnippet }}</span>
+          <span class="quote-symbol">”</span>
+          <span class="snippet-page-tag">Page {{ activeEvidenceContext.pageNumber }}</span>
+        </div>
+      </div>
+
+      <!-- PDF Canvas Viewport Container -->
+      <div class="pdf-canvas-scroll-wrap">
+        <div class="pdf-viewport-container">
+          <canvas #pdfCanvas class="pdf-canvas"></canvas>
+          
+          <!-- Exact Geometrically-Aligned Visual Coordinate Highlight Overlay -->
+          <div 
+            class="pdf-overlay-layer" 
+            *ngIf="pdfHighlightBox"
+            [style.width.px]="pdfCanvasWidth"
+            [style.height.px]="pdfCanvasHeight">
+            <div 
+              class="pdf-highlight-box" 
+              [style.left.px]="pdfHighlightBox.x" 
+              [style.top.px]="pdfHighlightBox.y" 
+              [style.width.px]="pdfHighlightBox.w" 
+              [style.height.px]="pdfHighlightBox.h" 
+              id="pdf-evidence-target"
+              title="Verified source evidence in document">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Exclusion Reason Banner (if non-reportable) -->
-    <div class="exclusion-banner" *ngIf="!currentResult.is_reportable && currentResult.exclusion_reason">
-      <div class="exclusion-title">Regulatory Exclusion Justification (GVP Module VI)</div>
-      <div class="exclusion-text">{{ currentResult.exclusion_reason }}</div>
-    </div>
-
-    <!-- Regulatory Screening Narrative -->
-    <div class="narrative-card" *ngIf="currentResult.screening_summary">
-      <div class="card-header">
-        <h3>Regulatory Screening Evaluation</h3>
-      </div>
-      <div class="narrative-body">
-        <p>{{ currentResult.screening_summary }}</p>
-      </div>
-    </div>
-
-    <!-- Split Individual Patient Cases Table -->
-    <div class="cases-card" *ngIf="currentResult.is_reportable && currentResult.individual_cases && currentResult.individual_cases.length > 0">
-      <div class="card-header">
-        <h3>Split Individual Patient ICSR Cases ({{ currentResult.individual_cases.length }})</h3>
-        <span class="info-tag">Ready for automated E2B XML or CIOMS export</span>
-      </div>
+    <!-- RIGHT PANEL: REVIEW DOSSIER -->
+    <div class="panel-right dossier-panel">
       
-      <div class="table-container">
-        <table class="cases-table">
-          <thead>
-            <tr>
-              <th>Case #</th>
-              <th>Patient Demographics</th>
-              <th>Suspect Medicinal Product</th>
-              <th>Adverse Drug Reaction</th>
-              <th>Regulatory Seriousness</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of currentResult.individual_cases; let idx = index">
-              <td class="case-id-cell">
-                <span class="case-chip">CASE {{ idx + 1 }}</span>
-                <div class="sub-id" *ngIf="c.case_id">{{ c.case_id }}</div>
-              </td>
-              <td>{{ getPatientDemographics(c) }}</td>
-              <td class="product-cell">
-                <strong>{{ getSuspectProduct(c) }}</strong>
-              </td>
-              <td class="reaction-cell">
-                <span class="reaction-tag">{{ getAdverseReaction(c) }}</span>
-              </td>
-              <td>
-                <span 
-                  class="seriousness-badge"
-                  [ngClass]="getSeriousness(c).includes('Serious') ? 'badge-serious' : 'badge-nonserious'">
-                  {{ getSeriousness(c) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Top Screening Assessment Summary -->
+      <div class="assessment-card">
+        <div class="assessment-header">
+          <div class="assessment-badge-group">
+            <span 
+              class="assessment-badge" 
+              [ngClass]="currentResult.is_reportable ? 'badge-reportable' : 'badge-excluded'">
+              {{ currentResult.is_reportable ? '✓ AI SCREENING ASSESSMENT: REPORTABLE ICSR (' + currentResult.patient_cases_count + ' CASE(S))' : '✕ AI SCREENING ASSESSMENT: NON-REPORTABLE / EXCLUDED' }}
+            </span>
+            <span class="human-review-status-tag">Prepared for Human Review</span>
+          </div>
+          <div class="article-meta-title">{{ currentResult.article_title || currentArticleName }}</div>
+        </div>
+
+        <div class="meta-details-grid">
+          <div class="meta-item">
+            <span class="meta-k">Journal:</span>
+            <span class="meta-v">{{ currentResult.journal || 'Biomedical Journal' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">Publication Year:</span>
+            <span class="meta-v">{{ currentResult.publication_year || '2025' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">Study Classification:</span>
+            <span class="meta-v highlight-type">{{ currentResult.study_type || 'Clinical Report' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">Identified Individual Cases:</span>
+            <span class="meta-v bold-count">{{ currentResult.patient_cases_count }} case(s)</span>
+          </div>
+          <div class="meta-item full-width" *ngIf="currentResult.authors && currentResult.authors !== 'Not stated'">
+            <span class="meta-k">Authors:</span>
+            <span class="meta-v">{{ currentResult.authors }}</span>
+          </div>
+        </div>
+
+        <!-- Screening Rationale Narrative -->
+        <div class="screening-rationale" *ngIf="currentResult.screening_summary">
+          <div class="rationale-heading">AI Screening Rationale:</div>
+          <p class="rationale-text">{{ currentResult.screening_summary }}</p>
+        </div>
+      </div>
+
+      <!-- Generic Aggregate Background Separation Banner (e.g. LIT-07) -->
+      <div class="aggregate-separation-banner" *ngIf="aggregateBackgroundInfo.present">
+        <div class="agg-icon">ℹ️</div>
+        <div class="agg-content">
+          <div class="agg-title">AGGREGATE BACKGROUND REGISTRY ({{ aggregateBackgroundInfo.count }} Patients) — Filtered Out from ICSR Ingestion</div>
+          <div class="agg-desc">{{ aggregateBackgroundInfo.description }}</div>
+        </div>
+      </div>
+
+      <!-- NON-REPORTABLE / EXCLUDED DOSSIER (LIT-04, LIT-05) -->
+      <div class="exclusion-card" *ngIf="!currentResult.is_reportable">
+        <div class="exclusion-header">
+          <h3>Regulatory Non-Reportability Determination (GVP Module VI)</h3>
+        </div>
+        <div class="exclusion-body">
+          <div class="exclusion-field">
+            <span class="ex-label">Exclusion Justification:</span>
+            <span class="ex-value">{{ currentResult.exclusion_reason || 'Article does not report an identifiable human adverse reaction case.' }}</span>
+          </div>
+          <div class="exclusion-field">
+            <span class="ex-label">Study Design:</span>
+            <span class="ex-value">{{ currentResult.study_type }}</span>
+          </div>
+          <div class="exclusion-actions">
+            <button 
+              type="button" 
+              class="btn-source-pill" 
+              (click)="onEvidenceClick({ page_number: 1, verbatim_snippet: currentResult.exclusion_reason }, 'Exclusion Source', currentResult.study_type)">
+              Inspect Article Abstract in PDF (Page 1) [Source ↗]
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTABLE MULTI-CASE / SINGLE-CASE DOSSIER -->
+      <div class="cases-workspace-container" *ngIf="currentResult.is_reportable && currentResult.individual_cases && currentResult.individual_cases.length > 0">
+        
+        <!-- Multi-Case Selector Tabs (LIT-03, LIT-07, etc.) -->
+        <div class="case-tabs-bar" *ngIf="currentResult.individual_cases.length > 1">
+          <div class="case-tabs-label">Split Case Records:</div>
+          <div class="tabs-list">
+            <button 
+              type="button" 
+              class="case-tab-btn" 
+              *ngFor="let c of currentResult.individual_cases; let idx = index"
+              [class.active]="selectedCaseIndex === idx"
+              (click)="selectCase(idx)">
+              <span class="tab-chip">Case {{ idx + 1 }}</span>
+              <span class="tab-id">{{ c.patient?.identifier || c.case_id || 'Patient ' + (idx + 1) }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Selected Case Dossier Card -->
+        <div class="case-dossier-card" *ngIf="selectedCase">
+          <div class="case-card-header">
+            <div class="case-title-row">
+              <h3>Case Record {{ selectedCaseIndex + 1 }}: {{ selectedCase.patient?.identifier || selectedCase.case_id || 'Individual Patient' }}</h3>
+              <span 
+                class="seriousness-tag"
+                [ngClass]="getSeriousnessDisplay(selectedCase).startsWith('Serious') ? 'tag-serious' : 'tag-nonserious'">
+                {{ getSeriousnessDisplay(selectedCase) }}
+              </span>
+            </div>
+            <div class="case-id-sub">Source Document: {{ currentArticleName }}</div>
+          </div>
+
+          <!-- Section 1: Patient Demographics -->
+          <div class="dossier-section">
+            <div class="section-title">Patient Demographics</div>
+            <div class="facts-grid">
+              <div class="fact-item">
+                <span class="fact-k">Patient Identifier:</span>
+                <span class="fact-v">{{ selectedCase.patient?.identifier || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'identifier')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'identifier'), 'Patient Identifier', selectedCase.patient?.identifier)">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item">
+                <span class="fact-k">Age / Sex:</span>
+                <span class="fact-v">{{ selectedCase.patient?.age || 'Not stated' }} / {{ selectedCase.patient?.sex || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'age') || getCitation(selectedCase, 'sex')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'age') || getCitation(selectedCase, 'sex'), 'Patient Demographics', (selectedCase.patient?.age || '') + ' ' + (selectedCase.patient?.sex || ''))">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item">
+                <span class="fact-k">Weight:</span>
+                <span class="fact-v">{{ selectedCase.patient?.weight || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'weight')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'weight'), 'Patient Weight', selectedCase.patient?.weight)">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item full-width">
+                <span class="fact-k">Medical History:</span>
+                <span class="fact-v">{{ selectedCase.patient?.medical_history || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'medical_history')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'medical_history'), 'Medical History', selectedCase.patient?.medical_history)">
+                  [Source ↗]
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Suspect Medicinal Product -->
+          <div class="dossier-section">
+            <div class="section-title">Suspect Medicinal Product</div>
+            <div class="facts-grid">
+              <div class="fact-item">
+                <span class="fact-k">Product Name:</span>
+                <span class="fact-v highlight-drug">{{ selectedCase.product?.product_name || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'product_name')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'product_name'), 'Suspect Product', selectedCase.product?.product_name)">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item">
+                <span class="fact-k">Dose & Regimen:</span>
+                <span class="fact-v">{{ selectedCase.product?.dose || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'dose')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'dose'), 'Product Dose', selectedCase.product?.dose)">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item">
+                <span class="fact-k">Route & Indication:</span>
+                <span class="fact-v">{{ selectedCase.product?.route || 'Not stated' }} — {{ selectedCase.product?.indication || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'route') || getCitation(selectedCase, 'indication')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'route') || getCitation(selectedCase, 'indication'), 'Route / Indication', (selectedCase.product?.route || '') + ' ' + (selectedCase.product?.indication || ''))">
+                  [Source ↗]
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Adverse Drug Reaction & Seriousness -->
+          <div class="dossier-section">
+            <div class="section-title">Adverse Reaction & Clinical Seriousness</div>
+            <div class="facts-grid">
+              <div class="fact-item">
+                <span class="fact-k">Reaction Term (PT):</span>
+                <span class="fact-v highlight-reaction">{{ selectedCase.reaction?.adverse_event || selectedCase.reaction?.reaction_pt || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'adverse_event')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'adverse_event'), 'Adverse Drug Reaction', selectedCase.reaction?.adverse_event || selectedCase.reaction?.reaction_pt)">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item">
+                <span class="fact-k">Clinical Outcome:</span>
+                <span class="fact-v">{{ selectedCase.reaction?.outcome || 'Not stated' }}</span>
+                <button 
+                  type="button" 
+                  class="btn-evidence-link" 
+                  *ngIf="getCitation(selectedCase, 'outcome')"
+                  (click)="onEvidenceClick(getCitation(selectedCase, 'outcome'), 'Reaction Outcome', selectedCase.reaction?.outcome)">
+                  [Source ↗]
+                </button>
+              </div>
+              <div class="fact-item full-width" *ngIf="selectedCase.reaction?.seriousness_criteria && selectedCase.reaction!.seriousness_criteria!.length > 0">
+                <span class="fact-k">Regulatory Seriousness Criteria:</span>
+                <div class="criteria-chips">
+                  <span class="crit-chip" *ngFor="let crit of selectedCase.reaction?.seriousness_criteria">
+                    {{ crit }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Structured Table Investigations (Labs & Biomarkers) -->
+          <div class="dossier-section" *ngIf="selectedCase.lab_tests && selectedCase.lab_tests.length > 0">
+            <div class="section-title">Structured Investigations (Table-Derived Biomarkers)</div>
+            <div class="table-scroll-wrap">
+              <table class="lab-tests-table">
+                <thead>
+                  <tr>
+                    <th>Test / Biomarker</th>
+                    <th>Value & Unit</th>
+                    <th>Reference Range</th>
+                    <th>Interpretation</th>
+                    <th>Source Verification</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let lab of selectedCase.lab_tests">
+                    <td class="lab-name-cell">
+                      <strong>{{ lab.test_name }}</strong>
+                    </td>
+                    <td class="lab-val-cell">
+                      <span class="val-bold">{{ lab.value }}</span> {{ lab.unit }}
+                    </td>
+                    <td>{{ lab.reference_range || 'Not stated' }}</td>
+                    <td>
+                      <span 
+                        class="interp-pill"
+                        [ngClass]="isElevatedLab(lab) ? 'interp-high' : 'interp-normal'">
+                        {{ lab.interpretation || 'Recorded' }}
+                      </span>
+                    </td>
+                    <td>
+                      <button 
+                        type="button" 
+                        class="btn-source-pill" 
+                        *ngIf="lab.citation"
+                        (click)="onEvidenceClick(lab.citation, lab.test_name, lab.value + ' ' + (lab.unit || ''))">
+                        Table [Source ↗]
+                      </button>
+                      <span *ngIf="!lab.citation" class="no-cite">—</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 5: Synthesized Clinical Narrative -->
+          <div class="dossier-section" *ngIf="selectedCase.narrative">
+            <div class="section-title">Case Clinical Narrative</div>
+            <div class="narrative-box">
+              <p>{{ selectedCase.narrative }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Screening History Table -->
+  <!-- Screening History Archive Table -->
   <div class="history-section" *ngIf="screenedArticles.length > 0">
     <div class="section-title-row">
       <h2>Screened Literature Archive</h2>
@@ -182,10 +442,11 @@
           <tr>
             <th>Article / File</th>
             <th>Journal</th>
-            <th>Type</th>
-            <th>Status</th>
+            <th>Study Type</th>
+            <th>Screening Assessment</th>
             <th>Cases</th>
             <th>Screened At</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -194,20 +455,26 @@
               <strong>{{ item.filename }}</strong>
               <div class="sub-title" *ngIf="item.articleTitle">{{ item.articleTitle }}</div>
             </td>
-            <td>{{ item.journal || 'Medical Journal' }}</td>
+            <td>{{ item.journal || 'Biomedical Journal' }}</td>
             <td>{{ item.studyType || 'Clinical Report' }}</td>
             <td>
               <span 
                 class="status-chip"
                 [ngClass]="item.isReportable ? 'chip-reportable' : 'chip-excluded'">
-                {{ item.isReportable ? 'Reportable' : 'Excluded' }}
+                {{ item.isReportable ? 'Reportable ICSR' : 'Excluded' }}
               </span>
             </td>
             <td class="cases-count-cell">{{ item.patientCasesCount }}</td>
             <td class="timestamp-cell">{{ item.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td>
+              <button type="button" class="btn-open-archive" (click)="openArchivedArticle(item)">
+                Open Workspace ↗
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
+

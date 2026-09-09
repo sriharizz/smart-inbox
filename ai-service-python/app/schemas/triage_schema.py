@@ -18,4 +18,4 @@ class TriageResult(BaseModel):
     is_multi_label: bool = Field(default=False, description="True if document belongs to multiple buckets (e.g. ICSR + PQC)")
     primary_category: CategoryEnum = Field(description="The primary classification category")
     labels: List[TriageLabel] = Field(description="All assigned categories with individual confidence scores and reasons")
-    executive_summary: str = Field(description="10-15 sentence comprehensive executive summary explaining clinical relevance and urgency")
+    executive_summary: str = Field(description="Concise 4 to 6 sentence reviewer synthesis preserving rich domain reasoning with human-in-the-loop assistive language")

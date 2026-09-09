@@ -9,10 +9,12 @@ from app.schemas.fact_contract import Fact, Evidence
 class IcsrPatient(BaseModel):
     """ICH E2B(R3) Section B.1: Patient Characteristics."""
     identifier: str = Field(default="Not stated", description="Patient initials or identifier (e.g. 'A.P. (Arthur Pendelton)')")
+    dob: str = Field(default="Not stated", description="Date of birth (e.g. '14-MAY-1967')")
     age: str = Field(default="Not stated", description="Patient age at onset of reaction (e.g. '71 YRS')")
     sex: str = Field(default="Not stated", description="Patient gender/sex (e.g. 'MALE', 'FEMALE')")
     weight: str = Field(default="Not stated", description="Patient weight with units (e.g. '74 kg')")
     height: str = Field(default="Not stated", description="Patient height with units (e.g. '178 cm')")
+    patient_country: str = Field(default="Not stated", description="Country of residence of patient")
     medical_history: str = Field(default="Not stated", description="Relevant prior conditions, risk factors, or pre-existing diseases")
     treated_indication: str = Field(default="Not stated", description="Medical condition treated by the suspect drug")
     facts: List[Fact] = Field(default_factory=list, description="Associated atomic patient facts")
@@ -21,14 +23,17 @@ class IcsrReporter(BaseModel):
     """ICH E2B(R3) Section A.2: Primary Source / Reporter Information."""
     name: str = Field(default="Not stated", description="Reporter full name and credentials")
     role: str = Field(default="Not stated", description="Reporter qualification: Physician, Pharmacist, Nurse, Consumer, etc.")
+    specialty: str = Field(default="Not stated", description="Medical specialty or department (e.g. Gastroenterologist)")
     institution: str = Field(default="Not stated", description="Reporting clinic, hospital, or department")
     country: str = Field(default="Not stated", description="Country of primary source")
     contact: str = Field(default="Not stated", description="Reporter email address, phone, or physical address")
+    health_professional: str = Field(default="Not stated", description="Yes / No healthcare professional status")
     facts: List[Fact] = Field(default_factory=list, description="Associated atomic reporter facts")
 
 class IcsrProduct(BaseModel):
     """ICH E2B(R3) Section B.4: Drug Information (Suspect Product)."""
     product_name: str = Field(default="Not stated", description="Brand name and generic substance")
+    formulation: str = Field(default="Not stated", description="Dosage form or formulation")
     dose: str = Field(default="Not stated", description="Dose administered (e.g. '1g IV piggyback', strictly 'Not stated' if omitted)")
     frequency: str = Field(default="Not stated", description="Dosing schedule (strictly 'Not stated' if unstated)")
     route: str = Field(default="Not stated", description="Route of administration (e.g. 'Oral', 'Intravenous')")
@@ -38,6 +43,7 @@ class IcsrProduct(BaseModel):
     duration: str = Field(default="Not stated", description="Duration of therapy prior to adverse event onset")
     lot_number: str = Field(default="Not stated", description="Manufacturing batch or lot identifier")
     expiry_date: str = Field(default="Not stated", description="Product expiration date")
+    action_taken: str = Field(default="Not stated", description="Action taken with suspect drug (e.g. Drug permanently withdrawn)")
     facts: List[Fact] = Field(default_factory=list, description="Associated atomic product facts")
 
 class IcsrReaction(BaseModel):
@@ -46,6 +52,13 @@ class IcsrReaction(BaseModel):
     onset_date: str = Field(default="Not stated", description="Date/time of first symptom presentation")
     outcome: str = Field(default="Not stated", description="Recovered, Recovering, Not Recovered, Fatal, Unknown")
     seriousness_criteria: List[str] = Field(default_factory=list, description="Hospitalization, Life-threatening, Death, Disability, etc.")
+    hospitalization: bool = Field(default=False, description="Whether event caused or prolonged hospitalization")
+    admission_date: str = Field(default="Not stated", description="Hospital admission date if applicable")
+    life_threatening: bool = Field(default=False, description="Whether event was life-threatening")
+    death: bool = Field(default=False, description="Whether event resulted in death")
+    disability: bool = Field(default=False, description="Whether event resulted in significant disability")
+    congenital_anomaly: bool = Field(default=False, description="Whether event resulted in congenital anomaly")
+    medically_important: bool = Field(default=False, description="Whether event is medically important")
     dechallenge: str = Field(default="Not stated", description="Outcome after drug withdrawal (Positive, Negative, Not applicable, Not stated)")
     rechallenge: str = Field(default="Not stated", description="Outcome upon re-introduction (Positive, Negative, Not done, Not stated)")
     facts: List[Fact] = Field(default_factory=list, description="Associated atomic adverse reaction facts")
@@ -56,7 +69,25 @@ class IcsrLabTest(BaseModel):
     value: str = Field(..., description="Numerical or qualitative result")
     unit: str = Field(default="", description="Measurement units")
     reference_range: str = Field(default="Not stated", description="Normal biological reference interval")
+    interpretation: str = Field(default="Not stated", description="Clinical interpretation (e.g. 'Critical elevation (>9x ULN)')")
     test_date: str = Field(default="Not stated", description="Date laboratory specimen obtained")
+    evidence: Optional[Evidence] = Field(default=None, description="Direct grounding citation for this lab test row")
+
+class IcsrConcomitantDrug(BaseModel):
+    """ICH E2B(R3) Section B.4: Concomitant Medication Entry."""
+    drug_name: str = Field(..., description="Name of concomitant medication")
+    dose_and_route: str = Field(default="Not stated", description="Dose, route, frequency")
+    indication: str = Field(default="Not stated", description="Indication for use")
+    dates: str = Field(default="Not stated", description="Therapy dates or duration")
+    status: str = Field(default="Ongoing", description="Ongoing / Discontinued")
+    evidence: Optional[Evidence] = Field(default=None, description="Direct grounding citation for this concomitant entry")
+
+class IcsrRegulatory(BaseModel):
+    """ICH E2B(R3) Section A.1: Regulatory and Administrative Case Metadata."""
+    mfr_control_number: str = Field(default="Not stated", description="Manufacturer / Company report control number")
+    date_received_by_mfr: str = Field(default="Not stated", description="Date report was received by manufacturer")
+    report_type: str = Field(default="Initial", description="Initial, Follow-up, etc.")
+    evidence: Optional[Evidence] = Field(default=None, description="Direct grounding citation for regulatory metadata")
 
 class IcsrPayload(BaseModel):
     """
@@ -66,8 +97,10 @@ class IcsrPayload(BaseModel):
     reporter: IcsrReporter = Field(default_factory=IcsrReporter)
     product: IcsrProduct = Field(default_factory=IcsrProduct)
     reaction: IcsrReaction = Field(default_factory=IcsrReaction)
-    concomitant_drugs: List[Dict[str, str]] = Field(default_factory=list, description="Co-administered medications and dates")
+    concomitant_drugs: List[Dict[str, Any]] = Field(default_factory=list, description="Co-administered medications and dates")
+    concomitant_medications: List[IcsrConcomitantDrug] = Field(default_factory=list, description="Structured concomitant medication entries")
     lab_tests: List[IcsrLabTest] = Field(default_factory=list, description="Structured chemistry, hematology, or pathology panels")
+    regulatory: Optional[IcsrRegulatory] = Field(default=None, description="Regulatory and administrative metadata")
     clinical_narrative: str = Field(default="Not stated", description="Chronological, plain-language clinical narrative")
     facts: List[Fact] = Field(default_factory=list, description="All atomic facts belonging to this ICSR")
 

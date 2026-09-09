@@ -5,7 +5,7 @@
 
 ---
 
-## Summary Matrix of the 11 Test Intake Cases
+## Summary Matrix of the 12 Test Intake Cases
 
 | Case | Category Bucket | Document Flavor & Attachment | Clinical Scenario | Key Test Objectives |
 | :---: | :--- | :--- | :--- | :--- |
@@ -20,6 +20,7 @@
 | **09** | **Medical Information (MI)** | **No Attachment (Pure Email Text)** | Clinical pharmacist inquiring whether Corzapan 10mg tablets can be crushed for feeding tube administration. | Pure MI inquiry #1 (hypothetical product inquiry; zero adverse reactions; zero defects); prevents false-positive ICSR tagging. |
 | **10** | **Not Relevant (Marketing / Spam)** | **No Attachment (Pure Email Text)** | Commercial promotional newsletter invitation for the "Global Pharma Compliance & AI Innovation Summit 2026". | Pure spam/marketing; model must classify as `Not Relevant` with high confidence ($>0.95$) and extract zero clinical entities. |
 | **11** | **Medical Information (MI)** | **No Attachment (Pure Email Text)** | Compounding specialist inquiring regarding Cefatox 1g stability and dilution compatibility in D5W IV infusion bags. | Pure MI inquiry #2 (reconstitution, refrigerated stability, room temp infusion kinetics; zero adverse reactions; zero defects). |
+| **12** | **Safety Report (ICSR)** | **Flavor 2: Scanned/Handwritten** (`urgent_care_clinic_note.pdf`) | Urgent care physician reporting acute angioedema (perioral and tongue) with rash and dyspnea s/p Cardioril 20mg. | Real photograph of urgent care clinic note; blue pen handwriting; vitals table (BP 96/62, HR 106, SpO2 93%); serious = life-threatening & Observation Unit admission. |
 
 ---
 
@@ -462,7 +463,43 @@ Tel: (617) 555-0144 | Email: e.rostova@massgeneral-pharmacy.org
 - Questions Asked: `Refrigerated stability in 100 mL D5W (48h), room-temp infusion stability (4h), and Y-site compatibility with normal saline or Lactated Ringer's`.
 - Adverse Reaction / Product Defect: `None / Not Applicable`.
 - Reporter: `Dr. Elena Rostova, PharmD, BCPS, Massachusetts General Hospital, Boston, MA`.
-- Sourcing: `emails/email_11.eml:Body`.
+---
+
+### Case 12: Acute Angioedema (Scanned Handwritten Clinic Note)
+- **Category**: `Safety Report (ICSR)` (Confidence: ~0.88 due to handwriting)
+- **Attached Document**: `urgent_care_clinic_note.pdf` (Real photograph of urgent care clinic encounter note)
+- **Email File**: `test-data/emails/email_12.eml`
+
+```email
+From: "Dr. Marcus Vance, MD" <m.vance@metrourgentcare.org>
+To: Clinevo Drug Safety Mailbox <drugsafety@clinevotech.com>
+Date: Sun, 10 Dec 2023 12:15:00 -0600
+Subject: URGENT: Adverse Drug Reaction Report - Acute Angioedema s/p Cardioril (Pt M.T.)
+Message-ID: <20231210.121500.mvance@metrourgentcare.org>
+X-Priority: 1
+
+Dear Pharmacovigilance Department,
+
+I am urgently submitting an initial adverse drug reaction report concerning a 47-year-old male patient (M.T., DOB: 11/04/1978) who presented to Metro Urgent Care Center in acute distress with perioral and tongue angioedema, diffuse maculopapular rash, and dyspnea approximately 90 minutes after taking his 8th morning dose of Cardioril (cardioril hydrochloride) 20 mg.
+
+The patient received emergency bedside stabilization including IV methylprednisolone, IV diphenhydramine, nebulized albuterol, and IV fluids. Cardioril has been permanently discontinued, and the patient has been transferred to the hospital Observation Unit for airway monitoring.
+
+Attached is the bedside clinical encounter note completed during evaluation.
+
+Sincerely,
+Dr. Marcus Vance, MD
+Urgent Care Physician, Metro Urgent Care Center, Chicago, IL
+NPI: 4491823055 | Email: m.vance@metrourgentcare.org
+```
+
+**Expected AI Extraction**:
+- Patient: Name `M. T.`, DOB `11/04/1978`, Age `47`, Sex `M`, Weight `82 kg`, Height `178 cm`, History `Mild hypertension (x 2 yrs), seasonal allergic rhinitis. No prior adverse drug reactions`.
+- Suspect Drug: Name `Cardioril (cardioril hydrochloride)`, Dose `20 mg`, Route `PO`, Frequency `once daily`, Therapy Dates `02-DEC-2023 to 10-DEC-2023`, Action `Discontinue Cardioril (do not restart)`.
+- Emergency Treatment: `Methylprednisolone 125 mg IV, Diphenhydramine 50 mg IV, Albuterol nebulizer 2.5 mg, IV Normal Saline 1000 mL bolus, transfer to hospital Observation Unit`.
+- Adverse Reaction: `Acute Angioedema (Perioral and Tongue)`, `Diffuse Erythematous Maculopapular Rash`, `Dyspnea / Shortness of Breath`, `Wheezing on Auscultation`.
+- Triage Vitals: BP `96/62 mmHg`, HR `106 bpm`, RR `22/min`, SpO2 `93%`, Temp `36.8 C`, Peak Flow `320 L/min`.
+- Seriousness: `Serious: YES`, `Life-Threatening: YES`, `Hospitalization: YES`, `Death: NO`.
+- Sourcing: Citations linked to `urgent_care_clinic_note.pdf:Page1`.
 
 ---
 
@@ -669,16 +706,16 @@ Tel: (617) 555-0144 | Email: e.rostova@massgeneral-pharmacy.org
 ### 1. `manifest.json` — System Inventory & Ingestion Catalog
 - **Location**: [`test-data/manifest.json`](file:///c:/projects/SmartInbox/test-data/manifest.json)
 - **Role**: Structured catalog indexing all assets with separated physical assets and logical case inventory:
-  - `physical_email_assets`: 11 `.eml` files with exact SHA-256 hashes.
-  - `physical_pdf_assets`: 20 `.pdf` files with exact SHA-256 hashes.
-  - `physical_image_assets`: 2 `.jpg` files with exact SHA-256 hashes.
-  - `attachment_relationships`: Explicit mapping of the 6 emails with attached PDFs.
-  - `logical_case_inventory`: 27 benchmark cases.
-  - `deferred_requirements`: Explicitly tracking the 2nd handwritten PDF reserved for live user sheet.
+  - `physical_email_assets`: 12 `.eml` files with exact SHA-256 hashes.
+  - `physical_pdf_assets`: 21 `.pdf` files with exact SHA-256 hashes.
+  - `physical_image_assets`: 3 `.jpg` files with exact SHA-256 hashes.
+  - `attachment_relationships`: Explicit mapping of the 7 emails with attached PDFs.
+  - `logical_case_inventory`: 28 benchmark cases.
+  - `deferred_requirements`: All requirements satisfied (Case 12 provides 2nd scanned/handwritten document).
 
 ### 2. `benchmark.json` — Ground Truth Evaluation Key
 - **Location**: [`test-data/ground_truth/benchmark.json`](file:///c:/projects/SmartInbox/test-data/ground_truth/benchmark.json)
-- **Role**: 27 comprehensive gold-standard ground truth cases built 100% from physical source files:
+- **Role**: 28 comprehensive gold-standard ground truth cases built 100% from physical source files:
   - Covers every single physical asset on disk.
   - Zero-hallucination verified: Case 02 dose is `"Not stated"`, Case 03 frequency is `"Not stated"`.
   - Canonical reporters and defect descriptions matched to physical evidence.
@@ -691,23 +728,23 @@ Tel: (617) 555-0144 | Email: e.rostova@massgeneral-pharmacy.org
 
 | Data / Test Asset | Minimum Required | Target to Create | Current Physical Status | Audit Result | Remaining |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Intake `.eml` emails** | 10 | 10–11 | **11 files on disk** (`email_01.eml` to `email_11.eml`) | **PASS** | **0** |
-| **Safety Report (ICSR) examples** | Covered in emails | 6+ | **6 emails + 10 PDFs** | **PASS** | **0** |
+| **Intake `.eml` emails** | 10 | 10–11 | **12 files on disk** (`email_01.eml` to `email_12.eml`) | **PASS** | **0** |
+| **Safety Report (ICSR) examples** | Covered in emails | 6+ | **7 emails + 10 PDFs** | **PASS** | **0** |
 | **Quality Complaint (PQC)-only examples** | 2 | 2 | **2 emails** (Case 07, 08) + **2 PDFs** | **PASS** | **0** |
 | **Medical Information (MI)-only examples** | 2 | 2 | **2 emails** (Case 09, 11) + **2 PDFs** (MED-01, 02) | **PASS** | **0** |
 | **Not Relevant / Marketing examples** | 1 | 1+ | **1 email** (Case 10) + **1 PDF** (IRR-01) | **PASS** | **0** |
 | **Multi-label ICSR + PQC example** | At least 1 | 1+ | **1 case** (Case 04 MedWatch + contaminated vial) | **PASS** | **0** |
 | **Normal digital PDFs** | 5 | 5+ | **5 files on disk** (`digital_forms/*.pdf`) + 5 others | **PASS** | **0** |
-| **Scanned / handwritten PDFs** | 2 | 2 | **1 file on disk** (`urgent_care_intake_handwritten.pdf`) | **DEFERRED** | **1** |
+| **Scanned / handwritten PDFs** | 2 | 2 | **2 files on disk** (`urgent_care_intake_handwritten.pdf`, `urgent_care_clinic_note.pdf`) | **PASS** | **0** |
 | **Case-bearing article PDFs** | 5 | 5 | **5 files on disk** (Articles 01, 02, 03, 06, 07) | **PASS** | **0** |
 | **Non-reportable negative article PDFs**| Recommended | 2 | **2 files on disk** (Articles 04, 05) | **PASS** | **0** |
 | **Total Literature Articles** | 5 | 7 | **7 files on disk** (`literature_articles/*.pdf`) | **PASS** | **0** |
 | **Non-English PDFs** | 2 | 2 | **2 files on disk** (`notificacion_ram_madrid.pdf`, `bericht_uaw_charite_berlin.pdf`) | **PASS** | **0** |
-| **PDF containing structured table(s)** | Required | 2+ | **8 PDFs on disk** (CIOMS labs, MedWatch grids, dosing tables) | **PASS** | **0** |
-| **PDF containing meaningful image(s)** | Required | 2+ | **2 PDFs on disk** (handwritten intake, vial contamination) | **PASS** | **0** |
+| **PDF containing structured table(s)** | Required | 2+ | **9 PDFs on disk** (CIOMS labs, MedWatch grids, vitals tables) | **PASS** | **0** |
+| **PDF containing meaningful image(s)** | Required | 2+ | **3 PDFs on disk** (2 handwritten intakes, vial contamination) | **PASS** | **0** |
 | **Image requiring human-review flag** | Required | 1+ | **1 photo exhibit** (cracked crimp seal with particulate) | **PASS** | **0** |
 | **Documents with deliberately missing fields**| Required | 2+ | **Cases 02, 03, 08, 09** (testing `"Not stated"`) | **PASS** | **0** |
 | **Field-level source/page traceability** | Required | All docs | **Full ground truth citations** in `benchmark.json` | **PASS** | **0** |
-| **Machine-readable ground truth JSON** | Required | 1 file | **1 file on disk** (`benchmark.json` covering all 27 cases) | **PASS** | **0** |
+| **Machine-readable ground truth JSON** | Required | 1 file | **1 file on disk** (`benchmark.json` covering all 28 cases) | **PASS** | **0** |
 | **Dataset manifest** | Recommended | 1 file | **1 file on disk** (`manifest.json` with separated assets) | **PASS** | **0** |
-| **Total Physical PDFs Verified** | 19 | 20 | **20 files on disk** (21st deferred for user photo) | **95% PASS** | **1** |
+| **Total Physical PDFs Verified** | 19 | 20 | **21 files on disk** (Both handwritten cases satisfied) | **100% PASS** | **0** |

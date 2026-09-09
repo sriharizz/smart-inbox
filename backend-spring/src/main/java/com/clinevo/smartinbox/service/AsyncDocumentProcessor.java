@@ -69,8 +69,48 @@ public class AsyncDocumentProcessor {
                 throw new IllegalStateException("Empty extraction result from AI service.");
             }
 
-            // 1. Update Triage Metadata
-            ExtractionResultDto.TriageResultDto triage = result.getTriage();
+            // Apply extraction result with category-aware conditional persistence
+            applyExtractionResult(message, result);
+
+            message.setStatus("TRIAGED");
+            messageRepository.save(message);
+
+            auditService.logEvent(
+                    messageId,
+                    "SYSTEM_AI_ENGINE",
+                    "AI_TRIAGE_COMPLETED",
+                    "STATUS",
+                    "PROCESSING",
+                    "TRIAGED",
+                    "Classified as " + message.getPrimaryCategory() + " with confidence " + message.getConfidence()
+            );
+
+            log.info("[ASYNC-WORKER] Successfully completed AI triage for Message ID: {} -> {}", messageId, message.getPrimaryCategory());
+
+        } catch (Exception e) {
+            log.error("[ASYNC-WORKER] AI processing failed for Message ID {}: {}", messageId, e.getMessage(), e);
+            message.setStatus("FAILED");
+            messageRepository.save(message);
+            auditService.logEvent(
+                    messageId,
+                    "SYSTEM_AI_ENGINE",
+                    "AI_PROCESSING_FAILED",
+                    "STATUS",
+                    "PROCESSING",
+                    "FAILED",
+                    "Error: " + e.getMessage()
+            );
+        }
+    }
+
+    /**
+     * Applies AI extraction results to an intake message with strict category-aware conditional persistence.
+     * Persists IcsrReportEntity ONLY when the message is triaged as an ICSR / Safety Report (or has clinical data).
+     * Prevents creation of empty dummy ICSR reports for pure PQC, pure MI, and Not Relevant cases.
+     */
+    public void applyExtractionResult(IntakeMessageEntity message, ExtractionResultDto result) throws Exception {
+        ExtractionResultDto.TriageResultDto triage = result.getTriage();
+        if (triage != null) {
             message.setPrimaryCategory(triage.getPrimary_category());
             message.setIsMultiLabel(triage.isIs_multi_label());
             message.setExecutiveSummary(triage.getExecutive_summary());
@@ -81,11 +121,42 @@ public class AsyncDocumentProcessor {
             } else {
                 message.setConfidence(0.90);
             }
+        }
 
-            // 2. Persist ICSR Report Entity
+        // 1. Language and Document Metadata
+        if (result.getLanguage_detected() != null && !result.getLanguage_detected().isBlank()) {
+            message.setLanguage(result.getLanguage_detected());
+        }
+
+        if (result.getAttachment_metadata() != null && !result.getAttachment_metadata().isEmpty() && message.getAttachments() != null) {
+            for (ExtractionResultDto.AttachmentMetadataDto meta : result.getAttachment_metadata()) {
+                if (meta.getFilename() == null) continue;
+                for (AttachmentEntity att : message.getAttachments()) {
+                    if (meta.getFilename().equalsIgnoreCase(att.getFilename())) {
+                        if (meta.getFlavor() != null && !meta.getFlavor().isBlank()) {
+                            att.setFlavor(meta.getFlavor());
+                        }
+                        if (meta.getLanguage() != null && !meta.getLanguage().isBlank()) {
+                            att.setLanguage(meta.getLanguage());
+                        }
+                        if (meta.getDocument_summary() != null && !meta.getDocument_summary().isBlank()) {
+                            att.setDocumentSummary(meta.getDocument_summary());
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Persist ICSR Report Entity (Only for ICSR / Safety Report categories)
+        boolean shouldPersistIcsr = isIcsrCategory(triage);
+        if (!shouldPersistIcsr && triage == null) {
+            shouldPersistIcsr = hasAnyClinicalData(result);
+        }
+
+        if (shouldPersistIcsr) {
             IcsrReportEntity icsr = message.getIcsrReport() != null ? message.getIcsrReport() : new IcsrReportEntity();
             icsr.setMessage(message);
-            icsr.setCaseIdentifier(result.getCase_id() != null ? result.getCase_id() : "CASE-" + messageId);
+            icsr.setCaseIdentifier(result.getCase_id() != null ? result.getCase_id() : (message.getId() != null ? "CASE-" + message.getId() : "CASE-NEW"));
 
             if (result.getPatient() != null) {
                 icsr.setPatientIdentifier(result.getPatient().getIdentifier());
@@ -131,76 +202,141 @@ public class AsyncDocumentProcessor {
             icsr.setClinicalNarrative(result.getNarrative() != null ? result.getNarrative() : "Not stated");
 
             Map<String, Object> citationsMap = new HashMap<>();
-            if (result.getPatient() != null && result.getPatient().getCitation() != null) citationsMap.put("patient", result.getPatient().getCitation());
-            if (result.getReporter() != null && result.getReporter().getCitation() != null) citationsMap.put("reporter", result.getReporter().getCitation());
-            if (result.getProduct() != null && result.getProduct().getCitation() != null) citationsMap.put("product", result.getProduct().getCitation());
-            if (result.getReaction() != null && result.getReaction().getCitation() != null) citationsMap.put("reaction", result.getReaction().getCitation());
+            if (result.getCitations() != null && !result.getCitations().isEmpty()) {
+                citationsMap.putAll(result.getCitations());
+            }
+            if (result.getPatient() != null) {
+                if (result.getPatient().getCitation() != null) citationsMap.putIfAbsent("patient", result.getPatient().getCitation());
+                if (result.getPatient().getDob() != null) citationsMap.put("patient_dob_val", result.getPatient().getDob());
+                if (result.getPatient().getCountry() != null) citationsMap.put("patient_country_val", result.getPatient().getCountry());
+            }
+            if (result.getReporter() != null) {
+                if (result.getReporter().getCitation() != null) citationsMap.putIfAbsent("reporter", result.getReporter().getCitation());
+                if (result.getReporter().getSpecialty() != null) citationsMap.put("reporter_specialty_val", result.getReporter().getSpecialty());
+                if (result.getReporter().getHealth_professional() != null) citationsMap.put("health_professional_val", result.getReporter().getHealth_professional());
+            }
+            if (result.getProduct() != null) {
+                if (result.getProduct().getCitation() != null) citationsMap.putIfAbsent("product", result.getProduct().getCitation());
+                if (result.getProduct().getFormulation() != null) citationsMap.put("product_formulation_val", result.getProduct().getFormulation());
+                if (result.getProduct().getStart_date() != null) citationsMap.put("treatment_start_date_val", result.getProduct().getStart_date());
+                if (result.getProduct().getStop_date() != null) citationsMap.put("treatment_stop_date_val", result.getProduct().getStop_date());
+                if (result.getProduct().getDuration() != null) citationsMap.put("treatment_duration_val", result.getProduct().getDuration());
+                if (result.getProduct().getAction_taken() != null) citationsMap.put("action_taken_val", result.getProduct().getAction_taken());
+            }
+            if (result.getReaction() != null) {
+                if (result.getReaction().getCitation() != null) citationsMap.putIfAbsent("reaction", result.getReaction().getCitation());
+                citationsMap.put("hospitalization_val", result.getReaction().isHospitalization());
+                if (result.getReaction().getAdmission_date() != null) citationsMap.put("hospital_admission_date_val", result.getReaction().getAdmission_date());
+                citationsMap.put("life_threatening_val", result.getReaction().isLife_threatening());
+                citationsMap.put("death_val", result.getReaction().isDeath());
+                citationsMap.put("medically_important_val", result.getReaction().isMedically_important());
+            }
+            if (result.getConcomitant_medications() != null && !result.getConcomitant_medications().isEmpty()) {
+                citationsMap.put("concomitant_medications", result.getConcomitant_medications());
+            }
+            if (result.getRegulatory() != null && !result.getRegulatory().isEmpty()) {
+                citationsMap.put("regulatory", result.getRegulatory());
+            }
             icsr.setSourceCitationsJson(objectMapper.writeValueAsString(citationsMap));
 
             message.setIcsrReport(icsr);
-
-            // 3. Persist Quality Complaint (PQC) if detected
-            if (result.getQuality_complaint() != null) {
-                ExtractionResultDto.QualityComplaintDto qc = result.getQuality_complaint();
-                PqcReportEntity pqc = message.getPqcReport() != null ? message.getPqcReport() : new PqcReportEntity();
-                pqc.setMessage(message);
-                pqc.setProductName(qc.getProduct_name());
-                pqc.setLotNumber(qc.getLot_number());
-                String defect = qc.getDefect_type();
-                pqc.setDefectType(defect != null && defect.length() > 950 ? defect.substring(0, 950) : defect);
-                pqc.setDefectDescription(qc.getDefect_description());
-                pqc.setPackagingBreached(qc.isPackaging_breached());
-                pqc.setPhotoDetected(qc.isPhoto_detected());
-                pqc.setPhotoDescription(qc.getPhoto_description());
-                pqc.setRequiresHumanReview(qc.isRequires_human_review());
-                if (qc.getCitation() != null) {
-                    pqc.setSourceCitationsJson(objectMapper.writeValueAsString(qc.getCitation()));
-                }
-                message.setPqcReport(pqc);
-            }
-
-            // 4. Persist Medical Information (MI) if detected
-            if (result.getMedical_info() != null) {
-                ExtractionResultDto.MedicalInfoDto mi = result.getMedical_info();
-                MedicalInfoEntity medInfo = message.getMedicalInfo() != null ? message.getMedicalInfo() : new MedicalInfoEntity();
-                medInfo.setMessage(message);
-                medInfo.setProductOrTopic(mi.getProduct_or_topic());
-                medInfo.setInquiryType(mi.getInquiry_type());
-                medInfo.setQuestionText(mi.getQuestion_text());
-                if (mi.getCitation() != null) {
-                    medInfo.setSourceCitationsJson(objectMapper.writeValueAsString(mi.getCitation()));
-                }
-                message.setMedicalInfo(medInfo);
-            }
-
-            message.setStatus("TRIAGED");
-            messageRepository.save(message);
-
-            auditService.logEvent(
-                    messageId,
-                    "SYSTEM_AI_ENGINE",
-                    "AI_TRIAGE_COMPLETED",
-                    "STATUS",
-                    "PROCESSING",
-                    "TRIAGED",
-                    "Classified as " + message.getPrimaryCategory() + " with confidence " + message.getConfidence()
-            );
-
-            log.info("[ASYNC-WORKER] Successfully completed AI triage for Message ID: {} -> {}", messageId, message.getPrimaryCategory());
-
-        } catch (Exception e) {
-            log.error("[ASYNC-WORKER] AI processing failed for Message ID {}: {}", messageId, e.getMessage(), e);
-            message.setStatus("FAILED");
-            messageRepository.save(message);
-            auditService.logEvent(
-                    messageId,
-                    "SYSTEM_AI_ENGINE",
-                    "AI_PROCESSING_FAILED",
-                    "STATUS",
-                    "PROCESSING",
-                    "FAILED",
-                    "Error: " + e.getMessage()
-            );
+        } else {
+            message.setIcsrReport(null);
         }
+
+        // 3. Persist Quality Complaint (PQC) if detected
+        if (result.getQuality_complaint() != null) {
+            ExtractionResultDto.QualityComplaintDto qc = result.getQuality_complaint();
+            PqcReportEntity pqc = message.getPqcReport() != null ? message.getPqcReport() : new PqcReportEntity();
+            pqc.setMessage(message);
+            pqc.setProductName(qc.getProduct_name());
+            pqc.setLotNumber(qc.getLot_number());
+            String defect = qc.getDefect_type();
+            pqc.setDefectType(defect != null && defect.length() > 950 ? defect.substring(0, 950) : defect);
+            pqc.setDefectDescription(qc.getDefect_description());
+            pqc.setPackagingBreached(qc.isPackaging_breached());
+            pqc.setPhotoDetected(qc.isPhoto_detected());
+            pqc.setPhotoDescription(qc.getPhoto_description());
+            pqc.setRequiresHumanReview(qc.isRequires_human_review());
+            Map<String, Object> pqcCitations = new HashMap<>();
+            if (result.getCitations() != null) {
+                pqcCitations.putAll(result.getCitations());
+            }
+            if (qc.getCitation() != null) {
+                pqcCitations.put("quality_complaint", qc.getCitation());
+            }
+            pqc.setSourceCitationsJson(objectMapper.writeValueAsString(pqcCitations));
+            message.setPqcReport(pqc);
+        } else {
+            message.setPqcReport(null);
+        }
+
+        // 4. Persist Medical Information (MI) if detected
+        if (result.getMedical_info() != null) {
+            ExtractionResultDto.MedicalInfoDto mi = result.getMedical_info();
+            MedicalInfoEntity medInfo = message.getMedicalInfo() != null ? message.getMedicalInfo() : new MedicalInfoEntity();
+            medInfo.setMessage(message);
+            medInfo.setProductOrTopic(mi.getProduct_or_topic());
+            medInfo.setInquiryType(mi.getInquiry_type());
+            medInfo.setQuestionText(mi.getQuestion_text());
+            Map<String, Object> miCitations = new HashMap<>();
+            if (result.getCitations() != null) {
+                miCitations.putAll(result.getCitations());
+            }
+            if (mi.getCitation() != null) {
+                miCitations.put("medical_info", mi.getCitation());
+                miCitations.put("mi", mi.getCitation());
+            }
+            medInfo.setSourceCitationsJson(objectMapper.writeValueAsString(miCitations));
+            message.setMedicalInfo(medInfo);
+        } else {
+            message.setMedicalInfo(null);
+        }
+    }
+
+    public boolean isIcsrCategory(ExtractionResultDto.TriageResultDto triage) {
+        if (triage == null) return false;
+        String primary = triage.getPrimary_category();
+        if (primary != null) {
+            String lower = primary.toLowerCase();
+            if (lower.contains("not relevant") || lower.contains("not_relevant")) {
+                return false;
+            }
+            if (lower.contains("icsr") || lower.contains("safety report") || lower.contains("adverse event")) {
+                return true;
+            }
+        }
+        if (triage.getLabels() != null) {
+            for (ExtractionResultDto.TriageLabelDto label : triage.getLabels()) {
+                if (label.getCategory() != null) {
+                    String lLower = label.getCategory().toLowerCase();
+                    if (!lLower.contains("not relevant") && 
+                        (lLower.contains("icsr") || lLower.contains("safety report") || lLower.contains("adverse event"))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAnyClinicalData(ExtractionResultDto result) {
+        if (result == null) return false;
+        if (result.getPatient() != null && isStated(result.getPatient().getIdentifier())) return true;
+        if (result.getProduct() != null && isStated(result.getProduct().getProduct_name())) return true;
+        if (result.getReaction() != null && isStated(result.getReaction().getAdverse_event())) return true;
+        if (isStated(result.getNarrative())) return true;
+        return false;
+    }
+
+    private boolean isStated(String val) {
+        if (val == null) return false;
+        String clean = val.trim().toLowerCase();
+        return !clean.isEmpty() && 
+               !clean.equals("not stated") && 
+               !clean.equals("unknown") && 
+               !clean.equals("null") && 
+               !clean.equals("n/a") &&
+               !clean.equals("none");
     }
 }

@@ -418,3 +418,114 @@ def test_pure_pqc_and_mi_cross_category_isolation():
     assert env_mi.mi is not None
     assert env_mi.mi.explicit_no_ae_no_pqc is True
 
+
+def test_hospitalization_boolean_consistency():
+    """Validates deterministic resolution of hospitalization boolean and seriousness criteria."""
+    triage = TriageResult(
+        is_multi_label=False,
+        primary_category=CategoryEnum.SAFETY_REPORT_ICSR,
+        labels=[TriageLabel(category=CategoryEnum.SAFETY_REPORT_ICSR, confidence=0.99, reason="ICSR")],
+        executive_summary="Safety report."
+    )
+
+    # 1. explicit hospitalization=True, no criteria
+    raw_1 = {
+        "icsr": {
+            "reaction": {
+                "adverse_event": "Acute Liver Injury",
+                "onset_date": "08-NOV-2025",
+                "outcome": "Recovered",
+                "hospitalization": True,
+                "admission_date": "10-NOV-2025",
+                "seriousness_criteria": []
+            }
+        }
+    }
+    env_1 = icsr_extractor._build_envelope_from_data(raw_1, triage, "test.pdf", "m1", 0.0, True, False, False, False)
+    assert env_1.icsr.reaction.hospitalization is True
+    assert env_1.icsr.reaction.admission_date == "10-NOV-2025"
+    fact_hosp_1 = next(f for f in env_1.fact_ledger if f.field == "hospitalization")
+    assert fact_hosp_1.value == "Yes"
+    # Verify unrelated fields unaffected
+    assert env_1.icsr.reaction.adverse_event == "Acute Liver Injury"
+    assert env_1.icsr.reaction.outcome == "Recovered"
+
+    # 2. explicit hospitalization=False + seriousness criteria contains hospitalization -> canonical result must be True
+    raw_2 = {
+        "icsr": {
+            "reaction": {
+                "adverse_event": "Acute Liver Injury",
+                "onset_date": "08-NOV-2025",
+                "outcome": "Recovered",
+                "hospitalization": False,
+                "admission_date": "10-NOV-2025",
+                "seriousness_criteria": ["Hospitalization", "Medically Significant"]
+            }
+        }
+    }
+    env_2 = icsr_extractor._build_envelope_from_data(raw_2, triage, "test.pdf", "m2", 0.0, True, False, False, False)
+    assert env_2.icsr.reaction.hospitalization is True
+    assert env_2.icsr.reaction.admission_date == "10-NOV-2025"
+    fact_hosp_2 = next(f for f in env_2.fact_ledger if f.field == "hospitalization")
+    assert fact_hosp_2.value == "Yes"
+    # Legacy adapter reflects normalized hospitalization
+    legacy_2 = envelope_to_legacy(env_2)
+    assert legacy_2.reaction.hospitalization is True
+    assert legacy_2.reaction.admission_date == "10-NOV-2025"
+
+    # 3. explicit hospitalization=False + no hospitalization criteria -> remains False
+    raw_3 = {
+        "icsr": {
+            "reaction": {
+                "adverse_event": "Mild Rash",
+                "onset_date": "08-NOV-2025",
+                "outcome": "Recovered",
+                "hospitalization": False,
+                "seriousness_criteria": ["Medically Significant"]
+            }
+        }
+    }
+    env_3 = icsr_extractor._build_envelope_from_data(raw_3, triage, "test.pdf", "m3", 0.0, True, False, False, False)
+    assert env_3.icsr.reaction.hospitalization is False
+    fact_hosp_3 = next(f for f in env_3.fact_ledger if f.field == "hospitalization")
+    assert fact_hosp_3.value == "No"
+
+    # 4. hospitalization=True + no criteria -> remains True
+    raw_4 = {
+        "icsr": {
+            "reaction": {
+                "adverse_event": "Anaphylaxis",
+                "onset_date": "08-NOV-2025",
+                "outcome": "Recovering",
+                "hospitalization": True,
+                "seriousness_criteria": []
+            }
+        }
+    }
+    env_4 = icsr_extractor._build_envelope_from_data(raw_4, triage, "test.pdf", "m4", 0.0, True, False, False, False)
+    assert env_4.icsr.reaction.hospitalization is True
+    fact_hosp_4 = next(f for f in env_4.fact_ledger if f.field == "hospitalization")
+    assert fact_hosp_4.value == "Yes"
+
+    # 5. admission date is preserved when present
+    raw_5 = {
+        "icsr": {
+            "reaction": {
+                "adverse_event": "Drug-induced Liver Injury",
+                "onset_date": "08-NOV-2025",
+                "hospitalization": True,
+                "admission_date": "10-NOV-2025",
+                "seriousness_criteria": ["Hospitalization"]
+            }
+        }
+    }
+    env_5 = icsr_extractor._build_envelope_from_data(raw_5, triage, "test.pdf", "m5", 0.0, True, False, False, False)
+    assert env_5.icsr.reaction.admission_date == "10-NOV-2025"
+    fact_adm_5 = next(f for f in env_5.fact_ledger if f.field == "hospital_admission_date")
+    assert fact_adm_5.value == "10-NOV-2025"
+
+    # 6. no unrelated fields change
+    assert env_5.icsr.reaction.adverse_event == "Drug-induced Liver Injury"
+    assert env_5.icsr.reaction.onset_date == "08-NOV-2025"
+
+

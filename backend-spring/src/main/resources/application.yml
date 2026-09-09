@@ -7,9 +7,9 @@ spring:
   profiles:
     active: demo
 
-  # Embedded H2 Database (Oracle Compatibility Mode) for Demo Profile
+  # Embedded / File-backed H2 Database (Oracle Compatibility Mode) for Demo Profile
   datasource:
-    url: jdbc:h2:mem:smartinboxdb;MODE=Oracle;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/smartinboxdb;MODE=Oracle;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1;DEFAULT_NULL_ORDERING=HIGH}
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
@@ -43,8 +43,8 @@ smartinbox:
       password: ${MAILBOX_PASSWORD:${MAIL_IMAP_PASSWORD:secret}}
       ssl: ${MAILBOX_IMAP_SSL:${MAIL_IMAP_SSL:true}}
       folder: ${MAILBOX_FOLDER:${MAIL_IMAP_FOLDER:INBOX}}
-      poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:30000}
-      initial-delay-ms: ${MAIL_POLL_INITIAL_DELAY_MS:5000}
+      poll-interval-ms: ${MAIL_POLL_INTERVAL_MS:15000}
+      initial-delay-ms: ${MAIL_POLL_INITIAL_DELAY_MS:3000}
   async:
     core-pool-size: 1
     max-pool-size: 1

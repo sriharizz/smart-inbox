@@ -295,7 +295,38 @@ class DocumentChunker:
                         location=LocationReference(page_number=p_num, section=f"Paragraph {idx+1}")
                     ))
 
-            # B. Structured Tables on Page
+            # B. Structured Tables on Page (Row-level chunks with exact bboxes + full table markdown)
+            table_rows = parsed_pdf.table_rows_by_page.get(p_num, [])
+            for r_info in table_rows:
+                r_text = r_info.get("text", "").strip()
+                if not r_text or len(r_text) < 3:
+                    continue
+                r_bbox = r_info.get("bbox")
+                bbox_obj = None
+                if r_bbox:
+                    bbox_obj = BoundingBox(
+                        x0=float(r_bbox[0]),
+                        y0=float(r_bbox[1]),
+                        x1=float(r_bbox[2]),
+                        y1=float(r_bbox[3]),
+                        page_number=p_num
+                    )
+                t_no = r_info.get("table_no", 0) + 1
+                r_no = r_info.get("row_no", 0)
+                chunks.append(DocumentChunk(
+                    chunk_id=f"{filename}:p{p_num}:t{t_no}:r{r_no}",
+                    source_id=filename,
+                    source_type=EvidenceType.TABLE_CELL,
+                    page_or_location=f"Page {p_num}, Table {t_no} Row {r_no}",
+                    text=r_text,
+                    location=LocationReference(
+                        page_number=p_num,
+                        section=f"Table {t_no} Row {r_no}",
+                        bounding_box=bbox_obj
+                    ),
+                    metadata={"is_table_row": True, "table_no": t_no, "row_no": r_no}
+                ))
+
             tables = parsed_pdf.tables_by_page.get(p_num, [])
             for t_idx, tbl_md in enumerate(tables):
                 clean_tbl = tbl_md.strip()
@@ -309,6 +340,33 @@ class DocumentChunker:
                     text=clean_tbl,
                     location=LocationReference(page_number=p_num, section=f"Table {t_idx+1}"),
                     metadata={"is_table": True}
+                ))
+
+            # C. Embedded Images on Page
+            page_images = [img for img in parsed_pdf.images if img.get("page") == p_num]
+            for img_idx, img_info in enumerate(page_images):
+                raw_bbox = img_info.get("bbox")
+                bbox_obj = None
+                if raw_bbox:
+                    bbox_obj = BoundingBox(
+                        x0=float(raw_bbox[0]),
+                        y0=float(raw_bbox[1]),
+                        x1=float(raw_bbox[2]),
+                        y1=float(raw_bbox[3]),
+                        page_number=p_num
+                    )
+                chunks.append(DocumentChunk(
+                    chunk_id=f"{filename}:p{p_num}:img{img_idx+1}",
+                    source_id=filename,
+                    source_type=EvidenceType.DEFECT_IMAGE,
+                    page_or_location=f"Page {p_num}, Defect Photograph",
+                    text=f"Embedded photographic exhibit asset on page {p_num} of {filename}: defect photograph",
+                    location=LocationReference(
+                        page_number=p_num,
+                        section="Defect Photograph",
+                        bounding_box=bbox_obj
+                    ),
+                    metadata={"is_image": True, "page": p_num}
                 ))
 
         return chunks
@@ -364,10 +422,22 @@ class DocumentEvidenceIndex:
         """
         Computes source-faithful lexical score between fact and chunk text.
         Awards bonuses for exact substring matches, normalized entity mentions, and field context.
+        Prioritizes structured table-row evidence for structured facts (labs, biomarkers) when
+        both analyte and value tokens are present.
         """
         val = str(fact.value).strip().lower()
         chunk_text = chunk.text.lower()
         score = 0.0
+
+        # Detect structured fact and table candidate generically
+        is_structured_fact = (
+            fact.field.startswith(("lab_", "biomarker_", "diagnostic_", "test_"))
+            or bool(fact.metadata and (fact.metadata.get("is_lab") or fact.metadata.get("is_structured")))
+        )
+        is_table_candidate = (
+            chunk.source_type == EvidenceType.TABLE_CELL
+            or bool(chunk.metadata and (chunk.metadata.get("is_table_row") or chunk.metadata.get("is_table")))
+        )
 
         # 1. Exact verbatim substring match (strongest signal)
         if len(val) >= 3 and val in chunk_text:
@@ -382,7 +452,8 @@ class DocumentEvidenceIndex:
         # 3. Token overlap (Jaccard-like content word matching)
         stopwords = {
             "the", "a", "an", "and", "or", "in", "on", "at", "to", "for", "with",
-            "is", "was", "are", "were", "of", "by", "as", "from", "it", "this"
+            "is", "was", "are", "were", "of", "by", "as", "from", "it", "this",
+            "patient", "level", "levels", "test", "tests", "value", "values"
         }
         val_tokens = set(re.findall(r"\b[a-zA-Z0-9\.\-\_]{2,}\b", val)) - stopwords
         chunk_tokens = set(re.findall(r"\b[a-zA-Z0-9\.\-\_]{2,}\b", chunk_text))
@@ -393,11 +464,61 @@ class DocumentEvidenceIndex:
 
         # 4. Field keyword context boost (only when there is some match on the value/entity)
         if score > 0.0:
-            field_keywords = fact.field.replace("_", " ").lower().split()
+            field_keywords = [
+                kw for kw in fact.field.replace("_", " ").lower().split()
+                if kw not in ("lab", "test", "biomarker", "diagnostic", "level", "levels") and len(kw) >= 2
+            ]
             for kw in field_keywords:
-                if len(kw) >= 3 and kw in chunk_text:
+                if len(kw) >= 2 and (kw in chunk_text or (len(kw) >= 4 and kw[:4] in chunk_text)):
                     score += 0.10
                     break
+
+        # 5. Patient scope boost / isolation (crucial for multi-case documents)
+        scope = fact.metadata.get("patient_scope") if fact.metadata else None
+        has_other = False
+        if scope and score > 0.0:
+            scope_clean = str(scope).strip().lower()
+            other_scopes = fact.metadata.get("other_scopes", [])
+            has_other = any(str(o).strip().lower() in chunk_text for o in other_scopes if str(o).strip())
+            
+            if len(scope_clean) >= 2 and scope_clean in chunk_text:
+                if not has_other:
+                    # Pure single-patient chunk (e.g. specific case section or dedicated table row)
+                    score += 0.40
+                else:
+                    # Multi-patient summary or abstract containing conflicting patients
+                    score -= 0.20
+            elif has_other:
+                # Belongs exclusively to a different patient
+                score -= 0.60
+
+        # 6. Generic Structured-Table Evidence Priority for Labs / Biomarkers
+        if is_structured_fact:
+            if is_table_candidate:
+                raw_field_tokens = [
+                    tok for tok in re.findall(r"[a-zA-Z]+", fact.field.lower())
+                    if tok not in ("lab", "test", "biomarker", "diagnostic", "level", "levels") and len(tok) >= 2
+                ]
+                non_num_val_tokens = [
+                    tok for tok in re.findall(r"[a-zA-Z]+", val)
+                    if tok not in stopwords and tok not in ("u/l", "mg/dl", "ng/ml", "pg/ml", "g/dl", "mmol/l", "iu/l", "fl", "iu", "ul", "l", "ml") and len(tok) >= 2
+                ]
+                analyte_tokens = set(raw_field_tokens + non_num_val_tokens)
+
+                num_val_tokens = set(re.findall(r"\b\d+(?:\.\d+)?(?:\:\d+)?\b", val))
+                if not num_val_tokens:
+                    num_val_tokens = {tok for tok in val_tokens if any(c.isdigit() for c in tok)}
+
+                has_analyte = any(
+                    tok in chunk_text or (len(tok) >= 4 and tok[:4] in chunk_text)
+                    for tok in analyte_tokens
+                )
+                has_value = any(tok in chunk_text for tok in num_val_tokens) if num_val_tokens else (score > 0.5)
+
+                if has_analyte and has_value and not has_other:
+                    score = max(score, 0.98)
+            else:
+                score = min(score, 0.88)
 
         return min(1.0, max(0.0, score))
 
@@ -457,8 +578,18 @@ class DocumentEvidenceIndex:
             if relevance >= min_relevance:
                 candidates.append((relevance, lex_score, sem_score, strat, chunk))
 
-        # Sort by relevance descending
-        candidates.sort(key=lambda x: x[0], reverse=True)
+        # Sort by relevance descending with structured table priority tie-breaking
+        is_struct = fact.field.startswith(("lab_", "biomarker_", "diagnostic_", "test_")) or bool(
+            fact.metadata and (fact.metadata.get("is_lab") or fact.metadata.get("is_structured"))
+        )
+        candidates.sort(
+            key=lambda x: (
+                x[0],
+                1 if (is_struct and (x[4].source_type == EvidenceType.TABLE_CELL or x[4].metadata.get("is_table_row"))) else 0,
+                1 if (x[4].location and x[4].location.bounding_box is not None) else 0
+            ),
+            reverse=True
+        )
         top_candidates = candidates[:top_k]
 
         evidence_items: List[Evidence] = []

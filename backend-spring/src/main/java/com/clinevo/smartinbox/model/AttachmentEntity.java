@@ -33,6 +33,10 @@ public class AttachmentEntity {
     private String language = "English";
 
     @Lob
+    @Column(name = "DOCUMENT_SUMMARY")
+    private String documentSummary;
+
+    @Lob
     @Column(name = "CONTENT_BYTES")
     private byte[] contentBytes;
 
@@ -62,9 +66,13 @@ public class AttachmentEntity {
     public String getLanguage() { return language; }
     public void setLanguage(String language) { this.language = language; }
 
+    public String getDocumentSummary() { return documentSummary; }
+    public void setDocumentSummary(String documentSummary) { this.documentSummary = documentSummary; }
+
     public byte[] getContentBytes() { return contentBytes; }
     public void setContentBytes(byte[] contentBytes) { this.contentBytes = contentBytes; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
+

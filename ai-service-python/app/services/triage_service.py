@@ -21,7 +21,13 @@ CRITICAL RULES:
 - Multi-Label Support: A message CAN belong to more than one bucket (e.g., a contaminated vial causing septic shock is BOTH 'Safety Report (ICSR)' AND 'Quality Complaint (PQC)').
 - Confidence Score: Provide a calibrated confidence score between 0.0 and 1.0 for every assigned label.
 - Rationale: Provide a concise, 1-line regulatory justification for each assigned category.
-- Executive Summary: Provide a 10 to 15 sentence comprehensive executive clinical summary of the document explaining relevance, clinical facts, urgency, and recommended regulatory action.
+- Executive Summary: Provide a concise, high-density reviewer synthesis (approximately 4 to 6 sentences). Preserve rich clinical/domain reasoning while avoiding redundant recitation of every structured parameter. Structure as:
+  1. Incident / Request: What occurred or what is being requested (patient, suspect product, reaction or defect or exact questions).
+  2. Domain Relevance: Clinical timing, seriousness, dechallenge/outcome, physical defect breach, or clinical context.
+  3. Key Findings & Uncertainties: Highlight any critical missing or uncertain parameters (e.g., unstated dose/lot, handwritten ambiguities) requiring human verification.
+  4. Reviewer Routing & Urgency: Suggested workflow routing (e.g., PV expedited triage, QA containment, Medical Affairs inquiry handling).
+  CRITICAL HUMAN-IN-THE-LOOP LANGUAGE MANDATE:
+  The AI must NEVER state definitive legal or regulatory conclusions (do NOT use "legally compliant", "must be submitted", "requires regulatory reporting" as an unconditional mandate, or "no further clarification required"). Frame urgency assistively (e.g., "Presents clinical features consistent with potential 15-day expedited reporting consideration; subject to reviewer medical assessment and regulatory verification").
 
 Return ONLY a valid JSON object matching this schema:
 {
@@ -34,7 +40,7 @@ Return ONLY a valid JSON object matching this schema:
       "reason": "1-line regulatory rationale"
     }
   ],
-  "executive_summary": "10-15 sentence clinical summary..."
+  "executive_summary": "4-6 sentence clinical reviewer synthesis..."
 }
 """
 

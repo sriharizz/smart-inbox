@@ -14,7 +14,8 @@ class ParsedEmail:
         recipient: str,
         subject: str,
         body_text: str,
-        attachments: List[Dict[str, Any]]
+        attachments: List[Dict[str, Any]],
+        detected_language: str = "English"
     ):
         self.message_id = message_id
         self.date = date
@@ -24,6 +25,7 @@ class ParsedEmail:
         self.subject = subject
         self.body_text = body_text
         self.attachments = attachments
+        self.detected_language = detected_language
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -34,6 +36,7 @@ class ParsedEmail:
             "recipient": self.recipient,
             "subject": self.subject,
             "body_text": self.body_text,
+            "detected_language": self.detected_language,
             "attachment_names": [a["filename"] for a in self.attachments]
         }
 
@@ -98,6 +101,11 @@ class EmailParser:
                 charset = msg.get_content_charset() or "utf-8"
                 body_text = payload.decode(charset, errors="replace")
 
+        from app.parsers.language_detector import detect_language
+        detected_lang = detect_language(body_text.strip())
+        if detected_lang == "Unknown":
+            detected_lang = "English"
+
         return ParsedEmail(
             message_id=message_id,
             date=date_str,
@@ -106,7 +114,8 @@ class EmailParser:
             recipient=to_str,
             subject=subject,
             body_text=body_text.strip(),
-            attachments=attachments
+            attachments=attachments,
+            detected_language=detected_lang
         )
 
     @staticmethod

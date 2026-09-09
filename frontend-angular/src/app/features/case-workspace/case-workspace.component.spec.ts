@@ -180,4 +180,36 @@ describe('CaseWorkspaceComponent', () => {
     component.onFlagCase();
     expect(component.isFlaggedForEscalation).toBe(false);
   });
+
+  it('keeps Executive Synthesis collapsed by default and toggles inline on user action', () => {
+    expect(component.isExecutiveSummaryExpanded).toBe(false);
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const body = compiled.querySelector('.synthesis-body');
+    const toggleBtn = compiled.querySelector('#btn-toggle-synthesis') as HTMLButtonElement;
+
+    expect(body).toBeTruthy();
+    expect(body?.classList.contains('collapsed')).toBe(true);
+    expect(toggleBtn).toBeTruthy();
+    expect(toggleBtn.textContent).toContain('Read full synthesis');
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
+
+    // Click to expand
+    toggleBtn.click();
+    fixture.detectChanges();
+
+    expect(component.isExecutiveSummaryExpanded).toBe(true);
+    expect(body?.classList.contains('collapsed')).toBe(false);
+    expect(toggleBtn.textContent).toContain('Collapse synthesis');
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('true');
+
+    // Click again to collapse
+    toggleBtn.click();
+    fixture.detectChanges();
+
+    expect(component.isExecutiveSummaryExpanded).toBe(false);
+    expect(body?.classList.contains('collapsed')).toBe(true);
+    expect(toggleBtn.textContent).toContain('Read full synthesis');
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
+  });
 });

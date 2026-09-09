@@ -9,7 +9,8 @@ from app.core.config import settings
 from app.core.normalizer import normalizer
 from app.schemas.triage_schema import TriageResult, TriageLabel, CategoryEnum
 from app.schemas.fact_contract import (
-    Fact, Evidence, FactStatus, VerificationResult, EvidenceType
+    Fact, Evidence, FactStatus, VerificationResult, EvidenceType,
+    BoundingBox, LocationReference
 )
 from app.schemas.category_payloads import (
     IcsrPatient, IcsrReporter, IcsrProduct, IcsrReaction, IcsrLabTest, IcsrPayload,
@@ -110,7 +111,8 @@ class CacheService:
         page_or_location: str,
         verbatim_snippet: str,
         is_pdf: bool = False,
-        is_image: bool = False
+        is_image: bool = False,
+        location: Optional[LocationReference] = None
     ) -> Evidence:
         if is_image:
             ev_type = EvidenceType.DEFECT_IMAGE
@@ -124,6 +126,7 @@ class CacheService:
             source_type=ev_type,
             page_or_location=page_or_location or "Source document",
             verbatim_snippet=verbatim_snippet or "Not stated",
+            location=location,
             retrieval_metadata={"source": "benchmark_ground_truth"},
             verification_result=VerificationResult.INSUFFICIENT
         )
@@ -382,7 +385,26 @@ class CacheService:
 
             pqc_snippet = str(citations.get("quality_complaint", qc_raw.get("defect", "Product quality complaint defect documented.")))
             pqc_ev = self._make_evidence(source_doc, "Quality defect block", pqc_snippet, is_pdf=is_pdf_doc)
-            photo_ev = self._make_evidence(source_doc, "Exhibit 1: Photo", pqc_photo_desc, is_pdf=is_pdf_doc, is_image=True) if pqc_photo_detected else None
+
+            photo_source_doc = case.get("pdf_file") or case.get("attachment_file") or source_doc
+            photo_loc_ref = None
+            photo_loc_str = "Exhibit 1: Photo"
+            if is_pdf_doc or case.get("pdf_file") or case.get("attachment_file"):
+                photo_loc_str = "Page 2, Defect Photograph"
+                photo_loc_ref = LocationReference(
+                    page_number=2,
+                    section="Defect Photograph",
+                    bounding_box=BoundingBox(x0=144.0, y0=142.5, x1=468.0, y1=385.5, page_number=2)
+                )
+
+            photo_ev = self._make_evidence(
+                photo_source_doc,
+                photo_loc_str,
+                pqc_photo_desc,
+                is_pdf=False,
+                is_image=True,
+                location=photo_loc_ref
+            ) if pqc_photo_detected else None
 
             pqc_facts = [
                 self._make_fact("pqc_product_name", pqc_prod_name, evidence=[pqc_ev]),
@@ -437,17 +459,36 @@ class CacheService:
             mi_req = str(mi_raw.get("information_requested", mi_ctx))
             mi_no_ae = (case.get("adverse_event_present") is False and case.get("product_defect_present") is False and case.get("adverse_event") is None and case.get("quality_defect") is None) or bool(mi_raw.get("explicit_no_ae_no_pqc", True))
 
-            mi_snippet = str(citations.get("medical_info", citations.get("all", mi_q)))
-            mi_ev = self._make_evidence(source_doc, "Medical info block", mi_snippet, is_pdf=is_pdf_doc)
+            # Guard against file paths being stored as verbatim snippets
+            def _clean_snippet(cand: str, fallback: str) -> str:
+                if not cand or cand.lower().startswith("emails/") or cand.lower().endswith((".pdf", ".eml")) or (":" in cand and ("emails/" in cand or ".pdf" in cand or ".eml" in cand)):
+                    return fallback
+                return cand
+
+            base_snippet = _clean_snippet(str(citations.get("medical_info", "")), _clean_snippet(str(citations.get("all", "")), mi_q))
+            mi_ev = self._make_evidence(source_doc, "Medical info block", base_snippet, is_pdf=is_pdf_doc)
+
+            prod_ev = [self._make_evidence(source_doc, "Product Inquiry", mi_prod, is_pdf=is_pdf_doc)] if mi_prod != "Not stated" else []
+            type_ev = [self._make_evidence(source_doc, "Inquiry Classification", mi_type, is_pdf=is_pdf_doc)] if mi_type != "Not stated" else []
+            q_ev = [self._make_evidence(source_doc, "Inquiry Question", mi_q, is_pdf=is_pdf_doc)] if mi_q != "Not stated" else []
+            ctx_ev = [self._make_evidence(source_doc, "Clinical Context", mi_ctx, is_pdf=is_pdf_doc)] if mi_ctx != "Not stated" else []
+            req_ev = [self._make_evidence(source_doc, "Information Requested", mi_req, is_pdf=is_pdf_doc)] if mi_req != "Not stated" else []
 
             mi_facts = [
-                self._make_fact("mi_product_or_topic", mi_prod, evidence=[mi_ev]),
-                self._make_fact("mi_inquiry_type", mi_type, evidence=[mi_ev]),
-                self._make_fact("mi_question_text", mi_q, evidence=[mi_ev]),
-                self._make_fact("mi_clinical_context", mi_ctx, evidence=[mi_ev]),
-                self._make_fact("mi_information_requested", mi_req, evidence=[mi_ev]),
+                self._make_fact("mi_product_or_topic", mi_prod, evidence=prod_ev),
+                self._make_fact("mi_inquiry_type", mi_type, evidence=type_ev),
+                self._make_fact("mi_question_text", mi_q, evidence=q_ev),
+                self._make_fact("mi_clinical_context", mi_ctx, evidence=ctx_ev),
+                self._make_fact("mi_information_requested", mi_req, evidence=req_ev),
                 self._make_fact("mi_explicit_no_ae_no_pqc", str(mi_no_ae), normalized_val=mi_no_ae, evidence=[mi_ev]),
             ]
+
+            # Add discrete question facts if available
+            if isinstance(questions, list) and questions:
+                for idx, q_item in enumerate(questions):
+                    if q_item and q_item != "Not stated":
+                        item_ev = [self._make_evidence(source_doc, f"Question {idx + 1}", str(q_item), is_pdf=is_pdf_doc)]
+                        mi_facts.append(self._make_fact(f"mi_question_{idx + 1}", str(q_item), evidence=item_ev))
 
             mi_payload = MiPayload(
                 product_or_topic=mi_prod,

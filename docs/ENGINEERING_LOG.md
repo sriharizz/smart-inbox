@@ -500,3 +500,63 @@ Controlled live validation was executed against the real Gmail synthetic message
 - **Full AI Microservice Test Suite**: **114/114 Passed**, 1 skipped live integration test (`tests/`).
 - **Benchmark Ground Truth**: `test-data/ground_truth/benchmark.json` and all evaluation fixtures left completely untouched and intact.
 
+---
+
+### [2026-09-07] — Milestone: Evidence UX Enhancement — Direct Source Navigation & Exact Visual Highlighting
+
+#### 1. Context & Architectural Problem
+The central product promise of Clinevo Smart Inbox is:
+> *"The system prepares an evidence-linked case, reducing manual searching and transcription while keeping the human reviewer in control."*
+
+Initial evidence inspection implementations presented extracted quotes inside a secondary bottom drawer or inspector dock. However, safety reviewers require a **source-first experience**:
+$$\text{FACT} \longrightarrow \text{Click "View evidence"} \longrightarrow \text{Actual source navigates to evidence} \longrightarrow \text{Exact passage highlighted inside original document}$$
+
+The reviewer must be able to visually verify extracted data directly against the original email or PDF document without manually hunting for citations.
+
+#### 2. Architectural Decisions & Implementation Details
+
+##### A. PDF Rendering via Path A (`pdfjs-dist`)
+- **Limitation of Native Browser Iframes**: Native browser PDF plugins (`<iframe src="file.pdf">`) run in sandboxed out-of-process C++ viewports with no accessible DOM layer, preventing aligned HTML overlay boxes.
+- **Controlled Canvas Architecture**: Replaced the native `<iframe>` with `pdfjs-dist` (@^4.10.38) rendering into an HTML5 `<canvas #pdfCanvas>`.
+- **Coordinate Alignment**:
+  - PyMuPDF point coordinates `(x0, y0, x1, y1)` use top-left origin at 72 DPI.
+  - PDF.js viewport at `baseScale = 1.333333 * (zoomLevel / 100)` maps points to CSS viewport pixels with 1:1 mathematical precision:
+    $$x = \text{bbox.x0} \times \text{baseScale}, \quad y = \text{bbox.y0} \times \text{baseScale}$$
+    $$w = (\text{bbox.x1} - \text{bbox.x0}) \times \text{baseScale}, \quad h = (\text{bbox.y1} - \text{bbox.y0}) \times \text{baseScale}$$
+  - Device Pixel Ratio (DPR) scaling is applied cleanly to internal canvas dimensions while maintaining exact CSS pixel style dimensions.
+  - Coordinate validation verifies that bounding box limits lie within page boundaries; if coordinates are missing or unaligned, the system degrades honestly to Level 2 (page navigation only) without showing spurious boxes.
+  - Smooth scrolling centers `.pdf-highlight-box` (`#pdf-evidence-target`) into view.
+
+##### B. Safe 5-Tier Non-Ambiguous Email Anchoring Hierarchy
+To ensure that ambiguous or common words are never arbitrarily highlighted in email bodies, a strict 5-tier resolution priority was established:
+1. **Tier a (Character Offsets)**: `char_start` / `char_end` when valid, within bounds, and matching candidate text.
+2. **Tier b (Exact Snippet Match)**: Case-insensitive match, accepted **only if unique** (`firstIdx === lastIdx`). Multiple occurrences degrade honestly to `MULTIPLE_OCCURRENCES`.
+3. **Tier c (Whitespace-Normalized Match)**: Collapses CRLF, tabs, and multiple spaces to match real-world intake variations.
+4. **Tier d (Unique Clause Match)**: Matches discrete regulatory phrases or sentences ($\ge 20$ chars) if uniquely identifiable.
+5. **Tier e (Honest Fallback)**: If still ambiguous or not found, NO arbitrary text is highlighted. The source email remains visible, an honest notice is displayed, and the verbatim quote is shown in the secondary inspector dock.
+
+##### C. Source-First Routing Strictly by Identity
+- Documents are never routed as PDFs merely because a page number exists.
+- Routing is resolved strictly by:
+  $$\text{source\_type} + \text{source\_id} \longrightarrow \text{Actual Source View}$$
+- `Email` $\to$ Email Body renderer.
+- `PDF` $\to$ PDF canvas viewer (active attachment tab).
+- `Image` $\to$ Image defect viewer.
+
+##### D. Visual Style & UI De-Cluttering
+- **Restrained Highlighter**: Eliminated distracting neon pulsing and glow animations. Replaced with authentic document-highlighter marks (`rgba(254, 240, 138, 0.75)` with subtle `#eab308` border).
+- **Ledger Table Clarity**: Removed multi-line "Also cited in" chip walls from table cells, restoring the clean regulatory columns: `Parameter | Extracted Value | Certainty Status | Confidence | Traceable Evidence`.
+- **Reviewer-Facing Terminology**: Replaced internal engine jargon (*"Deterministic intra-document grounding verified"*) with clean regulatory language (*"Supported"*, *"Verified against source"*).
+- **Dynamic State Management**: Selecting any new fact immediately clears previous highlights and scrolls the new evidence passage into view.
+
+#### 3. Verification & Acceptance Results
+- **Angular Test Suite**: **56/56 Passed** (`case-workspace-evidence-nav.spec.ts` 25/25 scenarios passed).
+- **AI Microservice Test Suite**: **114/114 Passed** (`tests/`).
+- **Spring Boot Compilation**: **Clean compile** with zero warnings.
+- **Manual Visual Acceptance Testing via Browser Subagent (Case 9)**:
+  - **Email**: Clicking *Reporter Qualification* navigated to Email Body and highlighted `Sarah Jenkins, MD, FACP...` in-line (`step2_reporter_evidence_1788780369981.png`).
+  - **PDF**: Clicking *Patient Weight* switched to `cioms_form_MK_Cardioril.pdf` on Page 1 and placed `.pdf-highlight-box` directly over Box 3a (`68 kg (150 lbs)`) with 100% geometric alignment (`step3_pdf_weight_evidence_1788780405841.png`).
+  - **Fact Switch**: Clicking *Suspect Product* cleared the weight highlight and positioned the highlight box over Box 14 (`Cardioril`) (`step4_another_fact_evidence_1788780477053.png`).
+  - **Browser Session Recording**: Persisted at `evidence_ux_acceptance_1788780304721.webp`.
+
+

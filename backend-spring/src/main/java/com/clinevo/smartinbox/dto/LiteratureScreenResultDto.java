@@ -6,6 +6,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LiteratureScreenResultDto {
 
+    private Long id;
+    private String filename;
     private String article_title;
     private String authors;
     private String journal;
@@ -16,8 +18,30 @@ public class LiteratureScreenResultDto {
     private int patient_cases_count;
     private List<ExtractionResultDto> individual_cases;
     private String screening_summary;
+    private String review_status = "PENDING";
+    private String reviewed_by;
+    private String reviewed_at;
+    private String reviewer_comments;
 
     public LiteratureScreenResultDto() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getFilename() { return filename; }
+    public void setFilename(String filename) { this.filename = filename; }
+
+    public String getReview_status() { return review_status; }
+    public void setReview_status(String review_status) { this.review_status = review_status; }
+
+    public String getReviewed_by() { return reviewed_by; }
+    public void setReviewed_by(String reviewed_by) { this.reviewed_by = reviewed_by; }
+
+    public String getReviewed_at() { return reviewed_at; }
+    public void setReviewed_at(String reviewed_at) { this.reviewed_at = reviewed_at; }
+
+    public String getReviewer_comments() { return reviewer_comments; }
+    public void setReviewer_comments(String reviewer_comments) { this.reviewer_comments = reviewer_comments; }
 
     public String getArticle_title() { return article_title; }
     public void setArticle_title(String article_title) { this.article_title = article_title; }

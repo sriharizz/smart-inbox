@@ -20,6 +20,10 @@ public class ExtractionResultDto {
     private MedicalInfoDto medical_info;
     private String narrative;
     private int processing_time_ms;
+    private Map<String, Object> citations;
+    private List<Map<String, Object>> concomitant_medications;
+    private Map<String, Object> regulatory;
+    private List<AttachmentMetadataDto> attachment_metadata;
 
     public ExtractionResultDto() {}
 
@@ -60,6 +64,15 @@ public class ExtractionResultDto {
         private String source_type = "email";
         private String page_or_location = "body";
         private String verbatim_snippet = "Not stated";
+        private String source_id = "source_doc";
+        private String source_name;
+        private Integer page_number;
+        private Map<String, Object> bounding_box;
+        private Integer char_start;
+        private Integer char_end;
+        private String anchor_level = "LEVEL_3_SNIPPET_ONLY";
+        private String verification_result = "SUPPORTS";
+        private String verification_rationale;
 
         public String getSource_type() { return source_type; }
         public void setSource_type(String source_type) { this.source_type = source_type; }
@@ -67,25 +80,49 @@ public class ExtractionResultDto {
         public void setPage_or_location(String page_or_location) { this.page_or_location = page_or_location; }
         public String getVerbatim_snippet() { return verbatim_snippet; }
         public void setVerbatim_snippet(String verbatim_snippet) { this.verbatim_snippet = verbatim_snippet; }
+        public String getSource_id() { return source_id; }
+        public void setSource_id(String source_id) { this.source_id = source_id; }
+        public String getSource_name() { return source_name; }
+        public void setSource_name(String source_name) { this.source_name = source_name; }
+        public Integer getPage_number() { return page_number; }
+        public void setPage_number(Integer page_number) { this.page_number = page_number; }
+        public Map<String, Object> getBounding_box() { return bounding_box; }
+        public void setBounding_box(Map<String, Object> bounding_box) { this.bounding_box = bounding_box; }
+        public Integer getChar_start() { return char_start; }
+        public void setChar_start(Integer char_start) { this.char_start = char_start; }
+        public Integer getChar_end() { return char_end; }
+        public void setChar_end(Integer char_end) { this.char_end = char_end; }
+        public String getAnchor_level() { return anchor_level; }
+        public void setAnchor_level(String anchor_level) { this.anchor_level = anchor_level; }
+        public String getVerification_result() { return verification_result; }
+        public void setVerification_result(String verification_result) { this.verification_result = verification_result; }
+        public String getVerification_rationale() { return verification_rationale; }
+        public void setVerification_rationale(String verification_rationale) { this.verification_rationale = verification_rationale; }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PatientDto {
         private String identifier = "Not stated";
+        private String dob = "Not stated";
         private String age = "Not stated";
         private String sex = "Not stated";
         private String weight = "Not stated";
+        private String country = "Not stated";
         private String medical_history = "Not stated";
         private SourceCitationDto citation;
 
         public String getIdentifier() { return identifier; }
         public void setIdentifier(String identifier) { this.identifier = identifier; }
+        public String getDob() { return dob; }
+        public void setDob(String dob) { this.dob = dob; }
         public String getAge() { return age; }
         public void setAge(String age) { this.age = age; }
         public String getSex() { return sex; }
         public void setSex(String sex) { this.sex = sex; }
         public String getWeight() { return weight; }
         public void setWeight(String weight) { this.weight = weight; }
+        public String getCountry() { return country; }
+        public void setCountry(String country) { this.country = country; }
         public String getMedical_history() { return medical_history; }
         public void setMedical_history(String medical_history) { this.medical_history = medical_history; }
         public SourceCitationDto getCitation() { return citation; }
@@ -96,21 +133,27 @@ public class ExtractionResultDto {
     public static class ReporterDto {
         private String name = "Not stated";
         private String role = "Not stated";
+        private String specialty = "Not stated";
         private String institution = "Not stated";
         private String country = "Not stated";
         private String email_or_phone = "Not stated";
+        private String health_professional = "Not stated";
         private SourceCitationDto citation;
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
+        public String getSpecialty() { return specialty; }
+        public void setSpecialty(String specialty) { this.specialty = specialty; }
         public String getInstitution() { return institution; }
         public void setInstitution(String institution) { this.institution = institution; }
         public String getCountry() { return country; }
         public void setCountry(String country) { this.country = country; }
         public String getEmail_or_phone() { return email_or_phone; }
         public void setEmail_or_phone(String email_or_phone) { this.email_or_phone = email_or_phone; }
+        public String getHealth_professional() { return health_professional; }
+        public void setHealth_professional(String health_professional) { this.health_professional = health_professional; }
         public SourceCitationDto getCitation() { return citation; }
         public void setCitation(SourceCitationDto citation) { this.citation = citation; }
     }
@@ -118,16 +161,23 @@ public class ExtractionResultDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ProductDto {
         private String product_name = "Not stated";
+        private String formulation = "Not stated";
         private String dose = "Not stated";
         private String frequency = "Not stated";
         private String route = "Not stated";
         private String lot_number = "Not stated";
         private String expiry_date = "Not stated";
         private String indication = "Not stated";
+        private String start_date = "Not stated";
+        private String stop_date = "Not stated";
+        private String duration = "Not stated";
+        private String action_taken = "Not stated";
         private SourceCitationDto citation;
 
         public String getProduct_name() { return product_name; }
         public void setProduct_name(String product_name) { this.product_name = product_name; }
+        public String getFormulation() { return formulation; }
+        public void setFormulation(String formulation) { this.formulation = formulation; }
         public String getDose() { return dose; }
         public void setDose(String dose) { this.dose = dose; }
         public String getFrequency() { return frequency; }
@@ -140,6 +190,14 @@ public class ExtractionResultDto {
         public void setExpiry_date(String expiry_date) { this.expiry_date = expiry_date; }
         public String getIndication() { return indication; }
         public void setIndication(String indication) { this.indication = indication; }
+        public String getStart_date() { return start_date; }
+        public void setStart_date(String start_date) { this.start_date = start_date; }
+        public String getStop_date() { return stop_date; }
+        public void setStop_date(String stop_date) { this.stop_date = stop_date; }
+        public String getDuration() { return duration; }
+        public void setDuration(String duration) { this.duration = duration; }
+        public String getAction_taken() { return action_taken; }
+        public void setAction_taken(String action_taken) { this.action_taken = action_taken; }
         public SourceCitationDto getCitation() { return citation; }
         public void setCitation(SourceCitationDto citation) { this.citation = citation; }
     }
@@ -150,6 +208,11 @@ public class ExtractionResultDto {
         private String onset_date = "Not stated";
         private String outcome = "Not stated";
         private List<String> seriousness_criteria;
+        private boolean hospitalization;
+        private String admission_date = "Not stated";
+        private boolean life_threatening;
+        private boolean death;
+        private boolean medically_important;
         private String dechallenge = "Not stated";
         private String rechallenge = "Not stated";
         private SourceCitationDto citation;
@@ -163,6 +226,16 @@ public class ExtractionResultDto {
         public String getOutcome() { return outcome; }
         public List<String> getSeriousness_criteria() { return seriousness_criteria; }
         public void setSeriousness_criteria(List<String> seriousness_criteria) { this.seriousness_criteria = seriousness_criteria; }
+        public boolean isHospitalization() { return hospitalization; }
+        public void setHospitalization(boolean hospitalization) { this.hospitalization = hospitalization; }
+        public String getAdmission_date() { return admission_date; }
+        public void setAdmission_date(String admission_date) { this.admission_date = admission_date; }
+        public boolean isLife_threatening() { return life_threatening; }
+        public void setLife_threatening(boolean life_threatening) { this.life_threatening = life_threatening; }
+        public boolean isDeath() { return death; }
+        public void setDeath(boolean death) { this.death = death; }
+        public boolean isMedically_important() { return medically_important; }
+        public void setMedically_important(boolean medically_important) { this.medically_important = medically_important; }
         public String getDechallenge() { return dechallenge; }
         public void setDechallenge(String dechallenge) { this.dechallenge = dechallenge; }
         public String getRechallenge() { return rechallenge; }
@@ -247,4 +320,30 @@ public class ExtractionResultDto {
     public void setNarrative(String narrative) { this.narrative = narrative; }
     public int getProcessing_time_ms() { return processing_time_ms; }
     public void setProcessing_time_ms(int processing_time_ms) { this.processing_time_ms = processing_time_ms; }
+    public Map<String, Object> getCitations() { return citations; }
+    public void setCitations(Map<String, Object> citations) { this.citations = citations; }
+    public List<Map<String, Object>> getConcomitant_medications() { return concomitant_medications; }
+    public void setConcomitant_medications(List<Map<String, Object>> concomitant_medications) { this.concomitant_medications = concomitant_medications; }
+    public Map<String, Object> getRegulatory() { return regulatory; }
+    public void setRegulatory(Map<String, Object> regulatory) { this.regulatory = regulatory; }
+    public List<AttachmentMetadataDto> getAttachment_metadata() { return attachment_metadata; }
+    public void setAttachment_metadata(List<AttachmentMetadataDto> attachment_metadata) { this.attachment_metadata = attachment_metadata; }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AttachmentMetadataDto {
+        private String filename;
+        private String flavor;
+        private String language;
+        private String document_summary;
+
+        public String getFilename() { return filename; }
+        public void setFilename(String filename) { this.filename = filename; }
+        public String getFlavor() { return flavor; }
+        public void setFlavor(String flavor) { this.flavor = flavor; }
+        public String getLanguage() { return language; }
+        public void setLanguage(String language) { this.language = language; }
+        public String getDocument_summary() { return document_summary; }
+        public void setDocument_summary(String document_summary) { this.document_summary = document_summary; }
+    }
 }
+

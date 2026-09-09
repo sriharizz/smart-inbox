@@ -40,19 +40,38 @@ class DocumentOrchestrator:
         ]
         
         candidate_images: List[Image.Image] = []
+        image_metadata: List[Dict[str, Any]] = []
+        attachment_metadata: List[Dict[str, Any]] = []
         
         for att in parsed_email.attachments:
             fname = att["filename"].lower()
             if fname.endswith(".pdf"):
                 pdf_res = PDFParser.parse_pdf_bytes(att["bytes"], filename=att["filename"])
+                attachment_metadata.append({
+                    "filename": att["filename"],
+                    "flavor": pdf_res.flavor,
+                    "language": pdf_res.detected_language,
+                    "extracted_text": pdf_res.full_content_with_tables
+                })
                 combined_text_parts.append(f"\n[ATTACHED PDF: {att['filename']} (Flavor: {pdf_res.flavor})]\n{pdf_res.full_content_with_tables}")
                 for img_info in pdf_res.images:
                     candidate_images.append(img_info["pil_image"])
+                    image_metadata.append({
+                        "source_filename": att["filename"],
+                        "page_number": img_info.get("page", 1),
+                        "bbox": img_info.get("bbox")
+                    })
                 
                 # If scanned/handwritten, render page 1 as high-res image
                 if pdf_res.flavor == "scanned_handwritten":
                     try:
-                        candidate_images.append(pdf_res.render_page_image(1))
+                        scanned_img = pdf_res.render_page_image(1)
+                        candidate_images.append(scanned_img)
+                        image_metadata.append({
+                            "source_filename": att["filename"],
+                            "page_number": 1,
+                            "bbox": None
+                        })
                     except Exception:
                         pass
             elif fname.endswith((".jpg", ".jpeg", ".png")):
@@ -60,9 +79,25 @@ class DocumentOrchestrator:
                 try:
                     img = Image.open(io.BytesIO(att["bytes"]))
                     candidate_images.append(img)
+                    image_metadata.append({
+                        "source_filename": att["filename"],
+                        "page_number": 1,
+                        "bbox": None
+                    })
                     combined_text_parts.append(f"\n[ATTACHED DEFECT PHOTO: {att['filename']}]")
+                    attachment_metadata.append({
+                        "filename": att["filename"],
+                        "flavor": "photo_evidence",
+                        "language": "English"
+                    })
                 except Exception as e:
                     logger.warning(f"Could not open image attachment {att['filename']}: {e}")
+            else:
+                attachment_metadata.append({
+                    "filename": att["filename"],
+                    "flavor": "digital_form",
+                    "language": "English"
+                })
 
         full_context_text = "\n\n".join(combined_text_parts)
 
@@ -74,12 +109,33 @@ class DocumentOrchestrator:
             document_text=full_context_text,
             triage_result=triage_result,
             images=candidate_images,
+            image_metadata=image_metadata,
             source_filename=filename,
             message_id=parsed_email.message_id or filename,
             fresh_processing=fresh_processing
         )
         envelope.received_date = parsed_email.date
+        envelope.language_detected = parsed_email.detected_language
         envelope.metadata["attachment_filenames"] = [att["filename"] for att in parsed_email.attachments]
+
+        # Associate PDF document_summary with specific PDF attachment(s)
+        pdf_metas = [m for m in attachment_metadata if m.get("filename", "").lower().endswith(".pdf")]
+        if len(pdf_metas) == 1:
+            # Single PDF attachment: Reuse existing envelope.document_summary without extra AI calls
+            pdf_metas[0]["document_summary"] = envelope.document_summary
+        elif len(pdf_metas) > 1:
+            # Multiple PDF attachments: First gets envelope.document_summary, secondary PDFs get independent summaries
+            for idx, pm in enumerate(pdf_metas):
+                if idx == 0:
+                    pm["document_summary"] = envelope.document_summary
+                else:
+                    pm["document_summary"] = icsr_extractor.summarize_pdf_document(
+                        pdf_content=pm.get("extracted_text", ""),
+                        filename=pm.get("filename", "document.pdf")
+                    )
+
+        envelope.metadata["attachment_metadata"] = attachment_metadata
+
 
         # 5. Intra-Document Evidence Retrieval (Step 4)
         try:
@@ -130,12 +186,23 @@ class DocumentOrchestrator:
         parsed_pdf = PDFParser.parse_pdf_bytes(pdf_bytes, filename=filename)
         
         candidate_images: List[Image.Image] = []
+        image_metadata: List[Dict[str, Any]] = []
         for img_info in parsed_pdf.images:
             candidate_images.append(img_info["pil_image"])
+            image_metadata.append({
+                "source_filename": filename,
+                "page_number": img_info.get("page", 1),
+                "bbox": img_info.get("bbox")
+            })
         
         if parsed_pdf.flavor == "scanned_handwritten":
             try:
                 candidate_images.append(parsed_pdf.render_page_image(1))
+                image_metadata.append({
+                    "source_filename": filename,
+                    "page_number": 1,
+                    "bbox": None
+                })
             except Exception:
                 pass
 
@@ -149,9 +216,20 @@ class DocumentOrchestrator:
             document_text=full_content,
             triage_result=triage_result,
             images=candidate_images,
+            image_metadata=image_metadata,
             source_filename=filename,
             message_id=filename
         )
+        envelope.language_detected = parsed_pdf.detected_language
+        envelope.metadata["document_flavor"] = parsed_pdf.flavor
+        envelope.metadata["document_language"] = parsed_pdf.detected_language
+        envelope.metadata["attachment_metadata"] = [{
+            "filename": filename,
+            "flavor": parsed_pdf.flavor,
+            "language": parsed_pdf.detected_language,
+            "document_summary": envelope.document_summary
+        }]
+
 
         # 4. Intra-Document Evidence Retrieval (Step 4)
         try:
@@ -194,6 +272,6 @@ class DocumentOrchestrator:
     @staticmethod
     def screen_literature_pdf(pdf_bytes: bytes, filename: str = "article.pdf") -> LiteratureScreenResult:
         parsed_pdf = PDFParser.parse_pdf_bytes(pdf_bytes, filename=filename)
-        return literature_service.screen_and_split(parsed_pdf.full_text, filename=filename)
+        return literature_service.screen_and_split(parsed_pdf, filename=filename)
 
 orchestrator = DocumentOrchestrator()

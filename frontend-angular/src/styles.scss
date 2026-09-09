@@ -6,44 +6,70 @@
    ========================================================================== */
 
 :root {
-  /* Application Design Tokens (Restrained Brand Accents) */
-  --brand-primary: #521d5e;             /* Restrained enterprise plum / deep purple */
-  --brand-primary-hover: #40144a;
-  --brand-primary-subtle: #f6eef8;      /* Light tint for selected rows & badges */
-  --brand-primary-border: #e4cce9;
+  /* Consolidated Brand Tokens (Clinevo Visual Identity) */
+  --brand-primary: #501d5a;             /* Deep Clinevo purple from official logo */
+  --brand-primary-hover: #3d1245;
+  --brand-primary-subtle: #f9f3fa;      /* Faded subtle tint for badges & active states */
+  --brand-primary-border: #e8d5ec;
   
-  --brand-secondary: #743485;           /* Secondary violet accent */
-  --brand-accent-blue: #2563eb;         /* Reference links */
+  --brand-secondary: #743485;           /* Muted violet/magenta derived from logo */
+  --brand-secondary-subtle: #fbf5fc;
+  --brand-secondary-border: #ebd9ee;
   
-  /* Semantic Status & Action Tokens */
-  --action-confirm: #18794e;            /* Enterprise action green */
-  --action-confirm-hover: #136340;
-  --action-confirm-bg: #edf8f2;
-  --action-confirm-border: #bce3cf;
-  
-  --status-urgent: #c92a2a;             /* Expedited / High risk */
-  --status-urgent-bg: #fff5f5;
-  --status-urgent-border: #ffc9c9;
-  
-  --status-attention: #d97706;          /* Low confidence / Missing data / Review cue */
+  --brand-accent: #2563eb;              /* Controlled blue derived from logo for source links */
+  --brand-accent-blue: #2563eb;         /* Backward-compatible alias */
+  --brand-accent-subtle: #eff6ff;
+  --brand-accent-border: #bfdbfe;
+
+  /* Surfaces & Canvas (Clean, calm enterprise clinical appearance) */
+  --surface: #ffffff;
+  --surface-panel: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-canvas: #f8fafc;
+  --surface-hover: #f1f5f9;
+  --surface-active: #f9f3fa;
+  --surface-subtle: #f8fafc;
+
+  /* Typography */
+  --text-primary: #0f172a;              /* High-contrast dark charcoal */
+  --text-main: #0f172a;
+  --text-secondary: #334155;            /* Labels & subtitles */
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --border: #e2e8f0;                    /* Crisp neutral subtle separator */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-focus: #501d5a;
+
+  /* Semantic Status Tokens (PRESERVED: DO NOT REPLACE WITH BRAND COLORS) */
+  --status-success: #166534;
+  --status-success-bg: #f0fdf4;
+  --status-success-border: #bbf7d0;
+  --action-confirm: #166534;
+  --action-confirm-hover: #14532d;
+  --action-confirm-bg: #f0fdf4;
+  --action-confirm-border: #bbf7d0;
+
+  --status-warning: #b45309;
+  --status-warning-bg: #fffbeb;
+  --status-warning-border: #fde68a;
+  --status-attention: #b45309;
   --status-attention-bg: #fffbeb;
   --status-attention-border: #fde68a;
-  
-  --status-neutral: #475569;            /* Standard / Non-expedited */
+
+  --status-critical: #b91c1c;
+  --status-critical-bg: #fef2f2;
+  --status-critical-border: #fecaca;
+  --status-urgent: #b91c1c;
+  --status-urgent-bg: #fef2f2;
+  --status-urgent-border: #fecaca;
+
+  --status-neutral: #475569;
   --status-neutral-bg: #f1f5f9;
   --status-neutral-border: #cbd5e1;
-
-  /* Surfaces & Canvas (Primarily White/Light) */
-  --surface-canvas: #f8fafc;            /* Application canvas background */
-  --surface-panel: #ffffff;             /* Cards, tables, inspectors */
-  --surface-hover: #f1f5f9;             /* Table row hover */
-  --surface-active: #f6eef8;            /* Selected queue row */
-  --surface-subtle: #f8fafc;
-  
-  /* Borders & Dividers */
-  --border-light: #e2e8f0;              /* Subtle separators */
-  --border-medium: #cbd5e1;             /* Control borders */
-  --border-focus: #521d5e;              /* Accessible focus ring */
 
   /* High-Contrast Typography */
   --text-main: #0f172a;                 /* Primary content / data fields */

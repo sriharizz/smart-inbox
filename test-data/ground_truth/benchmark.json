@@ -619,6 +619,88 @@
         "all": "emails/email_11.eml:Body"
       }
     },
+    "CASE-12": {
+      "type": "email_intake",
+      "email_file": "emails/email_12.eml",
+      "email_headers": {
+        "from": "\"Dr. Marcus Vance, MD\" <m.vance@metrourgentcare.org>",
+        "to": "\"Clinevo Drug Safety Mailbox\" <drugsafety@clinevotech.com>",
+        "date": "Sun, 10 Dec 2023 12:15:00 -0600",
+        "subject": "URGENT: Adverse Drug Reaction Report - Acute Angioedema s/p Cardioril (Pt M.T.)",
+        "message_id": "<20231210.121500.mvance@metrourgentcare.org>"
+      },
+      "attachment_file": "pdfs/scanned_handwritten/urgent_care_clinic_note.pdf",
+      "categories": [
+        "Safety Report (ICSR)"
+      ],
+      "confidence_threshold": 0.85,
+      "patient": {
+        "name": "M. T.",
+        "dob": "11/04/1978",
+        "age": "47",
+        "sex": "M",
+        "weight": "82 kg",
+        "height": "178 cm",
+        "medical_history": "Mild hypertension (x 2 yrs), seasonal allergic rhinitis. No prior adverse drug reactions"
+      },
+      "product": {
+        "name": "Cardioril (cardioril hydrochloride)",
+        "dose": "20 mg",
+        "route": "PO",
+        "frequency": "once daily",
+        "indication": "essential hypertension",
+        "therapy_dates": "02-DEC-2023 to 10-DEC-2023",
+        "onset_latency": "About 90 minutes following 8th dose",
+        "action_taken": "Discontinue Cardioril (do not restart)"
+      },
+      "reaction": {
+        "terms": [
+          "Acute Angioedema (Perioral and Tongue)",
+          "Diffuse Erythematous Maculopapular Rash",
+          "Dyspnea / Shortness of Breath",
+          "Wheezing on Auscultation"
+        ],
+        "onset": "10-DEC-2023",
+        "serious": true,
+        "life_threatening": true,
+        "hospitalization": true,
+        "death": false,
+        "canonical": "Acute Angioedema (Perioral and Tongue)",
+        "acceptable_terms": [
+          "acute angioedema (perioral and tongue)",
+          "acute angioedema",
+          "perioral and tongue swelling",
+          "diffuse erythematous maculopapular rash",
+          "maculopapular rash",
+          "dyspnea",
+          "shortness of breath",
+          "wheezing"
+        ]
+      },
+      "treatment": {
+        "emergency_intervention": "Methylprednisolone 125 mg IV, Diphenhydramine 50 mg IV, Albuterol nebulizer 2.5 mg, IV Normal Saline 1000 mL bolus, transfer to hospital Observation Unit"
+      },
+      "vitals": {
+        "BP": "96/62 mmHg",
+        "HR": "106 bpm",
+        "RR": "22/min",
+        "SpO2": "93%",
+        "Temp": "36.8 C",
+        "Peak_Flow": "320 L/min"
+      },
+      "outcome": "Stabilized after treatment; swelling and rash began to improve within ~4 hours; transferred to Observation Unit",
+      "dechallenge": "Positive",
+      "reporter": {
+        "name": "Dr. Marcus Vance, MD",
+        "institution": "Metro Urgent Care Center",
+        "location": "Chicago, IL",
+        "npi": "4491823055",
+        "email": "m.vance@metrourgentcare.org"
+      },
+      "source_citations": {
+        "all": "urgent_care_clinic_note.pdf:Page1"
+      }
+    },
     "LIT-01": {
       "type": "literature_screening",
       "pdf_file": "pdfs/literature_articles/article_01_dili_case.pdf",

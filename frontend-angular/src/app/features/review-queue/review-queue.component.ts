@@ -1,9 +1,10 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from '../../core/services/message.service';
 import { MessageSummary } from '../../core/models/message.model';
+import { resolveCaseId } from '../../core/utils/case-id.util';
 
 @Component({
   selector: 'app-review-queue',
@@ -12,7 +13,7 @@ import { MessageSummary } from '../../core/models/message.model';
   templateUrl: './review-queue.component.html',
   styleUrls: ['./review-queue.component.scss']
 })
-export class ReviewQueueComponent implements OnInit {
+export class ReviewQueueComponent implements OnInit, OnDestroy {
   private messageService = inject(MessageService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -21,6 +22,7 @@ export class ReviewQueueComponent implements OnInit {
   filteredMessages: MessageSummary[] = [];
   isLoading = true;
   errorMessage = '';
+  private pollInterval?: any;
 
   // Filter State
   selectedCategory = 'ALL';
@@ -35,6 +37,28 @@ export class ReviewQueueComponent implements OnInit {
 
   ngOnInit() {
     this.loadQueue();
+    this.pollInterval = setInterval(() => {
+      this.refreshSilently();
+    }, 10000);
+  }
+
+  ngOnDestroy() {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
+  }
+
+  refreshSilently() {
+    this.messageService.getMessages().subscribe({
+      next: (data) => {
+        if (data && (data.length !== this.messages.length || data.some((m, idx) => m.status !== this.messages[idx]?.status))) {
+          this.messages = data;
+          this.applyFilters();
+          this.cdr.markForCheck();
+        }
+      },
+      error: () => {}
+    });
   }
 
   loadQueue() {
@@ -97,7 +121,7 @@ export class ReviewQueueComponent implements OnInit {
         m.sender.toLowerCase().includes(q) ||
         m.senderEmail.toLowerCase().includes(q) ||
         m.subject.toLowerCase().includes(q) ||
-        this.formatCaseId(m.id).toLowerCase().includes(q) ||
+        this.formatCaseId(m).toLowerCase().includes(q) ||
         (m.executiveSummary && m.executiveSummary.toLowerCase().includes(q))
       );
     }
@@ -124,8 +148,8 @@ export class ReviewQueueComponent implements OnInit {
     this.router.navigate(['/cases', id]);
   }
 
-  formatCaseId(id: number): string {
-    return `CASE-${id.toString().padStart(3, '0')}`;
+  formatCaseId(item: any): string {
+    return resolveCaseId(item);
   }
 
   formatConfidence(conf: number): string {

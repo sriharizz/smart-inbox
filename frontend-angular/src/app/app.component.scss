@@ -32,30 +32,34 @@
   gap: 10px;
   text-decoration: none;
   color: inherit;
+  padding: 2px 0;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
-.brand-logo {
-  display: flex;
-  align-items: center;
+.brand-logo-img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
-.brand-text {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+.brand-divider {
+  font-size: 15px;
+  color: var(--border-medium);
+  font-weight: 300;
+  line-height: 1;
 }
 
-.brand-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--brand-primary);
-  letter-spacing: -0.3px;
-}
-
-.brand-sub {
+.product-title {
   font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
 }
 
 .main-nav {

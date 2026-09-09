@@ -46,6 +46,24 @@ public class LiteratureArticleEntity {
     @Column(name = "CASES_JSON")
     private String casesJson;
 
+    @Column(name = "REVIEW_STATUS", length = 50)
+    private String reviewStatus = "PENDING";
+
+    @Column(name = "REVIEWED_BY", length = 150)
+    private String reviewedBy;
+
+    @Column(name = "REVIEWED_AT")
+    private LocalDateTime reviewedAt;
+
+    @Lob
+    @Column(name = "REVIEWER_COMMENTS")
+    private String reviewerComments;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "PDF_DATA")
+    private byte[] pdfData;
+
     @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -86,6 +104,21 @@ public class LiteratureArticleEntity {
 
     public String getCasesJson() { return casesJson; }
     public void setCasesJson(String casesJson) { this.casesJson = casesJson; }
+
+    public String getReviewStatus() { return reviewStatus; }
+    public void setReviewStatus(String reviewStatus) { this.reviewStatus = reviewStatus; }
+
+    public String getReviewedBy() { return reviewedBy; }
+    public void setReviewedBy(String reviewedBy) { this.reviewedBy = reviewedBy; }
+
+    public LocalDateTime getReviewedAt() { return reviewedAt; }
+    public void setReviewedAt(LocalDateTime reviewedAt) { this.reviewedAt = reviewedAt; }
+
+    public String getReviewerComments() { return reviewerComments; }
+    public void setReviewerComments(String reviewerComments) { this.reviewerComments = reviewerComments; }
+
+    public byte[] getPdfData() { return pdfData; }
+    public void setPdfData(byte[] pdfData) { this.pdfData = pdfData; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

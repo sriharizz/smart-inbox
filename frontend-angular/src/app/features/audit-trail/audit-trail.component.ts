@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuditService } from '../../core/services/audit.service';
 import { AuditEvent } from '../../core/models/audit.model';
+import { resolveCaseId } from '../../core/utils/case-id.util';
 
 @Component({
   selector: 'app-audit-trail',
@@ -78,7 +79,7 @@ export class AuditTrailComponent implements OnInit {
   }
 
   formatCaseId(messageId: number): string {
-    return `CASE-${messageId.toString().padStart(3, '0')}`;
+    return resolveCaseId({ id: messageId });
   }
 
   getActionBadgeClass(action: string): string {

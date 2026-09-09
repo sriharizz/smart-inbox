@@ -1,42 +1,42 @@
 {
   "dataset_name": "Clinevo Smart Inbox Synthetic Pharmacovigilance Test Suite",
   "version": "3.0.0",
-  "scope_definition": "27 logical benchmark cases covering 11 emails and 20 PDFs; attached PDFs are linked through parent email cases.",
+  "scope_definition": "28 logical benchmark cases covering 12 emails and 21 PDFs; attached PDFs are linked through parent email cases.",
   "synthetic_data_statement": "100% Synthetic style-matched test documents complying with Section 3.E (No real patient data).",
   "summary_statistics": {
-    "logical_case_count": 27,
-    "physical_email_count": 11,
-    "physical_pdf_count": 20,
-    "physical_image_count": 2
+    "logical_case_count": 28,
+    "physical_email_count": 12,
+    "physical_pdf_count": 21,
+    "physical_image_count": 3
   },
   "email_statistics": {
-    "total_emails": 11,
+    "total_emails": 12,
     "categories": {
-      "Safety_Report_ICSR": 6,
+      "Safety_Report_ICSR": 7,
       "Quality_Complaint_PQC": 2,
       "Medical_Information_MI": 2,
       "Not_Relevant": 1,
       "Multi_Label_ICSR_PQC": 1
     },
-    "attachment_bearing_emails": 6,
+    "attachment_bearing_emails": 7,
     "pure_text_emails": 5
   },
   "document_statistics": {
-    "total_documents": 20,
+    "total_documents": 21,
     "flavors": {
       "Digital_PDF": 5,
-      "Scanned_Handwritten": 1,
+      "Scanned_Handwritten": 2,
       "Published_Article": 7,
       "Non_English": 2,
       "Quality_Complaint_PDF": 2,
       "Medical_Info_PDF": 2,
       "Irrelevant_PDF": 1
     },
-    "documents_with_tables": 8,
-    "documents_with_images": 2,
+    "documents_with_tables": 9,
+    "documents_with_images": 3,
     "image_requiring_human_review_flag": 1,
     "languages": {
-      "English_en": 17,
+      "English_en": 18,
       "Spanish_es": 1,
       "German_de": 1
     }
@@ -51,8 +51,8 @@
   },
   "deferred_requirements": {
     "second_scanned_handwritten_pdf": {
-      "status": "DEFERRED",
-      "reason": "Reserved for final synthetic hand-filled paper form"
+      "status": "SATISFIED",
+      "reason": "Fulfilled by CASE-12 (urgent_care_clinic_note.pdf)"
     }
   },
   "physical_email_assets": [
@@ -65,8 +65,8 @@
     {
       "filename": "email_02.eml",
       "relative_path": "emails/email_02.eml",
-      "size_bytes": 282693,
-      "sha256": "17b3bebb8b364f977ba3788f8101fb53c672653bc5e4bdaadbe7f928d7d20025"
+      "size_bytes": 504848,
+      "sha256": "ee4c81bee614bb50b30365ea105e5cc522e08bab884573cea2846a99aabd1326"
     },
     {
       "filename": "email_03.eml",
@@ -121,6 +121,12 @@
       "relative_path": "emails/email_11.eml",
       "size_bytes": 2702,
       "sha256": "555c26a18317f17a3d45caada699066929e5926571b2483434b5f8c22669ec2e"
+    },
+    {
+      "filename": "email_12.eml",
+      "relative_path": "emails/email_12.eml",
+      "size_bytes": 577846,
+      "sha256": "777550c02157f3d3fcb50a22dc3e86248b4a91cda028559e6bba875a9b8e954a"
     }
   ],
   "physical_pdf_assets": [
@@ -163,44 +169,44 @@
     {
       "filename": "article_01_dili_case.pdf",
       "relative_path": "pdfs/literature_articles/article_01_dili_case.pdf",
-      "size_bytes": 4790,
-      "sha256": "72526c86dec4942e9d73494d03567282cabd68387d5cba1ee861419b2c98f4b9"
+      "size_bytes": 10527,
+      "sha256": "82f7343e93e4ffa29a437244450eb51c1c09c107718a9ce1fa6ae22e65f73672"
     },
     {
       "filename": "article_02_sjs_case.pdf",
       "relative_path": "pdfs/literature_articles/article_02_sjs_case.pdf",
-      "size_bytes": 4378,
-      "sha256": "e5cf331c7548435290b16ab57a4c7ead2a8ecd29c96baf0960baac54c9188cad"
+      "size_bytes": 9848,
+      "sha256": "8fd655d9a7ffd9ad7f436dd1ad8f7c38f7631ed72b9960177217c965268bcdd0"
     },
     {
       "filename": "article_03_multicase_series.pdf",
       "relative_path": "pdfs/literature_articles/article_03_multicase_series.pdf",
-      "size_bytes": 5035,
-      "sha256": "9323684ca5d9ab5b4a38bf19abe0b9cd290c3c4dff8aebd80737eb370bf0d883"
+      "size_bytes": 9428,
+      "sha256": "13ba7e23fcee7c55b3cf0ad7aabef58ae35ce54ce42efd82607575003a25b648"
     },
     {
       "filename": "article_04_preclinical_review.pdf",
       "relative_path": "pdfs/literature_articles/article_04_preclinical_review.pdf",
-      "size_bytes": 4095,
-      "sha256": "e5cddbf47b3a84bd167b2a94cbfd87e20a8b4feb6f4e18c5df69f4be7ac8d1f1"
+      "size_bytes": 8490,
+      "sha256": "b74a598d907b967c7eaa5b7e281162a4ac5a94179a6c0120a5e93c0cefea0f35"
     },
     {
       "filename": "article_05_meta_analysis_review.pdf",
       "relative_path": "pdfs/literature_articles/article_05_meta_analysis_review.pdf",
-      "size_bytes": 3973,
-      "sha256": "4150bb29a9f45e38a25118f5999bf4cef18891e756c4ff9f0364336cf20ad806"
+      "size_bytes": 8373,
+      "sha256": "1cc4e80a032657bea27a8cef2702a1bcfd47c4ffb856928d98a75f73c4aacb45"
     },
     {
       "filename": "article_06_buried_case_study.pdf",
       "relative_path": "pdfs/literature_articles/article_06_buried_case_study.pdf",
-      "size_bytes": 8144,
-      "sha256": "a13f2eabdf43d6dab1b3f1e1c94f58139c23b9b79cbbc3cb84c0842d3bc7e96d"
+      "size_bytes": 12475,
+      "sha256": "2534635b8ac234f512d0f458a1e3955a5edfe49da8566164437b3d669218a437"
     },
     {
       "filename": "article_07_complex_screening_case.pdf",
       "relative_path": "pdfs/literature_articles/article_07_complex_screening_case.pdf",
-      "size_bytes": 8113,
-      "sha256": "49984eaaab51ee72420d7c3c795dc5b1ab5284d9666f34719c998097373c8c5d"
+      "size_bytes": 13934,
+      "sha256": "99e22620f69762ca39091b452e48227fb1c5f2c175b11dad84ccfbe3a3c1c329"
     },
     {
       "filename": "cardioril_clinical_monograph_dosing.pdf",
@@ -241,8 +247,14 @@
     {
       "filename": "urgent_care_intake_handwritten.pdf",
       "relative_path": "pdfs/scanned_handwritten/urgent_care_intake_handwritten.pdf",
-      "size_bytes": 207848,
-      "sha256": "c4a410351c165dd50c8d92d3c3d9ccceb8ed69a3f9ece9621b2c0b8603de9b5f"
+      "size_bytes": 372312,
+      "sha256": "ffc377bf4616f59d81bff734b61c097b448f21ce18e1f2e975135e725c7746ae"
+    },
+    {
+      "filename": "urgent_care_clinic_note.pdf",
+      "relative_path": "pdfs/scanned_handwritten/urgent_care_clinic_note.pdf",
+      "size_bytes": 426491,
+      "sha256": "f0c049a8bc0df42431958d1d3b61b9c2717a1c4186b720380b61bc7ef8b619c1"
     }
   ],
   "physical_image_assets": [
@@ -255,8 +267,14 @@
     {
       "filename": "handwritten_clinic_photo.jpg",
       "relative_path": "pdfs/scanned_handwritten/handwritten_clinic_photo.jpg",
-      "size_bytes": 920811,
-      "sha256": "8b397441ef1c710f48fd5af7c54d08d08e4aca56f886a618a226e9952ef39e89"
+      "size_bytes": 371627,
+      "sha256": "1829d14ec388e756a130f165b2277593e45a1f8d830f529bd0fc1c6aa8113088"
+    },
+    {
+      "filename": "urgent_care_clinic_photo.jpg",
+      "relative_path": "pdfs/scanned_handwritten/urgent_care_clinic_photo.jpg",
+      "size_bytes": 425702,
+      "sha256": "c86644e321285059f1be60e9ff7ae3c4d1831522d593ecf934cb2c7f724b5a7b"
     }
   ],
   "attachment_relationships": [
@@ -283,6 +301,10 @@
     {
       "email": "emails/email_07.eml",
       "attachment": "pdfs/quality_complaints/packaging_defect_report.pdf"
+    },
+    {
+      "email": "emails/email_12.eml",
+      "attachment": "pdfs/scanned_handwritten/urgent_care_clinic_note.pdf"
     }
   ],
   "logical_case_inventory": [
@@ -664,6 +686,20 @@
       "suspect_product": "Not stated",
       "reporter": "Not stated",
       "adverse_event_or_defect": "Not stated"
+    },
+    {
+      "case_id": "CASE-12",
+      "type": "email_intake",
+      "primary_category": "Safety Report (ICSR)",
+      "all_categories": [
+        "Safety Report (ICSR)"
+      ],
+      "primary_source_type": "email",
+      "source_email": "emails/email_12.eml",
+      "source_pdf": "pdfs/scanned_handwritten/urgent_care_clinic_note.pdf",
+      "suspect_product": "Cardioril (cardioril hydrochloride)",
+      "reporter": "Dr. Marcus Vance, MD",
+      "adverse_event_or_defect": "Acute Angioedema (Perioral and Tongue)"
     }
   ]
 }

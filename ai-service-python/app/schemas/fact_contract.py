@@ -80,3 +80,4 @@ class Fact(BaseModel):
     evidence: List[Evidence] = Field(default_factory=list, description="Associated evidence references proving or disproving this fact")
     verification_state: VerificationResult = Field(default=VerificationResult.INSUFFICIENT, description="Overall verification outcome: SUPPORTS, CONTRADICTS, or INSUFFICIENT")
     notes: Optional[str] = Field(default=None, description="Reviewer clarification, conflict notes, or ambiguity rationale")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Fact provenance and scoping metadata")

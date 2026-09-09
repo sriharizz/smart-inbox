@@ -25,7 +25,7 @@ class FixtureIngestionTest {
     void testFetchNewEmailsFromFixture() throws Exception {
         List<RawEmailPayload> emails = fixtureIngestionSource.fetchNewEmails();
         assertNotNull(emails);
-        assertEquals(11, emails.size(), "Should load exactly 11 synthetic fixture emails");
+        assertEquals(12, emails.size(), "Should load exactly 12 synthetic fixture emails");
 
         // Verify email 01
         RawEmailPayload email01 = emails.stream()
