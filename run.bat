@@ -33,6 +33,15 @@ if exist ".env" (
 :: Ensure backend data directory exists for embedded H2 database
 if not exist "backend-spring\data" mkdir "backend-spring\data" >nul 2>nul
 
+:: Auto-restore pre-seeded 12-case benchmark database on fresh install
+if not exist "backend-spring\data\smartinboxdb.mv.db" (
+    if exist "backend-spring\data\smartinboxdb-backup.zip" (
+        echo [INFO] Restoring pre-seeded 12-case clinical database...
+        powershell -NoProfile -Command "Expand-Archive -Path 'backend-spring\data\smartinboxdb-backup.zip' -DestinationPath 'backend-spring\data' -Force" >nul 2>nul
+        echo [OK] 12 benchmark cases restored to database.
+    )
+)
+
 :: 3. Check for API key and Mail credentials
 findstr /C:"GEMINI_API_KEY=your_gemini_api_key_here" .env >nul 2>nul
 if %errorlevel% equ 0 (

@@ -41,11 +41,19 @@ Desktop.ini
 
 # Temporary scratch and logs
 *.log
-*.zip
 scratch/
-*.db
 *.db-shm
 *.db-wal
 runtime-backup/
-data/
-backend-spring/data/
+/data/
+/smartinbox.db
+/backend-spring/smartinbox.db
+/test-data.zip
+
+# H2 database locks and traces
+backend-spring/data/*.lock.db
+backend-spring/data/*.trace.db
+backend-spring/data/*.mv.db
+
+# Preserve the pre-seeded benchmark database package
+!backend-spring/data/smartinboxdb-backup.zip

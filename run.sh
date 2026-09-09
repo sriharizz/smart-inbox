@@ -38,6 +38,16 @@ if grep -q "GEMINI_API_KEY=your_gemini_api_key_here" .env; then
     echo ""
 fi
 
+# Ensure backend data directory exists
+mkdir -p backend-spring/data
+
+# Auto-restore pre-seeded 12-case benchmark database on fresh install
+if [ ! -f "backend-spring/data/smartinboxdb.mv.db" ] && [ -f "backend-spring/data/smartinboxdb-backup.zip" ]; then
+    echo "[INFO] Restoring pre-seeded 12-case clinical database..."
+    unzip -q -o backend-spring/data/smartinboxdb-backup.zip -d backend-spring/data/ 2>/dev/null || true
+    echo "[OK] 12 benchmark cases restored to database."
+fi
+
 if [ "$INGESTION_MODE" = "IMAP" ]; then
     echo "[MODE] Live IMAP Mailbox Ingestion Active: $MAIL_IMAP_USERNAME"
     echo "[MODE] Polling every ${MAIL_POLL_INTERVAL_MS:-15000} ms"
