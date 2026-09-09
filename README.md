@@ -250,7 +250,7 @@ For seamless evaluation, the repository includes an automated 1-click launcher f
 
 The launcher automatically:
 - Checks Python 3.11+, Java JDK 17/21+, and Node.js
-- Unpacks the pre-seeded **13 clinical benchmark cases** in 0.5s so the queue is ready immediately
+- Unpacks the pre-seeded **12 clinical benchmark cases** in 0.5s so the queue is ready immediately
 - Installs Python dependencies (`ai-service-python/requirements.txt`)
 - Installs Angular frontend dependencies (`npm install` on first run)
 - Starts the **Python AI Microservice** on `http://localhost:8000`
@@ -259,16 +259,16 @@ The launcher automatically:
 - Automatically opens your browser to `http://localhost:4200`
 
 ### 7.2 Immediate Out-of-the-Box Evaluation
-The Review Queue opens with **all 13 canonical clinical benchmark cases already loaded**. Evaluators can immediately:
+The Review Queue opens with **all 12 canonical clinical benchmark cases already loaded**. Evaluators can immediately:
 - Inspect **Case 01** (CIOMS-I form) with highlighted verbatim citations in the side-by-side PDF viewer.
 - Inspect **Case 04** (Multi-label ICSR + Product Quality Complaint with defect photo).
 - Inspect **Case 05** (Spanish AEMPS adverse reaction translated to English with original source links).
-- Inspect **Case 13** (German BfArM Charité Berlin adverse event report with bilingual narrative and Level 1 visual bounding-box anchoring).
+- Inspect **Case 12** (Urgent care clinical note with acute angioedema report).
 - Explore the **Literature Screening** tab showing all screened biomedical articles with multi-case disaggregation (+30% Bonus).
 - Test **Human Reviewer Actions**: Confirm or override cases with clinical comments, updating the 21 CFR Part 11 immutable audit trail in real-time.
 
 ### 7.3 Live Email Intake Testing
-While the 13 pre-seeded cases are available for immediate review, the Spring Boot background poller actively monitors `clinevo.test.inbox12@gmail.com` every 15 seconds. Sending an email with a PDF/image attachment will automatically trigger live Gemini extraction and add **Case 14** live to the top of the queue!
+While the 12 pre-seeded cases are available for immediate review, the Spring Boot background poller actively monitors `clinevo.test.inbox12@gmail.com` every 15 seconds. Sending an email with a PDF/image attachment will automatically trigger live Gemini extraction and add **Case 13** live to the top of the queue!
 
 ### 7.4 Stopping the Services
 - **Windows**: Double-click `stop.bat`
