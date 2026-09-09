@@ -569,7 +569,7 @@ html_content = """<!DOCTYPE html>
         </tr>
         <tr>
           <td><strong>Separate retrieval from semantic verification</strong></td>
-          <td>High lexical similarity does not guarantee a passage actually supports a fact.</td>
+          <td>High lexical similarity does not mean a passage actually supports an extracted fact.</td>
           <td>Retrieval and NLI-based verification are split into two steps; reduced false evidence linkages observed in earlier iterations.</td>
         </tr>
         <tr>
@@ -584,8 +584,8 @@ html_content = """<!DOCTYPE html>
         </tr>
         <tr>
           <td><strong>Human-in-the-loop review</strong></td>
-          <td>Autonomous decisions are inappropriate for patient-safety-relevant content.</td>
-          <td>Human review remains required because model outputs can contain errors or omissions. The AI prepares a draft case; the human reviewer confirms or overrides it.</td>
+          <td>Healthcare intake requires human judgment and verification.</td>
+          <td>Human review remains required because model outputs can contain errors or omissions. The prototype prepares a draft case to assist the reviewer; the human reviewer confirms or overrides it.</td>
         </tr>
       </tbody>
     </table>
@@ -790,7 +790,7 @@ html_content = """<!DOCTYPE html>
 
     <h2>11. Final Takeaway</h2>
     <div class="quote-box">
-      &ldquo;This prototype demonstrates an end-to-end AI-assisted intake workflow for healthcare communications. It reduces first-pass manual work by organizing incoming messages, extracting relevant information, and linking facts back to source material. The reviewer remains responsible for confirmation and correction. The prototype was evaluated using synthetic benchmark data and is not presented as a production regulatory system.&rdquo;
+      &ldquo;This is a working prototype demonstrating an AI-assisted intake and review workflow. It was evaluated using synthetic data. The system assists the reviewer; it does not replace human review.&rdquo;
     </div>
 
     <div class="footer-links">
