@@ -31,7 +31,7 @@ The **Clinevo Smart Inbox Assistant** automates the initial intake and triage pa
   - *Published Literature*: Identifies reportable patient cases and filters out non-reportable studies (animal studies, meta-analyses).
   - *Non-English*: Spanish (AEMPS) and German (BfArM) detection with English translation and original-language source linking.
 - **Zero-Hallucination Extraction**: If a field (e.g., daily dose frequency, weight) is not explicitly present in the source, it is strictly assigned `"Not stated"`. Unsupported guessing is prohibited.
-- **Mandatory Source Attribution**: Every extracted entity links to its exact source (`source_type`, `page_or_location`, and `verbatim_snippet`).
+- **Mandatory Source Attribution & Visual Bounding-Box Anchoring**: Every extracted entity links directly to its source (`source_type`, `page_or_location`, and `verbatim_snippet`). Clicking any field in the reviewer workspace instantly draws an interactive bounding-box highlight on the PDF canvas and opens a docked Level 1 Evidence Inspector drawer.
 - **Literature Multi-Case Splitting (+30% Bonus)**: Automatically disaggregates multi-patient case series (e.g., 1 article reporting 3 patients) into 3 independent, discrete ICSR records.
 - **Human-in-the-Loop Review**: Split-screen dashboard allowing medical reviewers to inspect documents side-by-side with editable AI extractions, accept cases, or override classifications with mandatory audit logging.
 
@@ -129,8 +129,12 @@ Real-time dashboard displaying clinical urgency clocks (e.g. 15-day expedited re
 
 ---
 
-### 4.2 Split-Screen Workspace with Verbatim Evidence Highlighting
-Inspect original PDF attachments alongside editable ICH E2B clinical entities. Clicking any citation pill immediately highlights the supporting text directly inside the PDF canvas with zero-latency visual verification.
+### 4.2 Split-Screen Workspace with Verbatim Evidence Highlighting & Bounding-Box Anchoring
+Inspect original PDF attachments alongside editable ICH E2B clinical entities in a side-by-side split view. Clicking any extracted field (e.g. *Therapy Stop Date* in Case 04) triggers zero-latency client-side visual anchoring:
+- **Interactive PDF Canvas Highlighter**: Automatically renders a high-contrast amber bounding box directly on the PDF document canvas over the exact target coordinates (`[x: 406, y: 288 -> 474.3, 227.7]`), instantly spotlighting the supporting snippet (`"3. DATE OF EVENT 14-NOV-2025"`).
+- **Docked Evidence Inspector Drawer**: Opens seamlessly at the bottom of the viewer displaying the source file (`vial_contamination_sepsis.pdf`), page number (`Page 1`), verbatim quotation, and a **`LEVEL 1 - EXACT VISUAL ANCHOR`** certification badge.
+- **Bi-Directional Clinical Traceability**: Empowers medical reviewers to audit and verify complex clinical facts in under 2 seconds without tedious manual scrolling or searching.
+- **Human-in-the-Loop Regulatory Control**: Reviewers can validate confirmed fields, trigger 21 CFR Part 11 compliant overrides (`Override / Edit`), or accept extractions (`Confirm AI Case`).
 
 ![Case Workspace with Citations](docs/screenshots/02_case_workspace_evidence_highlighting.png)
 
