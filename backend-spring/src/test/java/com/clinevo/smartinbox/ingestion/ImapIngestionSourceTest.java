@@ -86,4 +86,18 @@ class ImapIngestionSourceTest {
         assertNotNull(emails);
         assertTrue(emails.isEmpty(), "Connection failure should be logged and return empty list rather than crashing");
     }
+
+    @Test
+    void testBenchmarkIdentification() {
+        com.clinevo.smartinbox.model.IntakeMessageEntity benchmark = new com.clinevo.smartinbox.model.IntakeMessageEntity();
+        benchmark.setMessageId("case-01-final-1788957014@metrohealth-chicago.org");
+        assertTrue(com.clinevo.smartinbox.service.MailboxIngestionService.isBenchmarkMessage(benchmark));
+
+        com.clinevo.smartinbox.model.IntakeMessageEntity liveEmail = new com.clinevo.smartinbox.model.IntakeMessageEntity();
+        liveEmail.setMessageId("CAGvH-3uU5X8g=abc@mail.gmail.com");
+        assertFalse(com.clinevo.smartinbox.service.MailboxIngestionService.isBenchmarkMessage(liveEmail));
+
+        com.clinevo.smartinbox.model.IntakeMessageEntity nullMsg = new com.clinevo.smartinbox.model.IntakeMessageEntity();
+        assertFalse(com.clinevo.smartinbox.service.MailboxIngestionService.isBenchmarkMessage(nullMsg));
+    }
 }

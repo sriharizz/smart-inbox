@@ -53,6 +53,8 @@ public class MailboxIngestionService {
     @EventListener(ApplicationReadyEvent.class)
     public void onStartup() {
         cleanupSpuriousRecords();
+        long count = messageRepository.count();
+        log.info("[STARTUP] Clinical database verified: {} stored cases loaded and active.", count);
         if (autoIngestOnStartup) {
             log.info("Auto-ingestion enabled on startup. Ingestion mode: {}", ingestionMode);
             try {
@@ -63,18 +65,39 @@ public class MailboxIngestionService {
         }
     }
 
+    public static boolean isBenchmarkMessage(IntakeMessageEntity msg) {
+        if (msg == null || msg.getMessageId() == null) return false;
+        String mId = msg.getMessageId().toLowerCase();
+        return mId.startsWith("case-0") || mId.startsWith("case-1")
+                || mId.contains("metrohealth") || mId.contains("stmarys")
+                || mId.contains("consumer-mail") || mId.contains("nmh-icu") || mId.contains("hospitallapaz")
+                || mId.contains("columbia-neurology") || mId.contains("apex-care") || mId.contains("ucsf-clinical")
+                || mId.contains("pharmasummit") || mId.contains("massgeneral") || mId.contains("metrourgentcare");
+    }
+
     private void cleanupSpuriousRecords() {
         try {
             List<IntakeMessageEntity> all = messageRepository.findAll();
+            int purged = 0;
             for (IntakeMessageEntity msg : all) {
+                // Absolute guard: NEVER purge benchmark cases!
+                if (isBenchmarkMessage(msg)) {
+                    continue;
+                }
                 boolean isFailed = "FAILED".equalsIgnoreCase(msg.getStatus());
-                boolean isSpuriousSender = msg.getSenderEmail() != null &&
-                        (msg.getSenderEmail().contains("srihan") || msg.getSenderEmail().contains("clinevo.test.inbox12"));
+                boolean isStuckReceived = "RECEIVED".equalsIgnoreCase(msg.getStatus());
+                boolean isStuckProcessing = "PROCESSING".equalsIgnoreCase(msg.getStatus());
+                boolean isSpuriousSender = msg.getSenderEmail() != null && msg.getSenderEmail().contains("srihan");
                 boolean isSpuriousSubject = msg.getSubject() != null && msg.getSubject().contains("Akutes Angioödem");
-                if (isFailed || isSpuriousSender || isSpuriousSubject) {
+
+                if (isFailed || isStuckReceived || isStuckProcessing || isSpuriousSender || isSpuriousSubject) {
                     log.warn("Purging spurious non-benchmark intake record ID {}: {} ({})", msg.getId(), msg.getSubject(), msg.getStatus());
                     messageRepository.delete(msg);
+                    purged++;
                 }
+            }
+            if (purged > 0) {
+                log.info("Startup record cleanup: purged {} spurious/stale non-benchmark records.", purged);
             }
         } catch (Exception e) {
             log.warn("Startup record cleanup warning: {}", e.getMessage());
@@ -113,6 +136,10 @@ public class MailboxIngestionService {
                 Optional<IntakeMessageEntity> existingOpt = messageRepository.findByMessageId(email.messageId());
                 if (existingOpt.isPresent()) {
                     IntakeMessageEntity existing = existingOpt.get();
+                    if (isBenchmarkMessage(existing) || "TRIAGED".equalsIgnoreCase(existing.getStatus()) || "REVIEWED".equalsIgnoreCase(existing.getStatus())) {
+                        log.debug("Skipping already completed/benchmark case: {}", email.messageId());
+                        continue;
+                    }
                     if ("RECEIVED".equals(existing.getStatus())) {
                         log.info("Triggering async processing for uncompleted message: {} (ID: {})", email.messageId(), existing.getId());
                         asyncDocumentProcessor.processMessageAsync(existing.getId(), email.rawBytes(), email.filename(), freshProcessing);

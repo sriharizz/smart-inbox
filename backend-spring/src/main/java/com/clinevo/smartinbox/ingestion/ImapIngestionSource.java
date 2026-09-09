@@ -35,8 +35,10 @@ public class ImapIngestionSource implements IngestionSource {
     @Value("${smartinbox.ingestion.imap.folder:INBOX}")
     private String folderName;
 
+    private final java.time.Instant startupInstant = java.time.Instant.now();
     private final java.util.concurrent.atomic.AtomicLong baselineMaxUid = new java.util.concurrent.atomic.AtomicLong(-1L);
     private final java.util.concurrent.atomic.AtomicBoolean baselineInitialized = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private final java.util.Set<String> historicalMessageIds = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     @Override
     public String getSourceName() {
@@ -100,20 +102,32 @@ public class ImapIngestionSource implements IngestionSource {
             fp.add("Message-ID");
             folder.fetch(messages, fp);
 
-            // Establish startup baseline: historical messages present at boot are not re-ingested
-            if (uidFolder != null && !baselineInitialized.get()) {
+            // Establish startup baseline: historical messages present at boot are strictly recorded and not re-ingested
+            if (!baselineInitialized.get()) {
                 long currentMaxUid = -1L;
                 for (Message msg : messages) {
                     try {
-                        long uid = uidFolder.getUID(msg);
-                        if (uid > currentMaxUid) {
-                            currentMaxUid = uid;
+                        if (uidFolder != null) {
+                            long uid = uidFolder.getUID(msg);
+                            if (uid > currentMaxUid) {
+                                currentMaxUid = uid;
+                            }
+                        }
+                        if (msg instanceof MimeMessage mimeMsg) {
+                            String rawId = mimeMsg.getMessageID();
+                            if ((rawId == null || rawId.isBlank()) && mimeMsg.getHeader("Message-ID") != null && mimeMsg.getHeader("Message-ID").length > 0) {
+                                rawId = mimeMsg.getHeader("Message-ID")[0];
+                            }
+                            if (rawId != null && !rawId.isBlank()) {
+                                historicalMessageIds.add(rawId.replaceAll("[<>]", "").trim());
+                            }
                         }
                     } catch (Exception ignored) {}
                 }
-                baselineMaxUid.set(currentMaxUid);
+                baselineMaxUid.set(Math.max(currentMaxUid, 0L));
                 baselineInitialized.set(true);
-                log.info("IMAP mailbox baseline established at UID {}. Existing {} historical messages in mailbox will not be re-ingested; waiting for new live incoming emails.", currentMaxUid, messages.length);
+                log.info("IMAP mailbox baseline established at UID {}. {} historical messages in mailbox ({} IDs indexed) will NOT be re-ingested; waiting strictly for new incoming emails sent post-startup.",
+                        baselineMaxUid.get(), messages.length, historicalMessageIds.size());
                 return results;
             }
 
@@ -126,8 +140,8 @@ public class ImapIngestionSource implements IngestionSource {
                         } catch (Exception ignored) {}
                     }
 
-                    // Skip historical baseline messages present in the mailbox prior to application startup
-                    if (uidFolder != null && baselineMaxUid.get() >= 0 && uid <= baselineMaxUid.get()) {
+                    // 1. Skip historical baseline messages by UID
+                    if (baselineMaxUid.get() >= 0 && uid <= baselineMaxUid.get()) {
                         log.debug("Skipping baseline historical email [UID: {}]", uid);
                         continue;
                     }
@@ -144,13 +158,33 @@ public class ImapIngestionSource implements IngestionSource {
                         messageId = rawMessageId.replaceAll("[<>]", "").trim();
                     }
 
-                    // 2. Skip already ingested messages BEFORE downloading full MIME
+                    // 2. Skip known historical Message-IDs
+                    if (historicalMessageIds.contains(messageId)) {
+                        log.debug("Skipping known historical email ID: {}", messageId);
+                        continue;
+                    }
+
+                    // 3. Skip messages sent/received prior to application startup
+                    try {
+                        Date sentDate = mimeMsg.getSentDate();
+                        Date receivedDate = mimeMsg.getReceivedDate();
+                        Date relevantDate = sentDate != null ? sentDate : receivedDate;
+                        if (relevantDate != null) {
+                            if (relevantDate.toInstant().isBefore(startupInstant.minusSeconds(15))) {
+                                log.debug("Skipping pre-startup email [Date: {}, MsgID: {}]", relevantDate, messageId);
+                                historicalMessageIds.add(messageId);
+                                continue;
+                            }
+                        }
+                    } catch (Exception ignored) {}
+
+                    // 4. Skip already ingested messages BEFORE downloading full MIME
                     if (isAlreadyIngested != null && isAlreadyIngested.test(messageId)) {
                         log.debug("Skipping already ingested email [UID: {}, MsgID: {}]", uid, messageId);
                         continue;
                     }
 
-                    log.info("Discovered new incoming email [UID: {}, MsgID: {}, Subject: {}]", uid, messageId, mimeMsg.getSubject());
+                    log.info("Discovered new live incoming email [UID: {}, MsgID: {}, Subject: {}]", uid, messageId, mimeMsg.getSubject());
 
                     // 3. Download raw bytes once
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
