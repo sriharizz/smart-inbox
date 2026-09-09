@@ -2,7 +2,7 @@
 
 > **Enterprise-grade, AI-powered pharmacovigilance intake automation platform with human-in-the-loop review.**  
 > Built for the Clinevo Technologies Live Project Assignment (Forward Deployment / GenAI Integration Engineer).  
-> 📄 **Canonical Evaluator Write-Up (4-Page Executive PDF)**: [docs/CLINEVO_TECHNICAL_WRITEUP.pdf](file:///c:/projects/SmartInbox/docs/CLINEVO_TECHNICAL_WRITEUP.pdf) &bull; [Markdown Source](file:///c:/projects/SmartInbox/docs/CLINEVO_WRITEUP.md)
+> 📄 **Canonical Evaluator Write-Up (Executive PDF)**: [docs/CLINEVO_TECHNICAL_WRITEUP.pdf](docs/CLINEVO_TECHNICAL_WRITEUP.pdf) &bull; **Case Review Dossier**: [docs/FINAL_REVIEW_PACKAGE.md](docs/FINAL_REVIEW_PACKAGE.md)
 
 ---
 
@@ -184,15 +184,7 @@ SmartInbox/
 ├── README.md                          # Master project documentation (this file)
 ├── .env.example                       # Example environment configuration template
 ├── docs/                              # Detailed engineering documentation
-│   ├── CLINEVO_WRITEUP.md             # Canonical evaluator write-up (2–5 pages)
-│   ├── ARCHITECTURE.md                # System architecture & component contracts
-│   ├── AI_PIPELINE.md                 # 16-stage AI processing pipeline specification
-│   ├── DATA_AND_GROUND_TRUTH.md       # Synthetic dataset, inventory & ground truth
-│   ├── PROMPT_DESIGN.md               # Prompt engineering, schemas & grounding rules
-│   ├── DECISIONS.md                   # Architecture Decision Records (ADR-001 - 008)
-│   ├── EVALUATION.md                  # Benchmark metrics & measured accuracy
-│   ├── LIMITATIONS_AND_PRODUCTION.md  # Prototype limitations vs. production roadmap
-│   ├── CHANGELOG.md                   # Project engineering milestone history
+│   ├── CLINEVO_TECHNICAL_WRITEUP.pdf  # Canonical evaluator write-up (Executive PDF)
 │   ├── FINAL_REVIEW_PACKAGE.md        # 12-case rendered dossier package
 │   └── screenshots/                   # High-resolution application UI screenshots
 ├── test-data/                         # Authoritative synthetic test corpus (Frozen)
@@ -364,4 +356,4 @@ python ai-service-python/eval_benchmark.py
 ## 11. Known Limitations & Deferred Requirements
 
 1. **Second Scanned/Handwritten PDF**: Explicitly marked **DEFERRED** in `manifest.json` and documentation. Reserved for final synthetic hand-filled paper form testing.
-2. **Prototype Scope**: This prototype demonstrates automated intake and human-in-the-loop review; it is not yet certified for GxP production without formal Computer System Validation (CSV), client-side PHI de-identification, and MedDRA dictionary auto-coding. Detailed production readiness requirements and roadmap are documented in [docs/CLINEVO_WRITEUP.md](file:///c:/projects/SmartInbox/docs/CLINEVO_WRITEUP.md#10-production-evolution-roadmap) and [docs/ENGINEERING_LOG.md](file:///c:/projects/SmartInbox/docs/ENGINEERING_LOG.md#5-prototype-boundaries--production-evolution).
+2. **Prototype Scope**: This prototype demonstrates automated intake and human-in-the-loop review; it is not yet certified for GxP production without formal Computer System Validation (CSV), client-side PHI de-identification, and MedDRA dictionary auto-coding. Detailed production readiness requirements and roadmap are documented in [docs/CLINEVO_TECHNICAL_WRITEUP.pdf](docs/CLINEVO_TECHNICAL_WRITEUP.pdf).
