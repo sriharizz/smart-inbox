@@ -168,15 +168,14 @@ For seamless evaluation, the repository includes an automated 1-click launcher f
    cd smart-inbox
    ```
 
-2. **Configure your Gemini API Key**:
-   Copy `.env.example` to `.env` and paste your Google Gemini API key:
+2. **Configure Environment Credentials**:
+   Copy `.env.example` to `.env`:
    ```bash
    cp .env.example .env
    ```
-   Open `.env` and set:
-   ```env
-   GEMINI_API_KEY=your_actual_gemini_api_key_here
-   ```
+   Open `.env` and configure your credentials:
+   - **Gemini AI Extraction**: Set `GEMINI_API_KEY=your_google_gemini_api_key` ([Google AI Studio](https://aistudio.google.com/))
+   - **Live Gmail Ingestion (Optional)**: Set `MAIL_IMAP_PASSWORD=your_16_char_google_app_password` to enable automated 15-second background polling of `clinevo.test.inbox12@gmail.com`.
 
 3. **Launch the platform**:
    - **Windows**: Double-click `run.bat` (or `start.bat`)

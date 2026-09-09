@@ -1,5 +1,6 @@
 @echo off
-setlocal enabledelayedexpansion
+cd /d "%~dp0"
+setlocal
 
 title Clinevo Smart Inbox - 1-Click Launch Launcher
 cls
@@ -13,8 +14,8 @@ echo.
 if not exist ".env" (
     echo [INFO] .env not found. Creating .env from .env.example...
     copy ".env.example" ".env" >nul
-    echo [SETUP REQUIRED] .env file created.
-    echo Please ensure your GEMINI_API_KEY is configured in .env!
+    echo [SETUP REQUIRED] .env file created from template.
+    echo Please ensure your GEMINI_API_KEY and MAIL_IMAP_PASSWORD are configured in .env!
     echo.
 )
 
@@ -29,24 +30,36 @@ if exist ".env" (
     copy /y ".env" "ai-service-python\.env" >nul 2>nul
 )
 
-:: 3. Check for GEMINI_API_KEY configuration
-findstr /C:"GEMINI_API_KEY=your_gemini_api_key_here" .env >nul
+:: Ensure backend data directory exists for embedded H2 database
+if not exist "backend-spring\data" mkdir "backend-spring\data" >nul 2>nul
+
+:: 3. Check for API key and Mail credentials
+findstr /C:"GEMINI_API_KEY=your_gemini_api_key_here" .env >nul 2>nul
 if %errorlevel% equ 0 (
-    echo [WARNING] GEMINI_API_KEY is not set in .env!
-    echo Live AI extraction requires a valid Google Gemini API key.
-    echo You can obtain one at https://aistudio.google.com/
+    echo [WARNING] GEMINI_API_KEY is not configured in .env!
+    echo           Please paste your Gemini API key from https://aistudio.google.com/
     echo.
 )
 
 if /i "%INGESTION_MODE%"=="IMAP" (
-    echo [MODE] Live IMAP Mailbox Ingestion Active: %MAIL_IMAP_USERNAME%
+    echo [MODE] Live IMAP Mailbox Ingestion: ACTIVE
+    echo [MODE] Account: %MAIL_IMAP_USERNAME%
     echo [MODE] Polling every %MAIL_POLL_INTERVAL_MS% ms
+    findstr /C:"MAIL_IMAP_PASSWORD=your_gmail_app_password_here" .env >nul 2>nul
+    if %errorlevel% equ 0 (
+        echo [WARNING] MAIL_IMAP_PASSWORD has placeholder value!
+        echo           Please paste your 16-character Google App Password in .env
+    ) else if "%MAIL_IMAP_PASSWORD%"=="" (
+        echo [WARNING] MAIL_IMAP_PASSWORD is empty in .env!
+    ) else (
+        echo [OK] Mail credentials detected.
+    )
 ) else (
     echo [MODE] Ingestion Mode: FIXTURE (local test files)
 )
 echo.
 
-:: 3. Check Prerequisites
+:: 4. Check Prerequisites
 echo [1/5] Checking environment prerequisites...
 
 where python >nul 2>nul
@@ -126,9 +139,15 @@ timeout /t 8 /nobreak >nul
 start http://localhost:4200
 
 echo.
-echo [HINT] To populate the queue on a fresh install, click [Lightning Ingest Fixtures]
+echo [HINT] To populate fixture cases on a fresh install, click [⚡ Ingest Fixtures]
 echo        in the top-right header of the web dashboard.
 echo.
-echo [HINT] To stop all services at once, double-click or run: stop.bat
+if /i "%INGESTION_MODE%"=="IMAP" (
+    echo [HINT] Live IMAP Polling: Active for %MAIL_IMAP_USERNAME%
+    echo        Send an email with attachments to this address; it will be automatically
+    echo        detected, extracted with Gemini AI, and added to the queue in 15 seconds!
+    echo.
+)
+echo [HINT] To stop all services at once, double-click: stop.bat
 echo.
 pause
