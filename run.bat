@@ -33,12 +33,16 @@ if exist ".env" (
 :: Ensure backend data directory exists
 if not exist "backend-spring\data" mkdir "backend-spring\data" >nul 2>nul
 
-:: Auto-restore pre-seeded 13-case benchmark database on fresh install
+:: Auto-restore pre-seeded 12-case benchmark database on fresh install or reset
+if "%1"=="--reset" (
+    echo [INFO] Resetting database to clean 12 benchmark cases...
+    del /f /q "backend-spring\data\smartinboxdb*.db" 2>nul
+)
 if not exist "backend-spring\data\smartinboxdb.mv.db" (
     if exist "backend-spring\data\smartinboxdb-backup.zip" (
-        echo [INFO] Restoring pre-seeded 13-case clinical database...
+        echo [INFO] Restoring pre-seeded 12-case clinical database...
         powershell -NoProfile -Command "Expand-Archive -Path 'backend-spring\data\smartinboxdb-backup.zip' -DestinationPath 'backend-spring\data' -Force" >nul 2>nul
-        echo [OK] 13 benchmark cases restored to database.
+        echo [OK] 12 benchmark cases restored to database.
     )
 )
 

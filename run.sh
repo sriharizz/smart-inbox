@@ -41,11 +41,15 @@ fi
 # Ensure backend data directory exists
 mkdir -p backend-spring/data
 
-# Auto-restore pre-seeded 13-case benchmark database on fresh install
+# Auto-restore pre-seeded 12-case benchmark database on fresh install or reset
+if [ "$1" = "--reset" ]; then
+    echo "[INFO] Resetting database to clean 12 benchmark cases..."
+    rm -f backend-spring/data/smartinboxdb*.db 2>/dev/null || true
+fi
 if [ ! -f "backend-spring/data/smartinboxdb.mv.db" ] && [ -f "backend-spring/data/smartinboxdb-backup.zip" ]; then
-    echo "[INFO] Restoring pre-seeded 13-case clinical database..."
+    echo "[INFO] Restoring pre-seeded 12-case clinical database..."
     unzip -q -o backend-spring/data/smartinboxdb-backup.zip -d backend-spring/data/ 2>/dev/null || true
-    echo "[OK] 13 benchmark cases restored to database."
+    echo "[OK] 12 benchmark cases restored to database."
 fi
 
 if [ "$INGESTION_MODE" = "IMAP" ]; then

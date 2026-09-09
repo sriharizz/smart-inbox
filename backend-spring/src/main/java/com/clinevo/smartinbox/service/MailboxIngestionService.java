@@ -52,6 +52,7 @@ public class MailboxIngestionService {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onStartup() {
+        cleanupSpuriousRecords();
         if (autoIngestOnStartup) {
             log.info("Auto-ingestion enabled on startup. Ingestion mode: {}", ingestionMode);
             try {
@@ -59,6 +60,24 @@ public class MailboxIngestionService {
             } catch (Exception e) {
                 log.error("Error during startup ingestion: {}", e.getMessage(), e);
             }
+        }
+    }
+
+    private void cleanupSpuriousRecords() {
+        try {
+            List<IntakeMessageEntity> all = messageRepository.findAll();
+            for (IntakeMessageEntity msg : all) {
+                boolean isFailed = "FAILED".equalsIgnoreCase(msg.getStatus());
+                boolean isSpuriousSender = msg.getSenderEmail() != null &&
+                        (msg.getSenderEmail().contains("srihan") || msg.getSenderEmail().contains("clinevo.test.inbox12"));
+                boolean isSpuriousSubject = msg.getSubject() != null && msg.getSubject().contains("Akutes Angioödem");
+                if (isFailed || isSpuriousSender || isSpuriousSubject) {
+                    log.warn("Purging spurious non-benchmark intake record ID {}: {} ({})", msg.getId(), msg.getSubject(), msg.getStatus());
+                    messageRepository.delete(msg);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Startup record cleanup warning: {}", e.getMessage());
         }
     }
 
