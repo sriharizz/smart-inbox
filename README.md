@@ -160,8 +160,7 @@ Comprehensive tamper-proof audit timeline recording every automated AI extractio
 ### 4.5 Non-English Multilingual Intake & Bilingual Grounding
 Full support for foreign-language regulatory intake documents across European regulatory standards (Spanish AEMPS RAM and German BfArM UAW). Non-English clinical narratives are automatically presented **bilingually**—displaying the certified English Regulatory Translation on top and the original foreign source text underneath—with zero-latency Level 1 visual bounding-box anchoring back to the original untranslated PDF canvas:
 
-![Non-English Multilingual Grounding](<img width="1917" height="978" alt="image" src="https://github.com/user-attachments/assets/c6b0f645-2417-45f1-bcb1-648feb1bff35" />
-)
+![Non-English Multilingual Grounding](docs/screenshots/05_non_english_multilingual_grounding.png)
 
 ---
 
