@@ -65,6 +65,14 @@ class TriageService:
                 clean_json = "\n".join(lines).strip()
             
             data = json.loads(clean_json)
+            # Calibrate ML confidence to max 0.98 to avoid uncalibrated 100% certainty
+            if "labels" in data and isinstance(data["labels"], list):
+                for lbl in data["labels"]:
+                    if isinstance(lbl, dict) and "confidence" in lbl:
+                        try:
+                            lbl["confidence"] = min(0.98, float(lbl["confidence"]))
+                        except (ValueError, TypeError):
+                            pass
             return TriageResult.model_validate(data)
         except Exception as e:
             logger.error(f"Error in TriageService: {e}. Checking benchmark/rule-based fallback.")

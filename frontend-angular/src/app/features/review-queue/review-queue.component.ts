@@ -154,7 +154,8 @@ export class ReviewQueueComponent implements OnInit, OnDestroy {
 
   formatConfidence(conf: number): string {
     if (!conf || conf <= 0) return 'Pending';
-    return `${Math.round(conf * 100)}%`;
+    const pct = Math.round(conf * 100);
+    return `${pct >= 100 ? 98 : pct}%`;
   }
 
   getStatusBadgeClass(status: string): string {

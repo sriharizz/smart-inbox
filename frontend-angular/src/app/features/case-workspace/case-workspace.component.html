@@ -299,7 +299,7 @@
             <div class="overview-confidence-block">
               <div class="overview-confidence">
                 <span class="conf-lbl">Triage Confidence:</span>
-                <span class="conf-val">{{ (brief.confidence * 100) | number:'1.0-0' }}%</span>
+                <span class="conf-val">{{ ((brief.confidence >= 1.0 ? 0.98 : brief.confidence) * 100) | number:'1.0-0' }}%</span>
               </div>
               <div class="overview-fact-stats" *ngIf="factSummaryLine">
                 <span class="stats-text">{{ factSummaryLine }}</span>
