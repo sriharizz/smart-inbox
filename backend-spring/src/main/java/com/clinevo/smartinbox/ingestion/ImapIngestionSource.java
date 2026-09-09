@@ -35,6 +35,9 @@ public class ImapIngestionSource implements IngestionSource {
     @Value("${smartinbox.ingestion.imap.folder:INBOX}")
     private String folderName;
 
+    private final java.util.concurrent.atomic.AtomicLong baselineMaxUid = new java.util.concurrent.atomic.AtomicLong(-1L);
+    private final java.util.concurrent.atomic.AtomicBoolean baselineInitialized = new java.util.concurrent.atomic.AtomicBoolean(false);
+
     @Override
     public String getSourceName() {
         return "LIVE_IMAP";
@@ -77,11 +80,16 @@ public class ImapIngestionSource implements IngestionSource {
             Message[] messages = folder.getMessages();
             log.info("IMAP mailbox connected: {} messages found in {}", messages.length, folderName);
 
+            UIDFolder uidFolder = (folder instanceof UIDFolder u) ? u : null;
+
             if (messages.length == 0) {
+                if (!baselineInitialized.get()) {
+                    baselineMaxUid.set(0L);
+                    baselineInitialized.set(true);
+                    log.info("IMAP mailbox connected (empty). Baseline initialized at UID 0; ready for incoming emails.");
+                }
                 return results;
             }
-
-            UIDFolder uidFolder = (folder instanceof UIDFolder u) ? u : null;
 
             // 1. Batch header pre-fetch in a single lightweight IMAP command
             FetchProfile fp = new FetchProfile();
@@ -92,6 +100,23 @@ public class ImapIngestionSource implements IngestionSource {
             fp.add("Message-ID");
             folder.fetch(messages, fp);
 
+            // Establish startup baseline: historical messages present at boot are not re-ingested
+            if (uidFolder != null && !baselineInitialized.get()) {
+                long currentMaxUid = -1L;
+                for (Message msg : messages) {
+                    try {
+                        long uid = uidFolder.getUID(msg);
+                        if (uid > currentMaxUid) {
+                            currentMaxUid = uid;
+                        }
+                    } catch (Exception ignored) {}
+                }
+                baselineMaxUid.set(currentMaxUid);
+                baselineInitialized.set(true);
+                log.info("IMAP mailbox baseline established at UID {}. Existing {} historical messages in mailbox will not be re-ingested; waiting for new live incoming emails.", currentMaxUid, messages.length);
+                return results;
+            }
+
             for (Message msg : messages) {
                 if (msg instanceof MimeMessage mimeMsg) {
                     long uid = msg.getMessageNumber();
@@ -99,6 +124,12 @@ public class ImapIngestionSource implements IngestionSource {
                         try {
                             uid = uidFolder.getUID(msg);
                         } catch (Exception ignored) {}
+                    }
+
+                    // Skip historical baseline messages present in the mailbox prior to application startup
+                    if (uidFolder != null && baselineMaxUid.get() >= 0 && uid <= baselineMaxUid.get()) {
+                        log.debug("Skipping baseline historical email [UID: {}]", uid);
+                        continue;
                     }
 
                     String rawMessageId = mimeMsg.getMessageID();
@@ -172,6 +203,9 @@ public class ImapIngestionSource implements IngestionSource {
                             attachments,
                             rawBytes
                     ));
+                    if (uidFolder != null && uid > baselineMaxUid.get()) {
+                        baselineMaxUid.set(uid);
+                    }
                     log.info("Successfully fetched new email [UID: {}, MsgID: {}] with {} attachments", uid, messageId, attachments.size());
                 }
             }
