@@ -595,8 +595,9 @@ export class ReviewerBriefBuilder {
       return citations[camelKey] as SourceCitation;
     }
 
-    // 4. Canonical key fallbacks for category variations (e.g. MI fields)
+    // 4. Canonical key fallbacks for category variations (e.g. MI and PQC fields)
     const canonicalKeyMap: Record<string, string[]> = {
+      // MI fields
       miProduct: ['mi_product_or_topic', 'product_or_topic', 'product_name', 'mi_product', 'product'],
       mi_product: ['mi_product_or_topic', 'product_or_topic', 'product_name', 'mi_product', 'product'],
       inquiryType: ['mi_inquiry_type', 'inquiry_type'],
@@ -606,7 +607,23 @@ export class ReviewerBriefBuilder {
       clinicalContext: ['mi_clinical_context', 'clinical_context'],
       clinical_context: ['mi_clinical_context', 'clinicalContext'],
       mi: ['medical_info', 'medicalInfo'],
-      medical_info: ['mi', 'medicalInfo']
+      medical_info: ['mi', 'medicalInfo'],
+
+      // PQC fields
+      pqcProduct: ['pqc_product_name', 'pqc_product', 'product_name', 'productName', 'product'],
+      pqc_product: ['pqc_product_name', 'pqcProduct', 'product_name', 'productName', 'product'],
+      pqc_product_name: ['pqcProduct', 'pqc_product', 'product_name', 'productName', 'product'],
+      pqcLot: ['pqc_lot_number', 'pqc_lot', 'lot_number', 'lotNumber', 'lot'],
+      pqc_lot: ['pqc_lot_number', 'pqcLot', 'lot_number', 'lotNumber', 'lot'],
+      pqc_lot_number: ['pqcLot', 'pqc_lot', 'lot_number', 'lotNumber', 'lot'],
+      defectType: ['pqc_defect_type', 'defect_type', 'defectType', 'physical_defect_type'],
+      defect_type: ['pqc_defect_type', 'defectType', 'physical_defect_type'],
+      pqc_defect_type: ['defectType', 'defect_type', 'physical_defect_type'],
+      defectDescription: ['pqc_defect_description', 'defect_description', 'defectDescription', 'defect_desc'],
+      defect_description: ['pqc_defect_description', 'defectDescription', 'defect_desc'],
+      pqc_defect_description: ['defectDescription', 'defect_description', 'defect_desc'],
+      packagingBreached: ['packaging_breached', 'packagingBreached'],
+      packaging_breached: ['packagingBreached']
     };
 
     if (canonicalKeyMap[key]) {

@@ -205,6 +205,13 @@ export class CaseWorkspaceComponent implements OnInit {
     this.pdfHighlightBox = null;
     this.resetEmailHighlight();
 
+    if (this.isPdfAttachment(att)) {
+      // Default to 85% so full width fits container comfortably without clipping
+      if (this.zoomLevel === 100) {
+        this.zoomLevel = 85;
+      }
+    }
+
     let rawUrl = this.messageService.getAttachmentDownloadUrl(att.id);
     if (pageNumber && this.isPdfAttachment(att)) {
       rawUrl += `#page=${pageNumber}`;
@@ -250,6 +257,23 @@ export class CaseWorkspaceComponent implements OnInit {
 
   resetZoom() {
     this.zoomLevel = 100;
+    if (this.activeAttachment && this.isPdfAttachment(this.activeAttachment)) {
+      this.loadAndRenderPdfPage(this.activeAttachment.id, this.activePageNumber, this.activeEvidence?.boundingBox);
+    }
+  }
+
+  fitWidth() {
+    if (typeof document !== 'undefined') {
+      const wrap = document.querySelector('.pdf-canvas-scroll-wrap') as HTMLElement;
+      if (wrap && wrap.clientWidth > 0) {
+        const availWidth = wrap.clientWidth - 40;
+        this.zoomLevel = Math.min(150, Math.max(50, Math.round((availWidth / 816) * 100)));
+      } else {
+        this.zoomLevel = 85;
+      }
+    } else {
+      this.zoomLevel = 85;
+    }
     if (this.activeAttachment && this.isPdfAttachment(this.activeAttachment)) {
       this.loadAndRenderPdfPage(this.activeAttachment.id, this.activePageNumber, this.activeEvidence?.boundingBox);
     }
@@ -322,6 +346,20 @@ export class CaseWorkspaceComponent implements OnInit {
             h: Math.max(4, h)
           };
           this.scrollPdfTargetIntoView();
+        } else if (this.activeEvidence && (this.activeEvidence.pageNumber === undefined || this.activeEvidence.pageNumber === safePageNum)) {
+          // Dynamic fallback for snippet-only / text citations without precomputed bounding box
+          const textHighlight = await this.findTextBoundsOnPage(
+            page,
+            this.activeEvidence.snippet,
+            this.activeEvidence.factValue,
+            viewport
+          );
+          if (textHighlight) {
+            this.pdfHighlightBox = textHighlight;
+            this.scrollPdfTargetIntoView();
+          } else {
+            this.pdfHighlightBox = null;
+          }
         } else {
           this.pdfHighlightBox = null;
         }
@@ -361,6 +399,76 @@ export class CaseWorkspaceComponent implements OnInit {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }, 80);
+  }
+
+  private async findTextBoundsOnPage(
+    page: any,
+    querySnippet: string | undefined,
+    factValue: string | undefined,
+    viewport: any
+  ): Promise<{ x: number; y: number; w: number; h: number } | null> {
+    if (!page) return null;
+
+    try {
+      const textContent = await page.getTextContent();
+      if (!textContent || !textContent.items || textContent.items.length === 0) return null;
+
+      const items = textContent.items as Array<{
+        str: string;
+        width: number;
+        height: number;
+        transform: number[];
+      }>;
+
+      // Build candidate search terms: prioritize exact fact value, then significant words in snippet
+      const searchTerms: string[] = [];
+      if (factValue && !this.isNotStatedSnippet(factValue) && factValue.trim().length >= 2) {
+        searchTerms.push(factValue.trim().toLowerCase());
+      }
+      if (querySnippet && !this.isNotStatedSnippet(querySnippet)) {
+        const cleanSnip = querySnippet.replace(/[\r\n]+/g, ' ').trim().toLowerCase();
+        if (cleanSnip.length >= 4) {
+          searchTerms.push(cleanSnip);
+        }
+        const words = cleanSnip.split(/\s+/).filter(w => w.length >= 4 || /\d/.test(w));
+        for (const w of words) {
+          const cleanW = w.replace(/[(),;:]/g, '');
+          if (cleanW.length >= 3 && !searchTerms.includes(cleanW)) {
+            searchTerms.push(cleanW);
+          }
+        }
+      }
+
+      for (const term of searchTerms) {
+        for (const item of items) {
+          if (!item.str) continue;
+          const itemText = item.str.toLowerCase();
+          const matchIdx = itemText.indexOf(term);
+          if (matchIdx !== -1) {
+            const [, , , scaleY, tx, ty] = item.transform;
+            const itemH = item.height || Math.abs(scaleY) || 10;
+            const itemW = item.width || (item.str.length * 6);
+            const charRatio = item.str.length > 0 ? itemW / item.str.length : 1;
+
+            const subTx = tx + (matchIdx * charRatio);
+            const subW = Math.max(16, term.length * charRatio);
+
+            if (typeof viewport.convertToViewportRectangle === 'function') {
+              const rect = viewport.convertToViewportRectangle([subTx, ty, subTx + subW, ty + itemH]);
+              return {
+                x: Math.max(0, Math.min(rect[0], rect[2]) - 2),
+                y: Math.max(0, Math.min(rect[1], rect[3]) - 2),
+                w: Math.max(14, Math.abs(rect[2] - rect[0]) + 4),
+                h: Math.max(12, Math.abs(rect[3] - rect[1]) + 4)
+              };
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Text-based PDF highlight lookup failed:', err);
+    }
+    return null;
   }
 
   // Dynamic Adaptive Reviewer Sections Filter
@@ -824,7 +932,10 @@ export class CaseWorkspaceComponent implements OnInit {
       return `Image · ${filename}${pageStr}`;
     }
     // PDF
-    const filename = evidence.sourceName || this.activeAttachment?.filename || 'Document.pdf';
+    let filename = evidence.sourceName || this.activeAttachment?.filename || 'Document.pdf';
+    if (filename.toLowerCase().endsWith('.eml') && this.activeAttachment && this.isPdfAttachment(this.activeAttachment)) {
+      filename = this.activeAttachment.filename;
+    }
     const pageStr = evidence.pageNumber ? ` · Page ${evidence.pageNumber}` : '';
     return `PDF · ${filename}${pageStr}`;
   }

@@ -106,7 +106,8 @@
           <button type="button" class="btn-zoom" (click)="zoomOut()" title="Zoom out">−</button>
           <span class="zoom-level">{{ zoomLevel }}%</span>
           <button type="button" class="btn-zoom" (click)="zoomIn()" title="Zoom in">+</button>
-          <button type="button" class="btn-zoom reset" (click)="resetZoom()" title="Reset zoom">Reset</button>
+          <button type="button" class="btn-zoom reset" (click)="resetZoom()" title="Reset zoom (100%)">Reset</button>
+          <button type="button" class="btn-zoom fit" (click)="fitWidth()" title="Fit to width">Fit</button>
           <a 
             *ngIf="activeAttachment" 
             [href]="'/api/messages/attachments/' + activeAttachment.id + '/download'" 
@@ -119,7 +120,7 @@
       </div>
 
       <!-- Document Display Canvas -->
-      <div class="document-canvas" [style.zoom.%]="zoomLevel">
+      <div class="document-canvas" [style.zoom.%]="activeTab === 'EMAIL' ? zoomLevel : 100">
         <!-- 1. Email Body -->
         <div class="email-display" *ngIf="activeTab === 'EMAIL'">
           <div class="email-meta-card">
