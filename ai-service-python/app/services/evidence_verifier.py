@@ -165,12 +165,24 @@ class EvidenceVerifier:
         """Returns the shared provider instance, instantiating once if needed."""
         if self._provider is not None:
             return self._provider
+        # 1. Prefer Groq if explicitly configured and healthy
+        if settings.GROQ_API_KEY:
+            try:
+                p = get_llm_provider("groq")
+                if p.is_healthy():
+                    self._provider = p
+                    return self._provider
+            except Exception as e:
+                logger.warning(f"Could not initialize Groq LLM provider: {e}")
+        # 2. Default seamlessly to Gemini provider (gemini-3.5-flash)
         try:
-            self._provider = get_llm_provider("groq")
-            return self._provider
+            p = get_llm_provider("gemini")
+            if p.is_healthy():
+                self._provider = p
+                return self._provider
         except Exception as e:
-            logger.warning(f"Could not initialize Groq LLM provider: {e}")
-            return None
+            logger.warning(f"Could not initialize Gemini LLM provider: {e}")
+        return None
 
     # ------------------------------------------------------------------------
     # Candidate-level verification (Single item, backward compatible)

@@ -59,6 +59,7 @@ class GeminiProvider(LLMProvider):
 
     def __init__(self, client=None):
         self._client = client or gemini_client
+        self._default_model = settings.GEMINI_MODEL_NAME
 
     @property
     def provider_name(self) -> str:
