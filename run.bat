@@ -18,7 +18,18 @@ if not exist ".env" (
     echo.
 )
 
-:: 2. Check for GEMINI_API_KEY configuration
+:: 2. Load environment variables from .env
+if exist ".env" (
+    echo [INFO] Loading configuration from .env...
+    for /f "usebackq eol=# tokens=1* delims==" %%A in (".env") do (
+        if not "%%A"=="" (
+            set "%%A=%%B"
+        )
+    )
+    copy /y ".env" "ai-service-python\.env" >nul 2>nul
+)
+
+:: 3. Check for GEMINI_API_KEY configuration
 findstr /C:"GEMINI_API_KEY=your_gemini_api_key_here" .env >nul
 if %errorlevel% equ 0 (
     echo [WARNING] GEMINI_API_KEY is not set in .env!
@@ -26,6 +37,14 @@ if %errorlevel% equ 0 (
     echo You can obtain one at https://aistudio.google.com/
     echo.
 )
+
+if /i "%INGESTION_MODE%"=="IMAP" (
+    echo [MODE] Live IMAP Mailbox Ingestion Active: %MAIL_IMAP_USERNAME%
+    echo [MODE] Polling every %MAIL_POLL_INTERVAL_MS% ms
+) else (
+    echo [MODE] Ingestion Mode: FIXTURE (local test files)
+)
+echo.
 
 :: 3. Check Prerequisites
 echo [1/5] Checking environment prerequisites...

@@ -21,13 +21,30 @@ if [ ! -f ".env" ]; then
     echo ""
 fi
 
-# 2. Check for GEMINI_API_KEY
+# 2. Load environment variables from .env
+if [ -f ".env" ]; then
+    echo "[INFO] Loading configuration from .env..."
+    set -a
+    source .env
+    set +a
+    cp .env ai-service-python/.env 2>/dev/null || true
+fi
+
+# 3. Check for GEMINI_API_KEY
 if grep -q "GEMINI_API_KEY=your_gemini_api_key_here" .env; then
     echo "[WARNING] GEMINI_API_KEY is not set in .env!"
     echo "Live AI extraction requires a valid Google Gemini API key."
     echo "You can obtain one at https://aistudio.google.com/"
     echo ""
 fi
+
+if [ "$INGESTION_MODE" = "IMAP" ]; then
+    echo "[MODE] Live IMAP Mailbox Ingestion Active: $MAIL_IMAP_USERNAME"
+    echo "[MODE] Polling every ${MAIL_POLL_INTERVAL_MS:-15000} ms"
+else
+    echo "[MODE] Ingestion Mode: FIXTURE (local test files)"
+fi
+echo ""
 
 # 3. Check Prerequisites
 echo "[1/5] Checking environment prerequisites..."
