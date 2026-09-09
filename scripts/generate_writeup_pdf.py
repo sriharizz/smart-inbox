@@ -6,13 +6,13 @@ html_content = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Clinevo Smart Inbox Assistant — Technical Write-Up</title>
+<title>Clinevo Smart Inbox Assistant — Technical Submission Write-Up</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
   @page {
     size: A4;
-    margin: 12mm 14mm 12mm 14mm;
+    margin: 10mm 14mm 10mm 14mm;
   }
 
   * {
@@ -25,8 +25,8 @@ html_content = """<!DOCTYPE html>
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #1e293b;
     background: #ffffff;
-    font-size: 7.9pt;
-    line-height: 1.36;
+    font-size: 8.2pt;
+    line-height: 1.38;
     margin: 0;
     padding: 0;
   }
@@ -34,8 +34,8 @@ html_content = """<!DOCTYPE html>
   .sheet {
     page-break-after: always;
     break-after: page;
-    height: 268mm;
-    max-height: 268mm;
+    height: 275mm;
+    max-height: 275mm;
     overflow: hidden;
     position: relative;
     display: flex;
@@ -53,13 +53,11 @@ html_content = """<!DOCTYPE html>
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #cbd5e1;
-    padding-bottom: 4px;
-    margin-bottom: 7px;
-    font-size: 6.8pt;
+    padding-bottom: 3px;
+    margin-bottom: 8px;
+    font-size: 7pt;
     font-weight: 600;
     color: #64748b;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
   }
 
   .page-footer {
@@ -69,163 +67,251 @@ html_content = """<!DOCTYPE html>
     border-top: 1px solid #cbd5e1;
     padding-top: 4px;
     margin-top: 6px;
-    font-size: 6.8pt;
-    color: #94a3b8;
-  }
-
-  /* Hero Banner */
-  .hero-banner {
-    border-bottom: 2px solid #3b82f6;
-    padding-bottom: 6px;
-    margin-bottom: 8px;
-  }
-
-  .brand-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-  }
-
-  .brand-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 9.5pt;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    color: #2563eb;
-    text-transform: uppercase;
-  }
-
-  .doc-badge {
-    background: #eff6ff;
-    color: #1d4ed8;
     font-size: 7pt;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    border: 1px solid #bfdbfe;
-    text-transform: uppercase;
+    color: #94a3b8;
   }
 
   h1.main-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 15.5pt;
+    font-size: 17pt;
     font-weight: 800;
     color: #0f172a;
     line-height: 1.15;
-    margin: 0 0 3px 0;
+    margin: 0 0 2px 0;
   }
 
-  .subtitle {
-    font-size: 8.5pt;
-    font-weight: 500;
-    color: #475569;
-    margin: 0 0 7px 0;
-    line-height: 1.3;
+  .sub-title {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: #334155;
+    margin: 0 0 2px 0;
   }
 
-  .meta-grid {
+  .tagline {
+    font-size: 8pt;
+    color: #64748b;
+    margin: 0 0 8px 0;
+  }
+
+  .meta-bar {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: 1.2fr 1.5fr 1.8fr;
+    gap: 12px;
     background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 5px 9px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 6px 10px;
+    margin-bottom: 10px;
   }
 
-  .meta-item {
-    font-size: 7.2pt;
+  .meta-col {
+    font-size: 7.6pt;
   }
   .meta-label {
     color: #64748b;
     font-weight: 600;
-    text-transform: uppercase;
-    font-size: 6.2pt;
-    letter-spacing: 0.4px;
     display: block;
+    margin-bottom: 1px;
+    font-size: 6.8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
-  .meta-value {
+  .meta-val {
     color: #0f172a;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   h2 {
     font-family: 'Outfit', sans-serif;
-    font-size: 10.2pt;
+    font-size: 10.5pt;
     font-weight: 700;
     color: #0f172a;
-    border-left: 3px solid #2563eb;
-    padding-left: 6px;
-    margin: 7px 0 4px 0;
+    margin: 8px 0 4px 0;
     line-height: 1.2;
   }
 
-  h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 8.5pt;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 5px 0 2px 0;
-  }
-
   p {
-    margin: 0 0 5px 0;
+    margin: 0 0 6px 0;
     text-align: justify;
   }
 
-  ul, ol {
-    margin: 0 0 5px 0;
-    padding-left: 16px;
+  /* 4 Categories 2x2 Grid */
+  .category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 6px 0;
   }
 
-  li {
-    margin-bottom: 2.5px;
+  .cat-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    overflow: hidden;
   }
 
-  .callout {
-    background: #f8fafc;
-    border-left: 3px solid #3b82f6;
-    border-radius: 0 5px 5px 0;
-    padding: 4px 7px;
-    margin: 4px 0;
-    font-size: 7.3pt;
-    line-height: 1.3;
-  }
-
-  .callout-title {
+  .cat-header {
+    background: #0f2744;
+    color: #ffffff;
     font-weight: 700;
-    margin-bottom: 1.5px;
-    font-size: 7pt;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: #1d4ed8;
+    font-size: 7.8pt;
+    padding: 3.5px 8px;
+  }
+  .cat-header.accent {
+    background: #1e528a;
   }
 
+  .cat-body {
+    padding: 5px 8px;
+    font-size: 7.4pt;
+    background: #ffffff;
+    color: #334155;
+    min-height: 28px;
+  }
+
+  /* Architecture & Flow Diagrams */
+  .arch-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 8px 6px 8px;
+    margin: 6px 0;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .node-box {
+    background: #f8fafc;
+    border: 1.2px solid #64748b;
+    border-radius: 5px;
+    padding: 8px 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 7.5pt;
+    color: #0f172a;
+    flex: 1;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .node-ai-group {
+    flex: 1.25;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .node-ai-header {
+    background: #1e528a;
+    color: #ffffff;
+    border: 1px solid #1e528a;
+    border-radius: 4px;
+    padding: 6px 4px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 7.8pt;
+  }
+
+  .node-ai-sub {
+    background: #f8fafc;
+    border: 1px solid #94a3b8;
+    border-radius: 3px;
+    padding: 2.5px 4px;
+    text-align: center;
+    font-size: 6.8pt;
+    color: #334155;
+  }
+
+  .node-human {
+    background: #0f2744;
+    color: #ffffff;
+    border: 1px solid #0f2744;
+    border-radius: 4px;
+    padding: 6px 4px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 7.5pt;
+    margin-top: 6px;
+  }
+
+  .arrow-right {
+    color: #64748b;
+    font-weight: 700;
+    font-size: 10pt;
+    padding: 0 1px;
+    user-select: none;
+  }
+
+  .arch-banner {
+    background: #e2e8f0;
+    border-radius: 3px;
+    padding: 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 7.2pt;
+    color: #1e293b;
+    margin-top: 8px;
+  }
+
+  /* Processing Flow Diagram */
+  .process-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 8px;
+    margin: 6px 0;
+  }
+
+  .proc-node {
+    background: #ffffff;
+    border: 1.2px solid #64748b;
+    border-radius: 4px;
+    padding: 7px 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 7.4pt;
+    flex: 1;
+    color: #0f172a;
+  }
+
+  .proc-node.dark {
+    background: #1e528a;
+    border-color: #1e528a;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  /* Tables */
   table {
     width: 100%;
     border-collapse: collapse;
     margin: 4px 0 6px 0;
-    font-size: 7.1pt;
+    font-size: 7.3pt;
   }
 
   th {
-    background: #1e293b;
+    background: #0f2744;
     color: #ffffff;
-    font-weight: 600;
+    font-weight: 700;
     text-align: left;
-    padding: 3.5px 5px;
-    font-size: 6.9pt;
-    letter-spacing: 0.2px;
+    padding: 4px 6px;
+    font-size: 7.2pt;
+    border-bottom: 1.5px solid #0f172a;
   }
 
-  th:first-child { border-top-left-radius: 4px; }
-  th:last-child { border-top-right-radius: 4px; }
-
   td {
-    padding: 3px 5px;
+    padding: 3.5px 6px;
     border-bottom: 1px solid #e2e8f0;
-    color: #334155;
+    color: #1e293b;
     vertical-align: middle;
   }
 
@@ -233,471 +319,494 @@ html_content = """<!DOCTYPE html>
     background: #f8fafc;
   }
 
-  .badge-pass {
-    background: #dcfce7;
-    color: #15803d;
-    font-weight: 700;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 6.6pt;
+  .table-clean th {
+    background: #0f2744;
+    color: #ffffff;
   }
 
-  .diagram-box {
-    background: #f8fafc;
+  /* Callouts & Highlights */
+  .callout {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+    padding: 5px 8px;
+    margin: 5px 0;
+    font-size: 7.2pt;
+    color: #1e40af;
+  }
+
+  /* Reviewer Workflow */
+  .workflow-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0 4px 0;
+  }
+
+  .wf-card {
+    flex: 1;
     border: 1px solid #cbd5e1;
     border-radius: 5px;
-    padding: 6px 8px;
-    margin: 5px 0;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 6.3pt;
-    line-height: 1.25;
-    color: #1e293b;
-    white-space: pre;
+    overflow: hidden;
   }
 
-  .grid-2 {
+  .wf-header {
+    background: #0f2744;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 7.5pt;
+    padding: 3.5px 8px;
+    text-align: center;
+    letter-spacing: 0.4px;
+  }
+
+  .wf-body {
+    padding: 6px 10px;
+    background: #ffffff;
+    font-size: 7.3pt;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .wf-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 4px 0 6px 0;
+  }
+
+  .wf-btn {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    border-radius: 3px;
+    padding: 2.5px 14px;
+    font-weight: 600;
+    font-size: 7.2pt;
+    color: #0f172a;
+  }
+
+  .two-col-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin: 3px 0;
+    gap: 10px;
+    margin: 4px 0 6px 0;
   }
 
-  .card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 5px;
-    padding: 5px 7px;
+  .two-col-list ul {
+    margin: 0;
+    padding-left: 14px;
   }
 
-  .card-title {
-    font-family: 'Outfit', sans-serif;
-    font-weight: 700;
-    font-size: 7.6pt;
-    color: #1e293b;
-    margin-bottom: 2px;
-  }
-
-  .decision-item {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 4px 6px;
-    margin-bottom: 3.5px;
-    font-size: 7.1pt;
-  }
-
-  .decision-title {
-    font-weight: 700;
-    color: #0f172a;
+  .two-col-list li {
+    margin-bottom: 2.5px;
     font-size: 7.3pt;
-    margin-bottom: 1px;
+  }
+
+  .quote-box {
+    background: #f1f5f9;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin: 6px 0 10px 0;
+    font-size: 7.3pt;
+    font-style: italic;
+    color: #334155;
+    line-height: 1.4;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.2pt;
+    font-weight: 600;
+    color: #0f172a;
+    padding-top: 4px;
   }
 </style>
 </head>
 <body>
 
-<!-- PAGE 1: WHAT I BUILT, ARCHITECTURE & PROCESSING FLOW -->
+<!-- ================= PAGE 1 ================= -->
 <div class="sheet">
   <div>
     <div class="page-header">
-      <span>Clinevo Smart Inbox Assistant</span>
-      <span>Evaluator Technical Write-Up</span>
+      <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
+      <span>Page 1</span>
     </div>
 
-    <div class="hero-banner">
-      <div class="brand-row">
-        <div class="brand-title">Clinevo Technologies &bull; Technical Assignment</div>
-        <div class="doc-badge">Submission Document</div>
-      </div>
-      <h1 class="main-title">Clinevo Smart Inbox Assistant</h1>
-      <div class="subtitle">AI-Assisted Pharmacovigilance Intake, Fact Extraction & Reviewer Workbench</div>
+    <h1 class="main-title">Clinevo Smart Inbox Assistant</h1>
+    <div class="sub-title">Technical Submission Write-Up</div>
+    <div class="tagline">AI-Assisted Healthcare Email/PDF Intake, Classification &amp; Human Review</div>
 
-      <div class="meta-grid">
-        <div class="meta-item">
-          <span class="meta-label">Role</span>
-          <span class="meta-value">GenAI Integration Engineer</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Candidate</span>
-          <span class="meta-value">Sri Hari (sriharizz)</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Deliverable Scope</span>
-          <span class="meta-value">100% Core + 30% Literature Bonus</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Tech Stack</span>
-          <span class="meta-value">Angular 18 &bull; Spring Boot 3 &bull; Python</span>
-        </div>
+    <div class="meta-bar">
+      <div class="meta-col">
+        <span class="meta-label">Candidate</span>
+        <span class="meta-val">Sri Hari</span>
+      </div>
+      <div class="meta-col">
+        <span class="meta-label">Deliverable Scope</span>
+        <span class="meta-val">Core (100%) + Literature Bonus (30%)</span>
+      </div>
+      <div class="meta-col">
+        <span class="meta-label">Tech Stack</span>
+        <span class="meta-val">Angular 18 &bull; Spring Boot 3 &bull; Python / FastAPI</span>
       </div>
     </div>
 
     <h2>1. What I Built</h2>
     <p>
-      The Clinevo Smart Inbox Assistant is a prototype system that automates the initial intake and triage pass for healthcare and pharmacovigilance communications. The system receives synthetic healthcare emails and PDF attachments, classifies the message, extracts relevant facts, links those facts back to verifiable source passages, and presents the result to a human reviewer for confirmation or correction.
-    </p>
-    <p>Incoming communications are categorized into four buckets:</p>
-    <ul>
-      <li><strong>Safety Report (ICSR):</strong> Communications reporting an adverse event experienced by a patient.</li>
-      <li><strong>Quality Complaint (PQC):</strong> Reports describing a physical or packaging defect with a product.</li>
-      <li><strong>Medical Information (MI):</strong> Inquiries seeking medical or product guidance without adverse events or defects.</li>
-      <li><strong>Not Relevant:</strong> Communications such as newsletters, marketing notices, or unrelated correspondence.</li>
-    </ul>
-    <p>
-      Multi-label communications (such as a contaminated vial that caused an adverse reaction, qualifying as both PQC and ICSR) are explicitly supported. The AI prepares the initial draft of the case; the final determination remains with the human reviewer.
+      The Clinevo Smart Inbox Assistant is a prototype that receives synthetic healthcare emails and PDF attachments, classifies each communication, extracts relevant facts, links those facts back to verifiable source passages, and presents the result to a human reviewer for confirmation or correction.
     </p>
 
-    <h2>2. Simple Architecture</h2>
-    <div class="diagram-box">
-Email / PDF Input
-      |
-      v
-Spring Boot Ingestion (Dual Mode: Angus Mail IMAP Poller / Synthetic EML Fixtures)
-      |
-      v
-Python AI Service (FastAPI)
-      +--> PDF / Document Understanding (PyMuPDF Layout & Table Extraction)
-      +--> Classification (ICSR, PQC, MI, Not Relevant, Multi-Label)
-      +--> Fact Extraction (Category-Specific Domain Payloads)
-      +--> Evidence Retrieval (Intra-Document Chunking & Hybrid Search)
-      +--> Evidence Verification (NLI Entailment: SUPPORTS, CONTRADICTS, INSUFFICIENT)
-      |
-      v
-Spring Boot Persistence / API (JPA & Embedded H2 in Oracle Mode)
-      |
-      v
-Angular Reviewer UI (Split-Screen Document Viewer & Extracted Facts Ledger)
-      |
-      v
-Human Review + Audit History (Accept, Override, Edit, & Timestamped Ledger)</div>
+    <div class="category-grid">
+      <div class="cat-card">
+        <div class="cat-header">Safety Report (ICSR)</div>
+        <div class="cat-body">Adverse event experienced by a patient.</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-header accent">Quality Complaint (PQC)</div>
+        <div class="cat-body">Physical or packaging defect with a product.</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-header accent">Medical Information (MI)</div>
+        <div class="cat-body">Guidance inquiry with no adverse event or defect.</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-header">Not Relevant</div>
+        <div class="cat-body">Newsletters, marketing, or unrelated correspondence.</div>
+      </div>
+    </div>
 
-    <p style="font-size:7.2pt; margin-top:2px;">
-      <strong>Ingestion:</strong> Receives emails/PDFs via IMAP or local synthetic fixtures, normalizing into standard messages. &bull;
-      <strong>AI Microservice:</strong> Parses layouts, classifies categories, extracts facts, and verifies supporting evidence. &bull;
-      <strong>Persistence/API:</strong> Stores cases, facts, and audit records in an embedded database and serves REST endpoints. &bull;
-      <strong>Reviewer UI:</strong> Displays split-screen document inspection and editable facts. &bull;
-      <strong>Human Review:</strong> Human confirms or edits extracted data with timestamped audit logging.
+    <p style="margin-top: 4px; margin-bottom: 8px;">
+      Multi-label cases are explicitly supported &mdash; for example, a contaminated vial that also caused an adverse reaction is classified as both PQC and ICSR.
     </p>
 
-    <h2>3. End-to-End Processing Flow</h2>
-    <div class="diagram-box">
-[1. Receive Email] --> [2. Read Metadata & Body] --> [3. Read PDF Attachments] --> [4. Detect Doc Type]
-  --> [5. Extract & Normalize Content] --> [6. Classify Message] --> [7. Extract Category Facts]
-  --> [8. Attach Source Evidence] --> [9. Verify Evidence] --> [10. Validate Consistency]
-  --> [11. Build Reviewer Brief] --> [12. Human Confirms / Overrides] --> [13. Persist & Record Audit]</div>
+    <h2>2. Architecture</h2>
+    <div class="arch-container">
+      <div class="flow-row">
+        <div class="node-box">Email / PDF<br>Input</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="node-box">Spring Boot<br>Ingestion</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="node-ai-group">
+          <div class="node-ai-header">Python AI Service</div>
+          <div class="node-ai-sub">Document Understanding</div>
+          <div class="node-ai-sub">Classification</div>
+          <div class="node-ai-sub">Fact Extraction</div>
+          <div class="node-ai-sub">Evidence Verification</div>
+        </div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="node-box">Spring Boot<br>Persistence / API</div>
+        <div class="arrow-right">&rarr;</div>
+        <div style="flex: 1; display: flex; flex-direction: column;">
+          <div class="node-box" style="width: 100%;">Angular<br>Reviewer UI</div>
+          <div style="text-align: center; color: #64748b; font-size: 8pt; margin: 1px 0;">&darr;</div>
+          <div class="node-human">Human Reviewer</div>
+        </div>
+      </div>
+      <div class="arch-banner">
+        Angular 18 &nbsp;|&nbsp; Spring Boot 3 &nbsp;|&nbsp; Python / FastAPI &nbsp;|&nbsp; H2 (local evaluation)
+      </div>
+    </div>
 
-    <p style="font-size:7.2pt; margin-top:2px;">
-      The lifecycle ingests emails/PDFs, normalizes content, performs multi-label classification, extracts category-specific facts, grounds them in source evidence, validates data integrity, and presents the draft case in the UI for human confirmation.
-    </p>
+    <h2>3. Processing Flow</h2>
+    <div class="process-grid">
+      <div class="flow-row">
+        <div class="proc-node">Receive</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="proc-node">Understand</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="proc-node">Classify</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="proc-node">Extract</div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; padding-right: 48px; color: #64748b; font-size: 9pt; margin: -3px 0;">
+        &darr;
+      </div>
+      <div class="flow-row">
+        <div class="proc-node">Ground with<br>Evidence</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="proc-node">Verify</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="proc-node">Human Review</div>
+        <div class="arrow-right">&rarr;</div>
+        <div class="proc-node dark">Audit</div>
+      </div>
+    </div>
   </div>
 
   <div class="page-footer">
     <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
-    <span>Page 1 of 4</span>
+    <span>Page 1</span>
   </div>
 </div>
 
-<!-- PAGE 2: KEY ENGINEERING DECISIONS & AI / PROMPTING APPROACH -->
+<!-- ================= PAGE 2 ================= -->
 <div class="sheet">
   <div>
     <div class="page-header">
-      <span>Clinevo Smart Inbox Assistant</span>
-      <span>Engineering Decisions & AI Approach</span>
+      <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
+      <span>Page 2</span>
     </div>
 
     <h2>4. Key Engineering Decisions</h2>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Bounded Complete-Document Processing Instead of Global Vector RAG</div>
-      <strong>Why:</strong> Intake packages are small (1 email, 1–5 PDF pages, &lt;15k tokens). Vector chunking fragments text into 500-token pieces, separating patient demographics from suspect drugs and breaking clinical causality.<br>
-      <strong>Implemented:</strong> Entire document text, layout-preserved headers, and 2D markdown tables are passed directly in-prompt.<br>
-      <strong>Trade-off:</strong> Uses higher input token counts per request, but eliminates vector indexing overhead and chunk boundary errors.
-    </div>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Category-Specific Payloads Instead of Monolithic ICSR Structures</div>
-      <strong>Why:</strong> Early iterations forced all communications into ICSR schemas. Non-safety messages like defect complaints or medical questions displayed confusing empty patient tables and spurious missing-field warnings.<br>
-      <strong>Implemented:</strong> Created distinct payloads (<code>IcsrPayload</code>, <code>PqcPayload</code>, <code>MiPayload</code>, <code>NotRelevantPayload</code>). Non-relevant items suppress clinical forms; multi-label cases combine payloads cleanly.<br>
-      <strong>Trade-off:</strong> Requires maintaining multiple schemas, but delivers a clean, intuitive reviewer experience.
-    </div>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Evidence-First Fact Model with Source Location and Verbatim Snippets</div>
-      <strong>Why:</strong> Reviewers cannot trust extracted values without seeing where the information originated in the source document.<br>
-      <strong>Implemented:</strong> Every fact links to a <code>SourceCitation</code> with source ID, origin type, page/section location, and verbatim text quote.<br>
-      <strong>Trade-off:</strong> Increases payload size and requires coordinate tracking from PyMuPDF, but enables 1-click source verification.
-    </div>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Separating Candidate Evidence Retrieval from Semantic Verification</div>
-      <strong>Why:</strong> High lexical similarity indicates candidate relevance, but not truth. Passages mentioning rescue medications (e.g. epinephrine) or negations ("denies rash") have high similarity to suspect drug questions despite not supporting them.<br>
-      <strong>Implemented:</strong> Split into two steps: Step 4 retrieves candidates; Step 5 evaluates NLI entailment (<code>SUPPORTS</code>, <code>CONTRADICTS</code>, <code>INSUFFICIENT</code>).<br>
-      <strong>Trade-off:</strong> Adds an extra evaluation step, but prevents negations and rescue drugs from being treated as supporting evidence.
-    </div>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Strict "Not stated" Representation for Missing Information</div>
-      <strong>Why:</strong> General-purpose LLMs tend to infer unstated attributes (such as daily dosing frequency or patient weight) from medical norms.<br>
-      <strong>Implemented:</strong> Prompts enforce negative constraints. If an attribute is absent from source text, it is marked <code>"Not stated"</code> with empty evidence.<br>
-      <strong>Trade-off:</strong> Output values are conservative, but strictly grounded in the document text.
-    </div>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Dual Fixture and Live Mailbox Ingestion</div>
-      <strong>Why:</strong> Live intake requires an IMAP server, but reviewers and test suites need to run immediately offline without email credentials.<br>
-      <strong>Implemented:</strong> Built an <code>IngestionSource</code> abstraction supporting live IMAP polling and offline synthetic <code>.eml</code> reading.<br>
-      <strong>Trade-off:</strong> Requires maintaining two ingestion adapters, but enables zero-friction offline evaluation.
-    </div>
-
-    <div class="decision-item">
-      <div class="decision-title">Decision: Human-in-the-Loop Reviewer Workflow</div>
-      <strong>Why:</strong> AI models can misinterpret complex clinical narratives or poor scans. Autonomous decision-making is inappropriate for patient safety.<br>
-      <strong>Implemented:</strong> Designed explicitly as a reviewer aid: "AI prepares the case; human confirms it." The UI highlights evidence for rapid human review.<br>
-      <strong>Trade-off:</strong> Requires human oversight for every case, but ensures accountability and clinical reliability.
-    </div>
-
-    <h2>5. AI & Prompting Approach</h2>
-    <p>
-      The AI microservice coordinates document understanding, triage, extraction, and verification using source-grounded design principles:
-    </p>
-    <ul>
-      <li><strong>Structured Outputs via Pydantic:</strong> All model requests enforce strict Pydantic schemas using JSON mode, ensuring deterministic structures and eliminating output parsing failures.</li>
-      <li><strong>Category-Aware Extraction:</strong> Prompts adapt to the detected communication category. Safety reports extract ICH E2B pillars; quality complaints extract lot numbers and defect descriptions; medical inquiries capture specific questions asked.</li>
-      <li><strong>Source-Grounded Facts & "Not stated":</strong> Prompts prohibit guessing. If a value (such as patient age or dose schedule) is absent, the model outputs <code>"Not stated"</code> rather than estimating based on context.</li>
-      <li><strong>Multilingual Support:</strong> German BfArM and Spanish AEMPS reports are translated into standardized English clinical fields while preserving original foreign text in the verbatim citation snippet.</li>
-      <li><strong>Tables & Scanned Documents:</strong> PyMuPDF converts lab values and dosing grids into Markdown tables. Scanned documents are rasterized and evaluated by the vision encoder, deciphering handwriting without fragile external OCR.</li>
-      <li><strong>Defect Photo Inspection:</strong> Smartphone photos of damaged packaging or contaminated vials (e.g. <code>contaminated_vial_photo.jpg</code>) are inspected natively. The defect is recorded and flagged for human review.</li>
-      <li><strong>Literature Screening (Bonus):</strong> A specialized literature service screens journal PDFs, rejecting non-reportable studies (animal models, reviews) and splitting multi-patient case series into independent safety records.</li>
-      <li><strong>Separated Evidence Verification:</strong> Candidate text passages are evaluated in bounded batches using a secondary NLI step, classifying items as <code>SUPPORTS</code>, <code>CONTRADICTS</code>, or <code>INSUFFICIENT</code>.</li>
-    </ul>
-    <div class="callout">
-      <div class="callout-title">Safety Note</div>
-      The prototype is designed to reduce unsupported guesses through source-grounded prompts and structured schemas. However, model outputs can still contain errors or omissions. The final review decision remains with the human reviewer.
-    </div>
-  </div>
-
-  <div class="page-footer">
-    <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
-    <span>Page 2 of 4</span>
-  </div>
-</div>
-
-<!-- PAGE 3: REVIEWER WORKFLOW, TESTING & RESULTS, LESSONS LEARNED -->
-<div class="sheet">
-  <div>
-    <div class="page-header">
-      <span>Clinevo Smart Inbox Assistant</span>
-      <span>Reviewer Workflow, Results & Fixes</span>
-    </div>
-
-    <h2>6. Reviewer Workflow</h2>
-    <p>
-      The reviewer workspace is designed around rapid, source-first verification:
-    </p>
-
-    <div class="diagram-box">
-+------------------------------------------+------------------------------------------+
-|          LEFT PANE: SOURCE VIEW          |        RIGHT PANE: STRUCTURED BRIEF      |
-|                                          |                                          |
-|  [Email Body] [PDF Canvas] [Photo Tab]   |  Category: Safety Report (ICSR) [0.98]   |
-|                                          |  Urgency: EXPEDITED (15-Day Clock)       |
-|  Original source document rendered.      |                                          |
-|  Clicking an evidence link in the right  |  Extracted Facts Ledger:                 |
-|  pane scrolls directly to the passage    |  - Patient: M.K., 58, Female  [🔍 Pg 1]  |
-|  and highlights it with an in-document   |  - Suspect Drug: Cardioril    [🔍 Box 14]|
-|  bounding box.                           |  - Adverse Event: Acute DILI  [🔍 Pg 2]  |
-|                                          |                                          |
-|                                          |  [Confirm Case]  [Override]  [Flag]      |
-+------------------------------------------+------------------------------------------+
-|                       COLLAPSIBLE REVIEW AUDIT HISTORY                               |
-|   Timestamp | User | Action | Field | Original Value | New Value | Rationale         |
-+-------------------------------------------------------------------------------------+</div>
-
-    <p style="font-size:7.2pt; margin-top:2px;">
-      <strong>Two-Pane Workspace:</strong> Left pane displays the source document; right pane displays the category brief and extracted facts ledger. &bull;
-      <strong>1-Click Evidence Inspection:</strong> Clicking an evidence chip navigates the adjacent document viewer to the exact page and passage. &bull;
-      <strong>Reviewer Actions:</strong> Reviewer can confirm the case, edit field values, flag for review, or override categories with clinical justifications. &bull;
-      <strong>Timestamped Audit History:</strong> Every AI extraction and human modification is recorded in a chronological audit ledger.
-    </p>
-
-    <h2>7. Testing & Results</h2>
-    <p>
-      Evaluated against a synthetic benchmark dataset comprising 27 test cases across 11 physical <code>.eml</code> emails, 20 PDF documents, and 2 image files using the automated benchmark runner (<code>eval_benchmark.py</code>):
-    </p>
-
-    <table>
+    <table class="table-clean">
       <thead>
         <tr>
-          <th style="width: 38%;">Evaluation Area</th>
-          <th style="width: 20%;">Target Standard</th>
-          <th style="width: 30%;">Measured Prototype Result</th>
-          <th style="width: 12%;">Status</th>
+          <th style="width: 32%;">Decision</th>
+          <th style="width: 34%;">Why</th>
+          <th style="width: 34%;">Result</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Primary Triage Classification</strong></td>
-          <td>&ge; 90.0%</td>
-          <td><strong>27 / 27 (100.0%)</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>Bounded document processing instead of global vector RAG</strong></td>
+          <td>Intake packages are small; chunking would separate patient details from suspect drugs.</td>
+          <td>Entire document is passed in-prompt with layout preserved; no chunk-boundary errors.</td>
         </tr>
         <tr>
-          <td><strong>Multi-Label Detection (ICSR + PQC)</strong></td>
-          <td>&ge; 90.0%</td>
-          <td><strong>1 / 1 (100.0%)</strong> (Case 04 correctly multi-labeled)</td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>Category-specific payloads</strong></td>
+          <td>Forcing all messages into an ICSR schema produced empty tables and false warnings.</td>
+          <td>Distinct payloads per category give a clean, relevant reviewer view.</td>
         </tr>
         <tr>
-          <td><strong>Core Fact Extraction Accuracy</strong></td>
-          <td>&ge; 85.0%</td>
-          <td><strong>94.8%</strong> across core clinical fields</td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>Evidence-linked fact model</strong></td>
+          <td>Reviewers need to see where an extracted value came from before trusting it.</td>
+          <td>Every fact links to a source citation with location and verbatim snippet.</td>
         </tr>
         <tr>
-          <td><strong>"Not stated" Handling</strong></td>
-          <td>0 ungrounded guesses</td>
-          <td><strong>No benchmark hallucinations observed</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>Separate retrieval from semantic verification</strong></td>
+          <td>High lexical similarity does not guarantee a passage actually supports a fact.</td>
+          <td>Retrieval and NLI-based verification are split into two steps, reducing false linkages.</td>
         </tr>
         <tr>
-          <td><strong>Physical Defect Photo Flagging</strong></td>
-          <td>100.0%</td>
-          <td><strong>100.0%</strong> (<code>requires_human_review = True</code>)</td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>&ldquo;Not stated&rdquo; for missing information</strong></td>
+          <td>General-purpose models tend to infer unstated clinical details.</td>
+          <td>Prompts enforce negative constraints; missing values are marked &ldquo;Not stated.&rdquo;</td>
         </tr>
         <tr>
-          <td><strong>Literature Negative Control Filtering</strong></td>
-          <td>100.0%</td>
-          <td><strong>100.0%</strong> (Animal study & review rejected)</td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>Fixture + live mailbox ingestion</strong></td>
+          <td>Reviewers and tests need to run offline without live email credentials.</td>
+          <td>An ingestion abstraction supports both live IMAP polling and offline fixtures.</td>
         </tr>
         <tr>
-          <td><strong>Literature Multi-Patient Splitting</strong></td>
-          <td>100.0%</td>
-          <td><strong>3 / 3 patients disaggregated</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
-        </tr>
-        <tr>
-          <td><strong>AI Microservice Test Suite</strong></td>
-          <td>100% pass</td>
-          <td><strong>114 / 114 unit & API tests passed</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
-        </tr>
-        <tr>
-          <td><strong>Angular Frontend Test Suite</strong></td>
-          <td>100% pass</td>
-          <td><strong>56 / 56 component & navigation tests passed</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
-        </tr>
-        <tr>
-          <td><strong>Spring Boot Test Suite</strong></td>
-          <td>100% pass</td>
-          <td><strong>7 / 7 integration & service tests passed</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
-        </tr>
-        <tr>
-          <td><strong>Live Mailbox Ingestion Path</strong></td>
-          <td>Operational</td>
-          <td><strong>Verified end-to-end via Gmail IMAP connector</strong></td>
-          <td><span class="badge-pass">Pass</span></td>
+          <td><strong>Human-in-the-loop review</strong></td>
+          <td>Autonomous decisions are inappropriate for patient-safety-relevant content.</td>
+          <td>The AI prepares a draft case; the human reviewer confirms or overrides it.</td>
         </tr>
       </tbody>
     </table>
-    <p style="font-size:6.8pt; color:#64748b; margin:0;">*Note on Latency: End-to-end document processing ranges between 1.5 and 3.5 seconds depending on document length and attachment complexity.</p>
 
-    <h2>8. What I Learned & Important Engineering Fixes</h2>
-    <ul>
-      <li><strong>IMAP Fetching Overhead:</strong> Ingestion initially downloaded full message bodies and attachments before checking if they already existed. Refactored to inspect lightweight IMAP UIDs first and download only new messages.</li>
-      <li><strong>Displayed Case Identifiers:</strong> The UI initially displayed database auto-increment IDs. Re-seeding database sequences altered numbers. Updated to display canonical case identifiers (<code>CASE-01</code>...<code>CASE-12</code>).</li>
-      <li><strong>Separating Retrieval from Semantic Verification:</strong> High lexical overlap was initially treated as confirmed evidence, causing false confirmations on emergency rescue drugs or negations. Separating retrieval from NLI verification eliminated these false linkages.</li>
-      <li><strong>Preventing Evidence Leakage on Missing Values:</strong> Early extraction schemas attached general document chunks to fields marked <code>"Not stated"</code>. Added a strict guard so unstated fields immediately receive empty evidence lists.</li>
-      <li><strong>Category-Specific View Modeling:</strong> Generic table views forced non-safety cases (PQC, MI) to display empty patient tables. Introducing category payloads allowed the UI to display only relevant fields.</li>
-      <li><strong>Executive Summary Length Enforcement:</strong> Initial prompts generated summaries that were too brief (4–6 sentences). Prompt instructions were calibrated to consistently produce comprehensive 10–15 sentence syntheses.</li>
-      <li><strong>Verification Batching:</strong> Evaluating candidates sequentially triggered 120+ HTTP requests on dense cases, causing rate-limit errors. Refactoring to bounded batches reduced API calls by ~96% and cut verification time to ~1.1 seconds.</li>
-      <li><strong>Controlled PDF Canvas Highlighting:</strong> Sandboxed browser iframes prevented bounding box overlays. Migrating the viewer to <code>pdfjs-dist</code> on an HTML5 canvas enabled point-to-pixel coordinate scaling and reliable in-document highlighting.</li>
-    </ul>
+    <h2>5. AI / Prompting Approach</h2>
+    <div class="two-col-list">
+      <ul>
+        <li>Structured model outputs enforced via strict schemas</li>
+        <li>Category-aware extraction tailored to the detected communication type</li>
+        <li>Source-grounded facts, with every value traceable to source text</li>
+        <li>&ldquo;Not stated&rdquo; used instead of guessing at missing values</li>
+      </ul>
+      <ul>
+        <li>Multilingual document handling (e.g. German, Spanish reports)</li>
+        <li>Table and scanned-document handling via layout-aware parsing</li>
+        <li>Separate evidence verification step (SUPPORTS / CONTRADICTS / INSUFFICIENT)</li>
+        <li>Literature screening extension for journal PDFs (bonus scope)</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <strong>Safety note:</strong> Model outputs can contain errors or omissions. The prototype is designed as a reviewer aid; the final decision remains with the human reviewer.
+    </div>
+
+    <h2>6. Reviewer Workflow</h2>
+    <div class="workflow-container">
+      <div class="wf-card">
+        <div class="wf-header">SOURCE DOCUMENT</div>
+        <div class="wf-body">
+          Email / PDF / Image<br>
+          Evidence source location<br>
+          Verbatim source passages
+        </div>
+      </div>
+      <div class="arrow-right" style="font-size: 14pt;">&rarr;</div>
+      <div class="wf-card">
+        <div class="wf-header">STRUCTURED REVIEW BRIEF</div>
+        <div class="wf-body">
+          Category<br>
+          Summary<br>
+          Extracted facts<br>
+          Evidence links<br>
+          Reviewer actions
+        </div>
+      </div>
+    </div>
+
+    <div class="wf-buttons">
+      <div class="wf-btn">Confirm</div>
+      <div class="wf-btn">Edit / Override</div>
+      <div class="wf-btn">Flag</div>
+    </div>
+
+    <p style="margin-top: 4px; font-size: 7.4pt;">
+      The reviewer workspace pairs the original source document with a structured review brief so every extracted fact can be checked in context. Clicking an evidence reference scrolls the source viewer directly to the supporting passage. The reviewer can confirm the draft case, edit or override any field, or flag it for further attention &mdash; with every action recorded in a timestamped audit history.
+    </p>
+
+    <h2>7. Testing &amp; Results</h2>
+    <table class="table-clean" style="margin-bottom: 0;">
+      <thead>
+        <tr>
+          <th style="width: 60%;">Evaluation</th>
+          <th style="width: 40%;">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary triage classification</td>
+          <td><strong>27 / 27 (100%)</strong></td>
+        </tr>
+        <tr>
+          <td>Multi-label detection</td>
+          <td><strong>100% on benchmark case</strong></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="page-footer">
     <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
-    <span>Page 3 of 4</span>
+    <span>Page 2</span>
   </div>
 </div>
 
-<!-- PAGE 4: LIMITATIONS, PRODUCTION NEXT STEPS & FINAL TAKEAWAY -->
+<!-- ================= PAGE 3 ================= -->
 <div class="sheet">
   <div>
     <div class="page-header">
-      <span>Clinevo Smart Inbox Assistant</span>
-      <span>Limitations, Roadmap & Conclusion</span>
+      <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
+      <span>Page 3</span>
     </div>
 
-    <h2>9. Prototype Limitations</h2>
-    <p>
-      To maintain engineering integrity, the boundaries of this prototype are explicitly stated:
+    <table class="table-clean" style="margin-top: 2px;">
+      <thead>
+        <tr>
+          <th style="width: 60%;">Evaluation</th>
+          <th style="width: 40%;">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Core fact extraction</td>
+          <td><strong>94.8%</strong></td>
+        </tr>
+        <tr>
+          <td>&ldquo;Not stated&rdquo; handling</td>
+          <td><strong>No benchmark hallucinations observed</strong></td>
+        </tr>
+        <tr>
+          <td>Defect photo flagging</td>
+          <td><strong>100%</strong></td>
+        </tr>
+        <tr>
+          <td>Literature negative controls</td>
+          <td><strong>100%</strong></td>
+        </tr>
+        <tr>
+          <td>Literature case splitting</td>
+          <td><strong>3 / 3</strong></td>
+        </tr>
+        <tr>
+          <td>AI service tests</td>
+          <td><strong>114 / 114 passed</strong></td>
+        </tr>
+        <tr>
+          <td>Angular tests</td>
+          <td><strong>56 / 56 passed</strong></td>
+        </tr>
+        <tr>
+          <td>Spring Boot tests</td>
+          <td><strong>20 / 20 passed</strong> (7 core + 13 integration)</td>
+        </tr>
+        <tr>
+          <td>Live mailbox ingestion</td>
+          <td><strong>Verified end-to-end</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 6.8pt; color: #64748b; margin-top: 2px; margin-bottom: 8px;">
+      Evaluated on a synthetic benchmark of 27 cases spanning emails, PDFs, and images. Results reflect prototype-stage evaluation, not a claim of production-grade certainty.
     </p>
 
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Data & Environment Boundaries</div>
-        <ul>
-          <li><strong>Synthetic Data Corpus:</strong> Developed and evaluated entirely against synthetic test cases. Degraded faxes, photocopies, or severe handwriting require further calibration.</li>
-          <li><strong>External Model Dependency:</strong> Relies on cloud-hosted LLM endpoints. Network latency, API quotas, or third-party outages can affect speed.</li>
-          <li><strong>Local Persistence for Evaluation:</strong> Default setup uses embedded H2 in Oracle compatibility mode. Production requires an enterprise-managed database cluster.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <div class="card-title">Clinical & System Boundaries</div>
-        <ul>
-          <li><strong>Absence of Standard Coding Dictionaries:</strong> Extracted drug names and reactions are captured as verbatim strings without automated MedDRA or WHO Drug coding.</li>
-          <li><strong>Prototype Audit Logging:</strong> Records timestamped actions in an audit table. Formal electronic signatures and GAMP 5 validation are outside prototype scope.</li>
-          <li><strong>Viewer Coordinate Approximation:</strong> Bounding-box highlights approximate text block boundaries; multi-line text can have minor visual alignment offsets.</li>
-          <li><strong>Human Oversight Required:</strong> The system is an assistive tool, not an autonomous agent. All automated outputs require human review and confirmation.</li>
-        </ul>
-      </div>
-    </div>
+    <h2>8. Important Engineering Fixes</h2>
+    <ul style="margin: 3px 0 8px 0; padding-left: 14px; font-size: 7.3pt;">
+      <li style="margin-bottom: 2.5px;"><strong>IMAP Startup Baseline Polling:</strong> Ingestion was updated to index historical UIDs/timestamps at boot, ignoring past mailbox clutter and ingesting only live emails sent post-startup.</li>
+      <li style="margin-bottom: 2.5px;"><strong>Canonical Case Identifier Stability:</strong> Canonical CASE-01... identifiers were separated from database auto-increment IDs.</li>
+      <li style="margin-bottom: 2.5px;"><strong>Decoupled Semantic Verification:</strong> Retrieval and semantic verification were separated to remove false evidence linkages.</li>
+      <li style="margin-bottom: 2.5px;"><strong>Missing Value Evidence Isolation:</strong> &ldquo;Not stated&rdquo; fields were prevented from receiving unrelated evidence chunks.</li>
+      <li style="margin-bottom: 2.5px;"><strong>Category-Specific View Schemas:</strong> Distinct payloads removed irrelevant ICSR fields from PQC/MI cases.</li>
+      <li style="margin-bottom: 2.5px;"><strong>Entailment Request Batching:</strong> Verification was batched to reduce unnecessary API calls by ~96% and eliminate rate-limit pressure.</li>
+    </ul>
 
-    <h2>10. Production Next Steps (Future Work)</h2>
-    <p>
-      Transitioning this prototype into an enterprise production service would involve the following future engineering work:
-    </p>
+    <h2>9. Limitations</h2>
+    <table class="table-clean" style="margin-bottom: 8px;">
+      <thead>
+        <tr>
+          <th style="width: 50%;">Prototype Boundary</th>
+          <th style="width: 50%;">Future Production Work</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Synthetic data only</td>
+          <td>Controlled real-data / privacy architecture</td>
+        </tr>
+        <tr>
+          <td>Cloud model dependency</td>
+          <td>Multi-provider strategy</td>
+        </tr>
+        <tr>
+          <td>Local H2 evaluation database</td>
+          <td>Managed enterprise database</td>
+        </tr>
+        <tr>
+          <td>No automatic MedDRA / WHO Drug coding</td>
+          <td>Dictionary integration</td>
+        </tr>
+        <tr>
+          <td>Prototype audit history</td>
+          <td>Formal validation / signature controls</td>
+        </tr>
+        <tr>
+          <td>PDF highlighting has some viewer limitations</td>
+          <td>Stronger document rendering / annotation layer</td>
+        </tr>
+        <tr>
+          <td>Human review required</td>
+          <td>Workflow / identity controls for production</td>
+        </tr>
+      </tbody>
+    </table>
 
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Data Privacy & Clinical Coding</div>
-        <ul>
-          <li><strong>Client-Side PHI De-Identification:</strong> Deploy an on-premise NER pipeline (e.g. Microsoft Presidio) to detect and redact patient identifiers before cloud API transmission.</li>
-          <li><strong>Medical Dictionary Auto-Coding:</strong> Integrate MedDRA and WHO Drug dictionary services to map terms to LLTs, PTs, and MPIDs with confidence scores for reviewer confirmation.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <div class="card-title">Infrastructure & Governance</div>
-        <ul>
-          <li><strong>Model Redundancy & Dynamic Routing:</strong> Implement an abstract gateway layer with circuit breakers to failover across multiple model providers (Vertex AI, Bedrock, OpenAI).</li>
-          <li><strong>Distributed Event Broker:</strong> Replace the in-memory executor with Apache Kafka or AWS SQS for distributed worker scaling and dead-letter queues.</li>
-          <li><strong>Enterprise Identity & Access Control:</strong> Integrate SAML 2.0 / OAuth2 authentication with fine-grained role-based permissions (Reviewer, Safety Lead, Admin).</li>
-          <li><strong>Formal Computer System Validation (CSV):</strong> Execute formal GAMP 5 Category 4/5 software validation protocols (IQ, OQ, PQ) for regulatory compliance.</li>
-        </ul>
-      </div>
-    </div>
+    <h2>10. Production Next Steps</h2>
+    <ul style="margin: 3px 0 8px 0; padding-left: 14px; font-size: 7.3pt;">
+      <li style="margin-bottom: 2.5px;">Data privacy and de-identification</li>
+      <li style="margin-bottom: 2.5px;">Enterprise authentication and access control</li>
+      <li style="margin-bottom: 2.5px;">Production database and distributed processing</li>
+      <li style="margin-bottom: 2.5px;">Formal validation and operational controls</li>
+    </ul>
 
     <h2>11. Final Takeaway</h2>
-    <div class="callout" style="padding: 7px 10px; margin-top: 6px;">
-      <p style="margin: 0; font-size: 7.6pt; line-height: 1.4;">
-        This prototype demonstrates an end-to-end AI-assisted intake workflow. It reduces manual first-pass work by organizing messages, extracting relevant information, and linking facts back to source material. The reviewer remains responsible for confirmation and correction. The prototype was evaluated on synthetic benchmark data and is not presented as a production regulatory system.
-      </p>
+    <div class="quote-box">
+      &ldquo;This prototype demonstrates an end-to-end AI-assisted intake workflow for healthcare communications. It reduces first-pass manual work by organizing incoming messages, extracting relevant information, and linking facts back to source material. The reviewer remains responsible for confirmation and correction. The prototype was evaluated using synthetic benchmark data and is not presented as a production regulatory system.&rdquo;
     </div>
 
-    <div style="margin-top: 14px; padding-top: 6px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; font-size: 7pt; color: #64748b;">
-      <div><strong>Project Repository:</strong> https://github.com/sriharizz/smart-inbox</div>
-      <div><strong>Single-Command Verification:</strong> <code>run.bat</code> (Windows) / <code>./run.sh</code> (Linux/macOS)</div>
-      <div><strong>Candidate:</strong> Sri Hari (sriharizz)</div>
+    <div class="footer-links">
+      <span>GitHub: github.com/sriharizz/smart-inbox</span>
+      <span>Run locally: run.bat / ./run.sh</span>
     </div>
   </div>
 
   <div class="page-footer">
     <span>Clinevo Smart Inbox Assistant &bull; Technical Submission Write-Up</span>
-    <span>Page 4 of 4</span>
+    <span>Page 3</span>
   </div>
 </div>
 
