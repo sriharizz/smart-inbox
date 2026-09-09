@@ -52,7 +52,7 @@ The platform uses a decoupled, 3-tier polyglot architecture matching Clinevo's e
 |  - Human Review Actions: Accept, Override, Reclassify, Modify Values              |
 +-----------------------------------------------------------------------------------+
                                          |
-                                         | HTTP / JSON REST APIs (Port 8080)
+                                         | HTTP / JSON REST APIs (Port 8081)
                                          v
 +-----------------------------------------------------------------------------------+
 |                        TIER 2: BACKEND ORCHESTRATION ENGINE                       |
@@ -156,83 +156,88 @@ SmartInbox/
 
 ---
 
-## 6. Getting Started & Local Setup
+## 6. Quick Start: 1-Click Launch (Recommended for Reviewers)
 
-### 6.1 Prerequisites
-- **Python**: Version 3.11 or higher
-- **Java Development Kit (JDK)**: Java 21 (OpenJDK / Eclipse Temurin)
-- **Node.js & npm**: Node.js v18+ and npm v10+
-- **Google GenAI API Key**: Required for live Gemini Flash multimodal reasoning
+For seamless evaluation, the repository includes an automated 1-click launcher for Windows, macOS, and Linux that validates prerequisites, installs dependencies, launches all 3 tiers, and opens the reviewer workbench in your default browser.
 
-### 6.2 Environment Configuration
+### 6.1 Three-Step Launch
 
-Create a `.env` file in the root directory (or set environment variables in your shell) based on `.env.example`:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/sriharizz/smart-inbox.git
+   cd smart-inbox
+   ```
 
-```bash
-# Google GenAI API Key (Mandatory for live AI execution)
-GEMINI_API_KEY=your_gemini_api_key_here
+2. **Configure your Gemini API Key**:
+   Copy `.env.example` to `.env` and paste your Google Gemini API key:
+   ```bash
+   cp .env.example .env
+   ```
+   Open `.env` and set:
+   ```env
+   GEMINI_API_KEY=your_actual_gemini_api_key_here
+   ```
 
-# Active Model (Default: gemini-2.5-flash with alias fallback to gemini-flash-latest)
-GEMINI_MODEL_NAME=gemini-2.5-flash
+3. **Launch the platform**:
+   - **Windows**: Double-click `run.bat` (or `start.bat`)
+   - **macOS / Linux**: Run `./run.sh` (or `./start.sh`)
 
-# Ingestion Mode: FIXTURE (local .eml files) or IMAP (live mailbox)
-INGESTION_MODE=FIXTURE
+The launcher automatically:
+- Checks Python 3.11+, Java JDK 17/21+, and Node.js
+- Installs Python dependencies (`ai-service-python/requirements.txt`)
+- Installs Angular frontend dependencies (`npm install`)
+- Starts the **Python AI Microservice** on `http://localhost:8000`
+- Starts the **Spring Boot Orchestrator** on `http://localhost:8081`
+- Starts the **Angular Reviewer Dashboard** on `http://localhost:4200`
+- Automatically opens your browser to `http://localhost:4200`
 
-# Live IMAP Settings (Only required if INGESTION_MODE=IMAP)
-MAIL_IMAP_HOST=imap.gmail.com
-MAIL_IMAP_PORT=993
-MAIL_IMAP_USERNAME=safety.intake.test@example.com
-MAIL_IMAP_PASSWORD=your_app_password_here
-MAIL_IMAP_SSL=true
+### 6.2 Populating Test Cases
+Once the dashboard opens, click **`⚡ Ingest Fixtures`** in the top-right navigation bar. The orchestrator will parse the canonical synthetic `.eml` test cases, execute layout-aware AI triage & extraction, and populate the Review Queue.
 
-# Database Profile: demo (embedded H2 Oracle mode) or prod (Oracle XE)
-SPRING_PROFILES_ACTIVE=demo
-```
+### 6.3 Stopping the Services
+- **Windows**: Double-click `stop.bat`
+- **macOS / Linux**: Run `./stop.sh` or press `Ctrl+C` in the terminal
 
 ---
 
-## 7. Running the Services
+## 7. Manual Step-by-Step Setup
 
-### 7.1 Running the Python AI Microservice
+If you prefer to run services in separate terminal windows:
+
+### 7.1 Prerequisites
+- **Python**: Version 3.11 or higher
+- **Java Development Kit (JDK)**: Java 17 or 21 (OpenJDK / Eclipse Temurin)
+- **Node.js & npm**: Node.js v18+ and npm v10+
+- **Google GenAI API Key**: Required for live Gemini Flash multimodal reasoning
+
+### 7.2 Running the Python AI Microservice (Tier 3)
 
 ```powershell
-# Navigate to Python service directory
 cd ai-service-python
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Start FastAPI server on port 8000
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+- Health endpoint: `http://localhost:8000/api/v1/health`
+- Interactive Swagger docs: `http://localhost:8000/docs`
 
-Verify service health at `http://localhost:8000/api/v1/health`.  
-Interactive Swagger API documentation is available at `http://localhost:8000/docs`.
-
-### 7.2 Running the Spring Boot Backend
+### 7.3 Running the Spring Boot Backend (Tier 2)
 
 ```powershell
-# Navigate to Spring Boot directory
 cd backend-spring
-
-# Build and run with Maven (Demo H2 profile enabled by default)
 ./mvnw spring-boot:run
 ```
+*(On Windows cmd, run `mvnw.cmd spring-boot:run` or `mvn spring-boot:run`)*
+- Backend REST API: `http://localhost:8081/api/messages`
+- H2 Console: `http://localhost:8081/h2-console`
 
-The Spring Boot backend will start on port `8080` and connect to the Python AI microservice at `http://localhost:8000`.
-
-### 7.3 Running the Angular Reviewer Dashboard
+### 7.4 Running the Angular Reviewer Dashboard (Tier 1)
 
 ```powershell
-# Navigate to Angular directory
 cd frontend-angular
-
-# Install dependencies and start development server
 npm install
 npm start
 ```
-
-Access the Reviewer Dashboard in your browser at `http://localhost:4200`.
+- Access the Reviewer Dashboard: `http://localhost:4200` (automatically proxies `/api` requests to port 8081)
 
 ---
 
