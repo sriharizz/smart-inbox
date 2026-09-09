@@ -182,8 +182,6 @@ Full support for foreign-language regulatory intake documents across European re
 ```text
 SmartInbox/
 ├── README.md                          # Master project documentation (this file)
-├── ASSIGNMENT_SPEC.md                 # Official specification & traceability matrix
-├── Clinevo_Assignment.pdf             # Original Clinevo assignment prompt
 ├── .env.example                       # Example environment configuration template
 ├── docs/                              # Detailed engineering documentation
 │   ├── CLINEVO_WRITEUP.md             # Canonical evaluator write-up (2–5 pages)
