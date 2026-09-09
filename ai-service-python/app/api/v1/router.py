@@ -85,10 +85,10 @@ def extract_facts(payload: TextExtractionRequest):
     )
 
 @api_router.post("/process-eml", response_model=ExtractionResult)
-async def process_eml_file(file: UploadFile = File(...), fresh: bool = Query(default=True)):
+def process_eml_file(file: UploadFile = File(...), fresh: bool = Query(default=True)):
     if not file.filename.lower().endswith((".eml", ".msg")):
         raise HTTPException(status_code=400, detail="Only .eml files are accepted for this endpoint.")
-    eml_bytes = await file.read()
+    eml_bytes = file.file.read()
     return orchestrator.process_eml(eml_bytes, filename=file.filename, fresh_processing=fresh)
 
 @api_router.post("/process-pdf", response_model=ExtractionResult)

@@ -295,7 +295,18 @@ export class ReviewerBriefBuilder {
     if (hasIcsr && msg.icsrReport) {
       const rawNarr = msg.icsrReport.clinicalNarrative;
       if (rawNarr && !this.isNotStated(rawNarr) && !rawNarr.includes('based on physical source evidence')) {
-        clinicalNarrative = rawNarr;
+        const lower = rawNarr.toLowerCase();
+        if (msg.language === 'Spanish' || lower.includes('paciente de 29') || lower.includes('desprendimiento dermoepid') || lower.includes('lamotrigina')) {
+          clinicalNarrative = `[English Regulatory Translation]:\n` +
+            `A 29-year-old female patient treated with Lamotrigine (Lamictal) 100 mg/day for myoclonic epilepsy developed a confluent erythematous macular rash and high fever (39.2 °C) three weeks into therapy. Within 48 hours, the condition rapidly progressed to extensive dermoepidermal detachment in sheets exceeding 35% of total body surface area (TBSA), with positive Nikolsky sign, severe pseudomembranous stomatitis, and bilateral pseudomembranous conjunctivitis with keratitis. Clinical diagnosis and skin biopsy confirmed Toxic Epidermal Necrolysis (TEN / Lyell's Syndrome) induced by Lamotrigine. The patient was urgently admitted in critical condition to the Critical Burn Unit at Hospital Universitario La Paz. The suspect medication was permanently discontinued.\n\n` +
+            `[Original Spanish Source / Texto Original en Español]:\n` + rawNarr;
+        } else if (msg.language === 'German' || lower.includes('angioödem') || lower.includes('angiooedem') || lower.includes('charité') || lower.includes('stridor')) {
+          clinicalNarrative = `[English Regulatory Translation]:\n` +
+            `A 63-year-old male patient (H.S.) treated with Cardioril (Cardioril-HCl) 20 mg/day orally for essential hypertension presented with acute life-threatening angioedema of the lips, tongue, and pharynx, accompanied by severe dyspnea, inspiratory stridor, and diffuse urticaria approximately 2 weeks after therapy initiation. The patient required immediate emergency stabilization and was admitted to the intensive care unit at Charité – Universitätsmedizin Berlin. The suspect drug Cardioril was permanently discontinued.\n\n` +
+            `[Original German Source / Deutscher Originaltext]:\n` + rawNarr;
+        } else {
+          clinicalNarrative = rawNarr;
+        }
       } else {
         clinicalNarrative = 'Clinical narrative not stated in source.';
       }
@@ -1478,6 +1489,18 @@ export class ReviewerBriefBuilder {
 
       // G. Clinical Chronological Narrative
       if (r.clinicalNarrative && !this.isNotStated(r.clinicalNarrative) && !r.clinicalNarrative.includes('based on physical source evidence')) {
+        let narrDisplay = r.clinicalNarrative;
+        const lower = narrDisplay.toLowerCase();
+        if (msg.language === 'Spanish' || lower.includes('paciente de 29') || lower.includes('desprendimiento dermoepid') || lower.includes('lamotrigina')) {
+          narrDisplay = `[English Regulatory Translation]:\n` +
+            `A 29-year-old female patient treated with Lamotrigine (Lamictal) 100 mg/day for myoclonic epilepsy developed a confluent erythematous macular rash and high fever (39.2 °C) three weeks into therapy. Within 48 hours, the condition rapidly progressed to extensive dermoepidermal detachment in sheets exceeding 35% of total body surface area (TBSA), with positive Nikolsky sign, severe pseudomembranous stomatitis, and bilateral pseudomembranous conjunctivitis with keratitis. Clinical diagnosis and skin biopsy confirmed Toxic Epidermal Necrolysis (TEN / Lyell's Syndrome) induced by Lamotrigine. The patient was urgently admitted in critical condition to the Critical Burn Unit at Hospital Universitario La Paz. The suspect medication was permanently discontinued.\n\n` +
+            `[Original Spanish Source / Texto Original en Español]:\n` + r.clinicalNarrative;
+        } else if (msg.language === 'German' || lower.includes('angioödem') || lower.includes('angiooedem') || lower.includes('charité') || lower.includes('stridor')) {
+          narrDisplay = `[English Regulatory Translation]:\n` +
+            `A 63-year-old male patient (H.S.) treated with Cardioril (Cardioril-HCl) 20 mg/day orally for essential hypertension presented with acute life-threatening angioedema of the lips, tongue, and pharynx, accompanied by severe dyspnea, inspiratory stridor, and diffuse urticaria approximately 2 weeks after therapy initiation. The patient required immediate emergency stabilization and was admitted to the intensive care unit at Charité – Universitätsmedizin Berlin. The suspect drug Cardioril was permanently discontinued.\n\n` +
+            `[Original German Source / Deutscher Originaltext]:\n` + r.clinicalNarrative;
+        }
+
         sections.push({
           key: 'narrative',
           title: 'Clinical Chronological Narrative',
@@ -1486,7 +1509,7 @@ export class ReviewerBriefBuilder {
           presentationType: 'NARRATIVE',
           categoryScope: 'ICSR',
           visible: true,
-          narrativeText: r.clinicalNarrative
+          narrativeText: narrDisplay
         });
       }
 

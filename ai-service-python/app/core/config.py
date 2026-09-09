@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     # Primary model is gemini-3.5-flash with alias fallback to gemini-3.5-flash-lite
     MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-3.5-flash")
+    GEMINI_MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-3.5-flash")
     FALLBACK_MODEL_NAME: str = "gemini-3.5-flash-lite"
     EMBEDDING_MODEL_NAME: str = os.getenv("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
     ENABLE_SEMANTIC_RETRIEVAL: bool = True

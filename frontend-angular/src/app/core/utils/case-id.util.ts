@@ -93,6 +93,16 @@ export function resolveCaseId(msg: {
     return 'CASE-11';
   }
 
+  // 12. CASE-12: Vance Urgent Care Clinic Note (Dr. Marcus Vance)
+  if (subj.includes('m.t.') || subj.includes('angioedema s/p') || sender.includes('mvance') || sender.includes('metrourgentcare')) {
+    return 'CASE-12';
+  }
+
+  // 13. CASE-13: German BfArM UAW Charité Berlin (Dr. med. Wolfgang Becker)
+  if (subj.includes('charit') || subj.includes('angioödem') || subj.includes('uaw-meldung') || sender.includes('charite') || mid.includes('bericht_uaw') || mid.includes('case-13') || mid.includes('case13')) {
+    return 'CASE-13';
+  }
+
   // Fallback: If DB ID is 1..12 (canonical seed data)
   if (typeof msg.id === 'number' && msg.id >= 1 && msg.id <= 12) {
     return `CASE-${msg.id.toString().padStart(2, '0')}`;

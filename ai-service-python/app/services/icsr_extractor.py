@@ -477,7 +477,8 @@ class ICSRExtractor:
                 is_pqc=is_pqc,
                 is_mi=is_mi,
                 is_not_relevant=is_not_relevant,
-                image_metadata=image_metadata
+                image_metadata=image_metadata,
+                document_text=document_text
             )
         else:
             if not fresh_processing:
@@ -589,7 +590,8 @@ class ICSRExtractor:
         is_pqc: bool,
         is_mi: bool,
         is_not_relevant: bool,
-        image_metadata: Optional[List[Dict[str, Any]]] = None
+        image_metadata: Optional[List[Dict[str, Any]]] = None,
+        document_text: str = ""
     ) -> CaseEnvelope:
         envelope_facts: List[Fact] = []
         icsr_payload: Optional[IcsrPayload] = None
