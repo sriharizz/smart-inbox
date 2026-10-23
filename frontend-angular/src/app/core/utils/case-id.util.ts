@@ -33,8 +33,14 @@ export function resolveCaseId(msg: {
     return `CASE-${num.toString().padStart(2, '0')}`;
   }
 
+  // Live ingested cases beyond benchmark (ID > 137 start at CASE-13)
+  if (typeof msg.id === 'number' && msg.id > 137) {
+    const liveNum = 12 + (msg.id - 137);
+    return "CASE-" + liveNum.toString().padStart(2, "0");
+  }
+
   // 12. CASE-12: Acute Angioedema Handwritten Note (Dr. Mark Vance)
-  if (subj.includes('angioedema') || sender.includes('mvance') || sender.includes('metrourgentcare') || mid.includes('case12') || mid.includes('case-12')) {
+  if ((subj.includes('angioedema') && subj.includes('cardioril')) || sender.includes('mvance') || sender.includes('metrourgentcare') || mid.includes('case12') || mid.includes('case-12')) {
     return 'CASE-12';
   }
 
