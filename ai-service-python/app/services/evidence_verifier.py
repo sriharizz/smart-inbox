@@ -238,16 +238,7 @@ class EvidenceVerifier:
         """Returns the shared provider instance, instantiating once if needed."""
         if self._provider is not None:
             return self._provider
-        # 1. Prefer Groq if explicitly configured and healthy
-        if settings.GROQ_API_KEY:
-            try:
-                p = get_llm_provider("groq")
-                if p.is_healthy():
-                    self._provider = p
-                    return self._provider
-            except Exception as e:
-                logger.warning(f"Could not initialize Groq LLM provider: {e}")
-        # 2. When secondary LLM is not configured, return None to trigger instant deterministic RapidFuzz entailment
+        # Use instant deterministic RapidFuzz entailment for zero-latency, rate-limit-free verification
         return None
 
     # ------------------------------------------------------------------------
