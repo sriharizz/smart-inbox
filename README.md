@@ -6,6 +6,21 @@
 
 ---
 
+### 🌐 Live Cloud Deployment (Zero Setup Needed for Evaluators)
+
+| Component | Platform | Live URL | Status |
+| :--- | :--- | :--- | :--- |
+| **Reviewer Dashboard (Frontend)** | **Vercel** | [https://smart-inbox-navy.vercel.app](https://smart-inbox-navy.vercel.app) | ![Vercel](https://img.shields.io/badge/Vercel-Live_Dashboard-success?logo=vercel) |
+| **Orchestrator Backend** | **Railway** | [https://smart-inbox-production-794f.up.railway.app](https://smart-inbox-production-794f.up.railway.app/api/messages) | ![Railway](https://img.shields.io/badge/Railway-Backend_API-success?logo=railway) |
+| **AI Extraction Microservice** | **Railway** | [https://smart-inbox-production.up.railway.app/docs](https://smart-inbox-production.up.railway.app/docs) | ![FastAPI](https://img.shields.io/badge/FastAPI-Swagger_Docs-success?logo=fastapi) |
+| **Live Mailbox Ingestion** | **Gmail IMAP** | `clinevo.test.inbox12@gmail.com` | ![IMAP](https://img.shields.io/badge/IMAP-15s_Active_Polling-blue?logo=gmail) |
+
+> 💡 **Try it Live in 30 Seconds**:
+> 1. Open the [Live Dashboard](https://smart-inbox-navy.vercel.app/queue) to inspect all 12 pre-seeded clinical benchmark cases.
+> 2. Send an email with any clinical CIOMS PDF to `clinevo.test.inbox12@gmail.com`. The background poller will ingest it within ~15s and triage it live with Google Gemini 2.5 Flash at the top of the queue!
+
+---
+
 ## 1. Problem Statement
 
 Pharmaceutical companies receive hundreds of unstructured communications daily across shared safety mailboxes—including spontaneous adverse event reports from physicians and patients, product quality complaints from pharmacists, and medical inquiries. Traditionally, pharmacovigilance intake specialists manually read every email and attached PDF, sort messages into regulatory categories, extract clinical safety facts conforming to ICH E2B(R3) guidelines, and transcribe data into safety databases (e.g., Oracle Argus Safety, ArisGlobal LifeSphere).
@@ -66,7 +81,7 @@ flowchart TB
         TriageEngine["Regulatory Triage Classifier<br/>ICSR / PQC / MI / Not Relevant"]
         ICSRExtractor["Zero-Hallucination Extractor<br/>ICH E2B Safety Facts and Citations"]
         LitSplitter["Literature Splitter<br/>Disaggregates Multi-Patient Series"]
-        GeminiClient["Google GenAI Engine<br/>gemini-3.5-flash"]
+        GeminiClient["Google GenAI Engine<br/>gemini-2.5-flash"]
     end
 
     Ingest_IMAP --> TaskQueue
@@ -95,7 +110,7 @@ sequenceDiagram
     participant IMAP as Live IMAP / Gmail
     participant Backend as Spring Boot Orchestrator (:8081)
     participant Python as Python AI Microservice (:8000)
-    participant Gemini as Google GenAI (gemini-3.5-flash)
+    participant Gemini as Google GenAI (gemini-2.5-flash)
     participant DB as H2 Database (Oracle Mode)
     actor Reviewer as Safety Specialist / UI (:4200)
 
@@ -171,7 +186,7 @@ Full support for foreign-language regulatory intake documents across European re
 | **Reviewer Frontend** | Angular 18+, TypeScript, HTML5, Vanilla CSS / Modern Healthcare Theme |
 | **Backend Orchestration**| Spring Boot 3.3+, Java 17+ LTS OpenJDK, Spring Data JPA, Angus Mail (IMAP) |
 | **AI Microservice** | Python 3.11+, FastAPI, Uvicorn, Pydantic v2, PyMuPDF (`fitz`), Pillow (PIL) |
-| **GenAI Engine** | Google GenAI SDK (`gemini-3.5-flash` with `gemini-3.5-flash-lite` fallback) |
+| **GenAI Engine** | Google GenAI SDK (`gemini-2.5-flash` with `gemini-2.0-flash` fallback) |
 | **Database** | Dual Profile: Embedded H2 (`MODE=Oracle`) for demo / Oracle 19c/21c for production |
 | **Dataset & Validation** | Python 3.11, SHA-256 Manifest Verification, 27 Canonical Benchmark Cases |
 
@@ -239,7 +254,7 @@ For seamless evaluation, the repository includes an automated 1-click launcher f
    ```
 
    > [!NOTE]
-   > - **Only `GEMINI_API_KEY` is required**: Google Gemini 3.5 Flash handles 100% of regulatory triage, clinical entity extraction, multimodal vision, and literature screening.
+   > - **Only `GEMINI_API_KEY` is required**: Google Gemini 2.5 Flash handles 100% of regulatory triage, clinical entity extraction, multimodal vision, and literature screening.
    > - **No Groq API key is required**: The primary extraction pipeline runs entirely on Google Gemini.
    > - **No Oracle database setup is required**: The system boots out of the box using embedded H2 in Oracle syntax mode.
    > - **Live Gmail is pre-configured**: `clinevo.test.inbox12@gmail.com` and app password are pre-populated so live 15-second background polling activates immediately.

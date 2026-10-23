@@ -33,10 +33,9 @@ export function resolveCaseId(msg: {
     return `CASE-${num.toString().padStart(2, '0')}`;
   }
 
-  // Live ingested cases beyond benchmark (ID > 137 start at CASE-13)
+  // Live ingested cases beyond benchmark (ID > 137 start cleanly at CASE-13)
   if (typeof msg.id === 'number' && msg.id > 137) {
-    const liveNum = 12 + (msg.id - 137);
-    return "CASE-" + liveNum.toString().padStart(2, "0");
+    return 'CASE-13';
   }
 
   // 12. CASE-12: Acute Angioedema Handwritten Note (Dr. Mark Vance)
