@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0"
-setlocal
+setlocal enabledelayedexpansion
 
 title Clinevo Smart Inbox - 1-Click Launcher
 cls
@@ -155,9 +155,18 @@ echo   Tier 2 - Backend API: http://localhost:8081/api/messages
 echo   Tier 3 - AI Service:  http://localhost:8000/docs
 echo =====================================================================
 echo.
-echo [5/5] Opening default browser to Reviewer Workbench...
-echo Waiting 6 seconds for web servers to initialize...
-ping -n 7 127.0.0.1 >nul 2>nul
+echo [5/5] Waiting for frontend server to initialize...
+set /a attempts=0
+:wait_loop
+set /a attempts+=1
+netstat -ano | findstr ":4200" | findstr "LISTENING" >nul 2>nul
+if %errorlevel% equ 0 goto :launch_browser
+if !attempts! geq 35 goto :launch_browser
+timeout /t 1 /nobreak >nul 2>nul
+goto :wait_loop
+
+:launch_browser
+echo [OK] Frontend is ready! Opening default browser to Reviewer Workbench...
 start http://localhost:4200
 
 echo.
