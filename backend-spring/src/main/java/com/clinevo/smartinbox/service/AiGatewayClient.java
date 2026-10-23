@@ -23,7 +23,7 @@ public class AiGatewayClient {
     private final String aiServiceUrl;
 
     public AiGatewayClient(RestTemplate restTemplate,
-                           @Value("${smartinbox.ai-service.url:http://localhost:8000}") String aiServiceUrl) {
+                           @Value("${smartinbox.ai-service.url:https://smart-inbox-production.up.railway.app}") String aiServiceUrl) {
         this.restTemplate = restTemplate;
         this.aiServiceUrl = aiServiceUrl.endsWith("/") ? aiServiceUrl.substring(0, aiServiceUrl.length() - 1) : aiServiceUrl;
     }

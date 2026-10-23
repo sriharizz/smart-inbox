@@ -29,7 +29,7 @@ spring:
 # Application Specific Properties
 smartinbox:
   ai-service:
-    url: ${PYTHON_AI_SERVICE_URL:http://127.0.0.1:8000}
+    url: ${PYTHON_AI_SERVICE_URL:https://smart-inbox-production.up.railway.app}
     timeout-seconds: 180
   ingestion:
     mode: ${INGESTION_MODE:IMAP}
