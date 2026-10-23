@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Rounded Square Background in SmartInbox brand purple -->
+  <rect width="64" height="64" rx="14" fill="#501D5A"/>
+  
+  <!-- Inbox Tray Outline -->
+  <path d="M14 36L22 46H42L50 36V22C50 19.7909 48.2091 18 46 18H18C15.7909 18 14 19.7909 14 22V36Z" fill="#743485" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+  
+  <!-- Front Lip of Inbox -->
+  <path d="M14 36H24L27 42H37L40 36H50V46C50 48.2091 48.2091 50 46 50H18C15.7909 50 14 48.2091 14 46V36Z" fill="#3D1245" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+  
+  <!-- Pharmacovigilance / Safety Medical Cross -->
+  <path d="M32 23V35M26 29H38" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
