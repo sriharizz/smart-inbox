@@ -13,7 +13,7 @@ import java.time.Duration;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${smartinbox.ai-service.timeout-seconds:60}")
+    @Value("${smartinbox.ai-service.timeout-seconds:180}")
     private int timeoutSeconds;
 
     @Override

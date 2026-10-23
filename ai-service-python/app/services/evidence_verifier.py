@@ -247,14 +247,7 @@ class EvidenceVerifier:
                     return self._provider
             except Exception as e:
                 logger.warning(f"Could not initialize Groq LLM provider: {e}")
-        # 2. Default seamlessly to Gemini provider (gemini-3.5-flash)
-        try:
-            p = get_llm_provider("gemini")
-            if p.is_healthy():
-                self._provider = p
-                return self._provider
-        except Exception as e:
-            logger.warning(f"Could not initialize Gemini LLM provider: {e}")
+        # 2. When secondary LLM is not configured, return None to trigger instant deterministic RapidFuzz entailment
         return None
 
     # ------------------------------------------------------------------------
