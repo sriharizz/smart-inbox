@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Tier 3: Python AI Microservice (FastAPI + PyMuPDF + Gemini)
+  ai-service:
+    build:
+      context: ./ai-service-python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    restart: unless-stopped
+
+  # Tier 2: Spring Boot 3 Backend Orchestrator (Java 21)
+  backend:
+    build:
+      context: ./backend-spring
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - PYTHON_AI_SERVICE_URL=http://ai-service:8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - INGESTION_MODE=${INGESTION_MODE:-FIXTURE}
+      - MAIL_IMAP_HOST=${MAIL_IMAP_HOST:-imap.gmail.com}
+      - MAIL_IMAP_PORT=${MAIL_IMAP_PORT:-993}
+      - MAIL_IMAP_USERNAME=${MAIL_IMAP_USERNAME}
+      - MAIL_IMAP_PASSWORD=${MAIL_IMAP_PASSWORD}
+    depends_on:
+      - ai-service
+    restart: unless-stopped
+
+  # Tier 1: Angular Reviewer Dashboard (Nginx)
+  frontend:
+    build:
+      context: ./frontend-angular
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
