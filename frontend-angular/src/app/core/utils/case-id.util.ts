@@ -1,3 +1,13 @@
+const liveIdOrder: number[] = [];
+
+function getLiveCaseNumber(id: number): number {
+  if (!liveIdOrder.includes(id)) {
+    liveIdOrder.push(id);
+    liveIdOrder.sort((a, b) => a - b);
+  }
+  return 13 + liveIdOrder.indexOf(id);
+}
+
 /**
  * Resolves the reviewer-facing human-meaningful logical Case ID (CASE-01 to CASE-12).
  * Strictly decouples reviewer-facing clinical case identity from arbitrary database primary keys.
@@ -33,9 +43,10 @@ export function resolveCaseId(msg: {
     return `CASE-${num.toString().padStart(2, '0')}`;
   }
 
-  // Live ingested cases beyond benchmark (ID > 137 start cleanly at CASE-13)
+  // Live ingested cases beyond benchmark (ID > 137 sequence cleanly: CASE-13, CASE-14, CASE-15...)
   if (typeof msg.id === 'number' && msg.id > 137) {
-    return 'CASE-13';
+    const liveNum = getLiveCaseNumber(msg.id);
+    return `CASE-${liveNum.toString().padStart(2, '0')}`;
   }
 
   // 12. CASE-12: Acute Angioedema Handwritten Note (Dr. Mark Vance)
