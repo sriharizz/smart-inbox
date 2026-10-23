@@ -775,8 +775,8 @@ class EvidenceVerifier:
 
         # 4. Construct Bounded Batches
         batches: List[VerificationBatch] = []
-        batch_max_items = getattr(settings, "VERIFIER_BATCH_MAX_ITEMS", 6)
-        batch_max_chars = getattr(settings, "VERIFIER_BATCH_MAX_CHARS", 3500)
+        batch_max_items = getattr(settings, "VERIFIER_BATCH_MAX_ITEMS", 30)
+        batch_max_chars = getattr(settings, "VERIFIER_BATCH_MAX_CHARS", 25000)
 
         current_batch_id_num = 1
         current_catalog: Dict[str, Dict[str, str]] = {}
