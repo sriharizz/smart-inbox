@@ -228,6 +228,9 @@
             }">
               {{ activeEvidence.verificationResult === 'SUPPORTS' ? 'Supported' : (activeEvidence.verificationResult === 'CONTRADICTS' ? 'Contradicted' : 'Insufficient') }}
             </span>
+            <span class="fuzz-score-tag" *ngIf="getRapidFuzzScore(activeEvidence) as fuzzScore">
+              <span class="fuzz-icon">⚡</span> RapidFuzz: <strong>{{ fuzzScore }}%</strong>
+            </span>
           </div>
 
           <div class="insp-quote-card">

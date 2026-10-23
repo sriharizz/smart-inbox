@@ -53,7 +53,21 @@ export class AuditTrailComponent implements OnInit {
     let list = [...this.events];
 
     if (this.selectedAction !== 'ALL') {
-      list = list.filter(e => e.action === this.selectedAction);
+      list = list.filter(e => {
+        const act = (e.action || '').toUpperCase();
+        switch (this.selectedAction) {
+          case 'OVERRIDE_FIELD':
+            return act === 'OVERRIDE_FIELD' || act === 'EDIT_FIELD' || act.includes('FIELD') || act.includes('EDIT');
+          case 'OVERRIDE_CATEGORY':
+            return act === 'OVERRIDE_CATEGORY' || act === 'CATEGORY_OVERRIDE' || act.includes('CATEGORY');
+          case 'REVIEWER_CONFIRM':
+            return act === 'REVIEWER_CONFIRM' || act === 'ACCEPT' || act === 'CONFIRM_CASE' || act.includes('CONFIRM');
+          case 'INGESTION':
+            return act === 'INGESTION' || act === 'AI_TRIAGE_COMPLETED' || act === 'TRIAGE_COMPLETE' || act.includes('INGEST') || act.includes('TRIAGE');
+          default:
+            return act === this.selectedAction.toUpperCase();
+        }
+      });
     }
 
     if (this.searchQuery.trim()) {
@@ -83,27 +97,37 @@ export class AuditTrailComponent implements OnInit {
   }
 
   getActionBadgeClass(action: string): string {
-    switch (action) {
+    const act = (action || '').toUpperCase();
+    switch (act) {
       case 'REVIEWER_CONFIRM':
+      case 'CONFIRM_CASE':
       case 'ACCEPT': return 'badge-accept';
       case 'OVERRIDE_CATEGORY':
+      case 'CATEGORY_OVERRIDE':
       case 'OVERRIDE_FIELD':
+      case 'EDIT_FIELD':
       case 'OVERRIDE': return 'badge-override';
       case 'INGESTION': return 'badge-ingest';
-      case 'TRIAGE_COMPLETE': return 'badge-triage';
+      case 'TRIAGE_COMPLETE':
+      case 'AI_TRIAGE_COMPLETED': return 'badge-triage';
       default: return 'badge-neutral';
     }
   }
 
   getActionLabel(action: string): string {
-    switch (action) {
+    const act = (action || '').toUpperCase();
+    switch (act) {
       case 'REVIEWER_CONFIRM':
+      case 'CONFIRM_CASE':
       case 'ACCEPT': return 'Confirmed by Reviewer';
-      case 'OVERRIDE_CATEGORY': return 'Category Override';
-      case 'OVERRIDE_FIELD': return 'Field Override';
+      case 'OVERRIDE_CATEGORY':
+      case 'CATEGORY_OVERRIDE': return 'Category Override';
+      case 'OVERRIDE_FIELD':
+      case 'EDIT_FIELD': return 'Field Override';
       case 'OVERRIDE': return 'Reviewer Override';
       case 'INGESTION': return 'System Ingested';
-      case 'TRIAGE_COMPLETE': return 'AI Triage Complete';
+      case 'TRIAGE_COMPLETE':
+      case 'AI_TRIAGE_COMPLETED': return 'AI Triage Complete';
       default: return action;
     }
   }

@@ -38,6 +38,7 @@ export interface EvidenceRef {
   anchorLevel?: AnchorLevel;
   verificationResult?: 'SUPPORTS' | 'CONTRADICTS' | 'INSUFFICIENT';
   verificationRationale?: string;
+  confidence?: number;
 }
 
 export interface ReviewFocusItem {

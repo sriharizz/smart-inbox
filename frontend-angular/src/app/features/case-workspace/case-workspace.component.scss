@@ -634,6 +634,28 @@ $not-stated-dot: #94a3b8;
           &.verif-contradicts { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
           &.verif-insufficient { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         }
+
+        .fuzz-score-tag {
+          font-size: 0.72rem;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 3px;
+          background: #eef2ff;
+          color: #3730a3;
+          border: 1px solid #c7d2fe;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+
+          .fuzz-icon {
+            font-size: 0.75rem;
+            color: #4f46e5;
+          }
+
+          strong {
+            color: #312e81;
+          }
+        }
       }
 
       .insp-quote-card {

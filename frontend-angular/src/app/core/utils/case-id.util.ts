@@ -14,10 +14,10 @@ export function resolveCaseId(msg: {
   if (!msg) return 'CASE-01';
 
   // If already explicitly provided with canonical format
-  if (msg.caseReference && /^CASE-(0[1-9]|1[0-2])$/i.test(msg.caseReference)) {
+  if (msg.caseReference && /^CASE-\d+$/i.test(msg.caseReference)) {
     return msg.caseReference.toUpperCase();
   }
-  if (msg.caseId && /^CASE-(0[1-9]|1[0-2])$/i.test(msg.caseId)) {
+  if (msg.caseId && /^CASE-\d+$/i.test(msg.caseId)) {
     return msg.caseId.toUpperCase();
   }
 
@@ -98,14 +98,19 @@ export function resolveCaseId(msg: {
     return 'CASE-12';
   }
 
-  // 13. CASE-13: German BfArM UAW Charité Berlin (Dr. med. Wolfgang Becker)
-  if (subj.includes('charit') || subj.includes('angioödem') || subj.includes('uaw-meldung') || sender.includes('charite') || mid.includes('bericht_uaw') || mid.includes('case-13') || mid.includes('case13')) {
+  // 13. CASE-13: Rosuvastatin Rhabdomyolysis / German BfArM / Live Ingested Case
+  if (subj.includes('rhabdo') || subj.includes('rosuvastatin') || subj.includes('charit') || subj.includes('angioödem') || subj.includes('uaw-meldung') || sender.includes('charite') || mid.includes('bericht_uaw') || mid.includes('case-13') || mid.includes('case13')) {
     return 'CASE-13';
   }
 
   // Fallback: If DB ID is 1..12 (canonical seed data)
   if (typeof msg.id === 'number' && msg.id >= 1 && msg.id <= 12) {
     return `CASE-${msg.id.toString().padStart(2, '0')}`;
+  }
+
+  // Live ingested cases beyond the 12 canonical benchmark cases (e.g. ID > 137)
+  if (typeof msg.id === 'number' && msg.id > 137) {
+    return `CASE-${12 + (msg.id - 137)}`;
   }
 
   // Fallback for demo: map to modulo 1..12 so no arbitrary DB ID (like 109 or 45) ever leaks to UI

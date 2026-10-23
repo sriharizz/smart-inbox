@@ -423,18 +423,35 @@ export class CaseWorkspaceComponent implements OnInit {
       // Build candidate search terms: prioritize exact fact value, then significant words in snippet
       const searchTerms: string[] = [];
       if (factValue && !this.isNotStatedSnippet(factValue) && factValue.trim().length >= 2) {
-        searchTerms.push(factValue.trim().toLowerCase());
+        const cleanVal = factValue.trim().toLowerCase();
+        // Extract parenthetical clarifiers e.g. "Yes (Hospitalized)" -> "hospitalized", "hospitalization"
+        const parenMatch = cleanVal.match(/\(([^)]+)\)/);
+        if (parenMatch && parenMatch[1]) {
+          const inner = parenMatch[1].trim();
+          searchTerms.push(inner);
+          if (inner.endsWith('ed')) {
+            searchTerms.push(inner.slice(0, -2) + 'ation');
+          }
+        }
+        if (!['yes', 'no', 'unknown', 'none'].includes(cleanVal)) {
+          searchTerms.push(cleanVal);
+        }
       }
+
       if (querySnippet && !this.isNotStatedSnippet(querySnippet)) {
         const cleanSnip = querySnippet.replace(/[\r\n]+/g, ' ').trim().toLowerCase();
         if (cleanSnip.length >= 4) {
           searchTerms.push(cleanSnip);
         }
-        const words = cleanSnip.split(/\s+/).filter(w => w.length >= 4 || /\d/.test(w));
+        // Extract significant clinical words, sorted by length descending so specific terms match first
+        const words = cleanSnip.split(/\s+/)
+          .map(w => w.replace(/[(),;:."']/g, ''))
+          .filter(w => (w.length >= 4 || /\d/.test(w)) && !['stat', 'with', 'from', 'this', 'that', 'were', 'have', 'been'].includes(w));
+        words.sort((a, b) => b.length - a.length);
+
         for (const w of words) {
-          const cleanW = w.replace(/[(),;:]/g, '');
-          if (cleanW.length >= 3 && !searchTerms.includes(cleanW)) {
-            searchTerms.push(cleanW);
+          if (w.length >= 3 && !searchTerms.includes(w)) {
+            searchTerms.push(w);
           }
         }
       }
@@ -443,7 +460,20 @@ export class CaseWorkspaceComponent implements OnInit {
         for (const item of items) {
           if (!item.str) continue;
           const itemText = item.str.toLowerCase();
-          const matchIdx = itemText.indexOf(term);
+
+          // Enforce word-boundary to prevent sub-string collisions like "stat" inside "states"
+          const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const wordRegex = new RegExp('(?:^|[^a-zA-Z0-9])(' + escaped + ')(?:[^a-zA-Z0-9]|$)', 'i');
+          const regexMatch = wordRegex.exec(item.str);
+
+          let matchIdx = -1;
+          if (regexMatch) {
+            matchIdx = itemText.indexOf(term);
+          } else if (term.length >= 8 && itemText.indexOf(term) !== -1) {
+            // For longer multi-word phrases or terms (>= 8 chars), allow exact substring
+            matchIdx = itemText.indexOf(term);
+          }
+
           if (matchIdx !== -1) {
             const [, , , scaleY, tx, ty] = item.transform;
             const itemH = item.height || Math.abs(scaleY) || 10;
@@ -467,6 +497,31 @@ export class CaseWorkspaceComponent implements OnInit {
       }
     } catch (err) {
       console.warn('Text-based PDF highlight lookup failed:', err);
+    }
+    return null;
+  }
+
+  getRapidFuzzScore(evidence: EvidenceRef | null): number | null {
+    if (!evidence) return null;
+    const rat = evidence.verificationRationale || '';
+    const match = rat.match(/\[RapidFuzz:\s*(\d+)%/i)
+      || rat.match(/RapidFuzz.*?(\d+)%/i)
+      || rat.match(/(\d+(?:\.\d+)?)\s*%\s*(?:token match|lexical|match)/i);
+    if (match && match[1]) {
+      return Math.round(parseFloat(match[1]));
+    }
+    if (evidence.verificationResult === 'SUPPORTS') {
+      const ratLower = rat.toLowerCase();
+      if (ratLower.includes('verbatim') || ratLower.includes('directly contains') || ratLower.includes('exact')) {
+        return 100;
+      }
+      if (ratLower.includes('normalized')) {
+        return 98;
+      }
+      if (evidence.confidence && evidence.confidence > 0.8) {
+        return Math.round(evidence.confidence * 100);
+      }
+      return 85;
     }
     return null;
   }
@@ -1047,13 +1102,31 @@ export class CaseWorkspaceComponent implements OnInit {
       return;
     }
 
+    // Compute only fields that actually changed (diff delta)
+    const changedFields: Record<string, string> = {};
+    if (this.brief && this.brief.facts) {
+      for (const f of this.brief.facts) {
+        const newVal = this.overrideFieldEdits[f.field];
+        if (newVal !== undefined && newVal !== f.value) {
+          changedFields[f.field] = newVal;
+        }
+      }
+    }
+    const hasCategoryChange = !!(this.overrideCategory && this.overrideCategory !== this.message.primaryCategory);
+    const hasFieldChanges = Object.keys(changedFields).length > 0;
+
+    if (!hasCategoryChange && !hasFieldChanges) {
+      alert('No changes detected. Please modify a field or category before saving.');
+      return;
+    }
+
     this.isSubmittingAction = true;
     this.cdr.markForCheck();
     this.messageService.overrideMessage(this.message.id, {
       reviewerUsername: 'safety.reviewer@clinevo.com',
-      newCategory: this.overrideCategory !== this.message.primaryCategory ? this.overrideCategory : undefined,
+      newCategory: hasCategoryChange ? this.overrideCategory : undefined,
       justification: this.overrideJustification,
-      fieldEdits: this.overrideFieldEdits
+      fieldEdits: hasFieldChanges ? changedFields : undefined
     }).subscribe({
       next: (updated) => {
         this.message = updated;

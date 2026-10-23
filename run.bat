@@ -90,6 +90,21 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:: Ensure Java 21 is prioritized for Spring Boot backend (compiled with class version 65)
+if exist "C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot" (
+    set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
+    set "PATH=C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\bin;%PATH%"
+) else (
+    for /d %%D in ("C:\Program Files\Eclipse Adoptium\jdk-21*") do (
+        set "JAVA_HOME=%%D"
+        set "PATH=%%D\bin;%PATH%"
+    )
+    for /d %%D in ("C:\Program Files\Java\jdk-21*") do (
+        set "JAVA_HOME=%%D"
+        set "PATH=%%D\bin;%PATH%"
+    )
+)
+
 echo [OK] Python, Node.js, and Java detected.
 echo.
 
@@ -121,9 +136,9 @@ start "Clinevo Tier 3 - Python AI Service - Port 8000" cmd /k "cd ai-service-pyt
 :: 8. Launch Tier 2: Spring Boot Backend Orchestrator
 echo [INFO] Starting Spring Boot Backend on port 8081...
 if exist "backend-spring\mvnw.cmd" (
-    start "Clinevo Tier 2 - Spring Boot Backend - Port 8081" cmd /k "cd backend-spring && mvnw.cmd spring-boot:run"
+    start "Clinevo Tier 2 - Spring Boot Backend - Port 8081" cmd /k "cd backend-spring && set "JAVA_HOME=%JAVA_HOME%" & set "PATH=%JAVA_HOME%\bin;%%PATH%%" & mvnw.cmd spring-boot:run"
 ) else (
-    start "Clinevo Tier 2 - Spring Boot Backend - Port 8081" cmd /k "cd backend-spring && mvn spring-boot:run"
+    start "Clinevo Tier 2 - Spring Boot Backend - Port 8081" cmd /k "cd backend-spring && set "JAVA_HOME=%JAVA_HOME%" & set "PATH=%JAVA_HOME%\bin;%%PATH%%" & mvn spring-boot:run"
 )
 
 :: 9. Launch Tier 1: Angular Reviewer Dashboard
